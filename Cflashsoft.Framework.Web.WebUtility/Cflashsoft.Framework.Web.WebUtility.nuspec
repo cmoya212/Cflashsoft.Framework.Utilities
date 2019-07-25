@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<package >
+  <metadata>
+    <id>$id$</id>
+    <version>1.0.1</version>
+    <title>$title$</title>
+    <authors>C. Moya</authors>
+    <owners>cmoya212</owners>
+    <projectUrl>https://www.nuget.org/packages/Cflashsoft.Framework.Web.WebUtility</projectUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>Generic web utility.</description>
+    <releaseNotes>This release contains all updates through $date$</releaseNotes>
+    <copyright>Copyright 2019</copyright>
+    <dependencies>
+    </dependencies>
+  </metadata>
+</package>

@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+<package >
+  <metadata>
+    <id>$id$</id>
+    <version>1.0.6</version>
+    <title>$title$</title>
+    <authors>C. Moya</authors>
+    <owners>cmoya212</owners>
+    <projectUrl>https://www.nuget.org/packages/Cflashsoft.Framework.Http</projectUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>HTTP API utility extensions.</description>
+    <releaseNotes>This release contains all updates through $date$</releaseNotes>
+    <copyright>Copyright 2019</copyright>
+    <dependencies>
+      <dependency id="Newtonsoft.Json" version="11.0.2" />
+      <dependency id="Microsoft.AspNet.WebApi.Client" version="5.2.6" />
+      <dependency id="System.Configuration.ConfigurationManager" version="4.5.0" />
+    </dependencies>
+  </metadata>
+</package>

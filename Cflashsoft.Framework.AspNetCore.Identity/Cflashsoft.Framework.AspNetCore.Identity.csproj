@@ -1,0 +1,24 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp2.1</TargetFramework>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <DocumentationFile>C:\Users\cmoya\source\repos\CfFramework.Example.WebApiApp\Cflashsoft.Framework.AspNetCore.Identity\bin\Debug\netcoreapp2.1\Cflashsoft.Framework.AspNetCore.Identity.xml</DocumentationFile>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <DocumentationFile>C:\Users\cmoya\source\repos\CfFramework.Example.WebApiApp\Cflashsoft.Framework.AspNetCore.Identity\bin\Release\netcoreapp2.1\Cflashsoft.Framework.AspNetCore.Identity.xml</DocumentationFile>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Cflashsoft.Framework.SecurityCore" Version="1.0.1" />
+    <PackageReference Include="Cflashsoft.Framework.Types" Version="1.0.2" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication" Version="2.1.1" />
+    <PackageReference Include="Microsoft.Extensions.Configuration" Version="2.1.1" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="2.1.1" />
+    <PackageReference Include="Newtonsoft.Json" Version="11.0.2" />
+  </ItemGroup>
+
+</Project>
