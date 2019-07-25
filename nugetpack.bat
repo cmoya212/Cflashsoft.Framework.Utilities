@@ -1,5 +1,3 @@
-rem cd Cflashsoft.Framework.Optimization
-rem nuget pack -prop Configuration=Release
 
 cd Cflashsoft.Framework.Security
 nuget pack -prop Configuration=Release
