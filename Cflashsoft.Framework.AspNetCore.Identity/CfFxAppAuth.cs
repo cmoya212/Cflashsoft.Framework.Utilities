@@ -79,7 +79,7 @@ namespace Cflashsoft.Framework.AspNetCore.Identity
     /// <summary>
     /// Delegate for retrieveing User information from the store and creating an authentication ticket.
     /// </summary>
-    public delegate Task<AuthenticateResult> CreateAuthenticationTicketAsyncDelegate(IAppSystemUser systemAppUser, Guid? loginToken, string authKey, string authenticationScheme);
+    public delegate Task<AuthenticateResult> CreateAuthenticationTicketAsyncDelegate(IServiceProvider serviceProvider, IAppSystemUser systemAppUser, Guid? loginToken, string authKey, string authenticationScheme);
 
     /// <summary>
     /// Represents Authentication Scheme options for Cflashsoft Framework Identity authentication. 
@@ -97,6 +97,7 @@ namespace Cflashsoft.Framework.AspNetCore.Identity
     /// </summary>
     public class CfFxAppAuthHandler : AuthenticationHandler<CfFxAppAuthSchemeOptions>
     {
+        private IServiceProvider _serviceProvider { get; }
         private IConfiguration _configuration { get; }
         private IConfigurationSection _authConfig { get; }
         private IAppSystemUser _systemUser { get; }
@@ -104,9 +105,10 @@ namespace Cflashsoft.Framework.AspNetCore.Identity
         /// <summary>
         /// Initializes a new instance of the CfFxAppAuthHandler class.
         /// </summary>
-        public CfFxAppAuthHandler(IConfiguration configuration, IOptionsMonitor<CfFxAppAuthSchemeOptions> options, ILoggerFactory logger, UrlEncoder encoder, ISystemClock clock, IAppSystemUser systemUser = null)
+        public CfFxAppAuthHandler(IServiceProvider serviceProvider, IConfiguration configuration, IOptionsMonitor<CfFxAppAuthSchemeOptions> options, ILoggerFactory logger, UrlEncoder encoder, ISystemClock clock, IAppSystemUser systemUser = null)
             : base(options, logger, encoder, clock)
         {
+            _serviceProvider = serviceProvider;
             _configuration = configuration;
             _authConfig = configuration.GetSection("CfFxAuth");
             _systemUser = systemUser;
@@ -162,13 +164,45 @@ namespace Cflashsoft.Framework.AspNetCore.Identity
         {
             AuthenticateResult result = null;
 
+            //TODO: see about caching these config lookups
+
             string authKey = null;
 
             if (_authConfig.GetValue<bool>("EnableCookieAuth"))
                 authKey = this.Request.Cookies[_authConfig["CookieName"]];
 
-            if (string.IsNullOrWhiteSpace(authKey) && _authConfig.GetValue<bool>("EnableQueryStringAuth") && (this.Context.Request.Method == "GET" || this.Context.Request.Method == "DELETE"))
-                authKey = this.Request.Query["api_key"];
+            if (string.IsNullOrWhiteSpace(authKey) && _authConfig.GetValue<bool>("EnableAltAuth"))
+            {
+                string[] apiKeyNames = _authConfig["AltAuthKeyNames"].Split(',');
+
+                if (apiKeyNames != null && apiKeyNames.Length > 0)
+                {
+                    foreach (string keyName in apiKeyNames)
+                    {
+                        string param = this.Request.Query[keyName];
+
+                        if (!string.IsNullOrEmpty(param))
+                        {
+                            authKey = param;
+                            break;
+                        }
+                    }
+
+                    if (string.IsNullOrWhiteSpace(authKey))
+                    {
+                        foreach (string keyName in apiKeyNames)
+                        {
+                            string header = this.Request.Headers[keyName];
+
+                            if (!string.IsNullOrEmpty(header))
+                            {
+                                authKey = header;
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
 
             if (string.IsNullOrWhiteSpace(authKey) && _authConfig.GetValue<bool>("EnableHeaderAuth"))
             {
@@ -202,7 +236,7 @@ namespace Cflashsoft.Framework.AspNetCore.Identity
                         token = tokenGuid;
                 }
 
-                result = await this.Options.CreateAuthenticationTicketAsync(_systemUser, token, authKey, this.Scheme.Name);
+                result = await this.Options.CreateAuthenticationTicketAsync(_serviceProvider, _systemUser, token, authKey, this.Scheme.Name);
             }
 
             return result ?? AuthenticateResult.NoResult();

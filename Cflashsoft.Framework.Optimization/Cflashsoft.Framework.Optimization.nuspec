@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+<package >
+  <metadata>
+    <id>$id$</id>
+    <version>1.0.001</version>
+    <title>$title$</title>
+    <authors>C. Moya</authors>
+    <owners>cmoya212</owners>
+    <projectUrl>https://www.nuget.org/packages/Cflashsoft.Framework.Optimization</projectUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>This package has utility classes which can be used across multiple solutions</description>
+    <releaseNotes>This release contains all updates through $date$</releaseNotes>
+    <copyright>Copyright 2019</copyright>
+    <dependencies>
+      <dependency id="System.Runtime.Caching" version="4.5.0" exclude="Build,Analyzers" />
+    </dependencies>
+  </metadata>
+</package>
