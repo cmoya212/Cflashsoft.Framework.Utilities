@@ -19,14 +19,14 @@ namespace Cflashsoft.Framework.Http
     /// </summary>
     public static class HttpApiExtensions
     {
-        public static Task<HttpApiResult<TResult>> ApiAsAsync<TResult>(this HttpClient client, HttpVerb verb, string requestUri, AuthenticationHeaderValue authenticationHeader = null)
+        public static Task<HttpApiResult<TResult>> ApiAsAsync<TResult>(this HttpClient client, HttpVerb verb, string requestUri, AuthenticationHeaderValue authenticationHeader = null, IEnumerable<(string Key, string Value)> headers = null)
         {
-            return ApiAsAsync<TResult>(client, verb, requestUri, null, authenticationHeader, HttpContentType.NotSet);
+            return ApiAsAsync<TResult>(client, verb, requestUri, null, authenticationHeader, headers, HttpContentType.NotSet);
         }
 
-        public static async Task<HttpApiResult<TResult>> ApiAsAsync<TResult>(this HttpClient client, HttpVerb verb, string requestUri, object value, AuthenticationHeaderValue authenticationHeader = null, HttpContentType contentType = HttpContentType.Json)
+        public static async Task<HttpApiResult<TResult>> ApiAsAsync<TResult>(this HttpClient client, HttpVerb verb, string requestUri, object value, AuthenticationHeaderValue authenticationHeader = null, IEnumerable<(string Key, string Value)> headers = null, HttpContentType contentType = HttpContentType.Json)
         {
-            using (HttpRequestMessage message = HttpApiUtility.CreateRequestMessage(verb, requestUri, value, contentType, authenticationHeader))
+            using (HttpRequestMessage message = HttpApiUtility.CreateRequestMessage(verb, requestUri, value, contentType, authenticationHeader, headers))
             {
                 try
                 {
@@ -47,24 +47,24 @@ namespace Cflashsoft.Framework.Http
             }
         }
 
-        public static Task<HttpApiResult<JToken>> ApiAsJTokenAsync(this HttpClient client, HttpVerb verb, string requestUri, AuthenticationHeaderValue authenticationHeader = null)
+        public static Task<HttpApiResult<JToken>> ApiAsJTokenAsync(this HttpClient client, HttpVerb verb, string requestUri, AuthenticationHeaderValue authenticationHeader = null, IEnumerable<(string Key, string Value)> headers = null)
         {
-            return ApiAsAsync<JToken>(client, verb, requestUri, authenticationHeader);
+            return ApiAsAsync<JToken>(client, verb, requestUri, authenticationHeader, headers);
         }
 
-        public static Task<HttpApiResult<JToken>> ApiAsJTokenAsync(this HttpClient client, HttpVerb verb, string requestUri, object value, AuthenticationHeaderValue authenticationHeader = null, HttpContentType contentType = HttpContentType.Json)
+        public static Task<HttpApiResult<JToken>> ApiAsJTokenAsync(this HttpClient client, HttpVerb verb, string requestUri, object value, AuthenticationHeaderValue authenticationHeader = null, IEnumerable<(string Key, string Value)> headers = null, HttpContentType contentType = HttpContentType.Json)
         {
-            return ApiAsAsync<JToken>(client, verb, requestUri, value, authenticationHeader, contentType);
+            return ApiAsAsync<JToken>(client, verb, requestUri, value, authenticationHeader, headers, contentType);
         }
 
-        public static Task<HttpApiResult<string>> ApiAsStringAsync(this HttpClient client, HttpVerb verb, string requestUri, AuthenticationHeaderValue authenticationHeader = null)
+        public static Task<HttpApiResult<string>> ApiAsStringAsync(this HttpClient client, HttpVerb verb, string requestUri, AuthenticationHeaderValue authenticationHeader = null, IEnumerable<(string Key, string Value)> headers = null)
         {
-            return ApiAsAsync<string>(client, verb, requestUri, authenticationHeader);
+            return ApiAsAsync<string>(client, verb, requestUri, authenticationHeader, headers);
         }
 
-        public static Task<HttpApiResult<string>> ApiAsStringAsync(this HttpClient client, HttpVerb verb, string requestUri, object value, AuthenticationHeaderValue authenticationHeader = null, HttpContentType contentType = HttpContentType.Json)
+        public static Task<HttpApiResult<string>> ApiAsStringAsync(this HttpClient client, HttpVerb verb, string requestUri, object value, AuthenticationHeaderValue authenticationHeader = null, IEnumerable<(string Key, string Value)> headers = null, HttpContentType contentType = HttpContentType.Json)
         {
-            return ApiAsAsync<string>(client, verb, requestUri, value, authenticationHeader, contentType);
+            return ApiAsAsync<string>(client, verb, requestUri, value, authenticationHeader, headers, contentType);
         }
 
         public static async Task<HttpApiResult<TResult>> ReadAsApiResponseAsync<TResult>(this HttpContent content, HttpStatusCode statusCode, bool isSuccessStatusCode)

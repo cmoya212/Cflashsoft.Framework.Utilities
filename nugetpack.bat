@@ -19,6 +19,11 @@ nuget pack -prop Configuration=Release
 
 cd ..
 
+cd Cflashsoft.Framework.Data
+nuget pack -prop Configuration=Release
+
+cd ..
+
 cd Cflashsoft.Framework.Http
 nuget pack -prop Configuration=Release
 

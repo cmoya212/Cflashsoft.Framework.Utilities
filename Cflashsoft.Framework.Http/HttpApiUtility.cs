@@ -39,12 +39,12 @@ namespace Cflashsoft.Framework.Http
             return result;
         }
 
-        public static HttpRequestMessage CreateRequestMessage(HttpVerb verb, string requestUri, AuthenticationHeaderValue authenticationHeader = null)
+        public static HttpRequestMessage CreateRequestMessage(HttpVerb verb, string requestUri, AuthenticationHeaderValue authenticationHeader = null, IEnumerable<(string Key, string Value)> headers = null)
         {
             return CreateRequestMessage(verb, requestUri, (object)null, HttpContentType.NotSet, authenticationHeader);
         }
 
-        public static HttpRequestMessage CreateRequestMessage(HttpVerb verb, string requestUri, object value, HttpContentType contentType = HttpContentType.Json, AuthenticationHeaderValue authenticationHeader = null)
+        public static HttpRequestMessage CreateRequestMessage(HttpVerb verb, string requestUri, object value, HttpContentType contentType = HttpContentType.Json, AuthenticationHeaderValue authenticationHeader = null, IEnumerable<(string Key, string Value)> headers = null)
         {
             if ((value != null || contentType != HttpContentType.NotSet) && (verb == HttpVerb.Get || verb == HttpVerb.Delete))
                 throw new ArgumentException("Get and Delete requests cannot contain message bodies and ContentType is not applicable.");
@@ -77,6 +77,14 @@ namespace Cflashsoft.Framework.Http
 
             if (authenticationHeader != null)
                 result.Headers.Authorization = authenticationHeader;
+
+            if (headers != null)
+            {
+                foreach (var header in headers)
+                {
+                    result.Headers.Add(header.Key, header.Value);
+                }
+            }
 
             return result;
         }
