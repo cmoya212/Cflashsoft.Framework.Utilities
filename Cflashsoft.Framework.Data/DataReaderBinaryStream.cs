@@ -16,7 +16,7 @@ namespace Cflashsoft.Framework.Data
     /// Exposes a forward-only stream whose source is a DB binary column for use with FileStreamResult ActionResult in ASP.NET MVC.
     /// </summary>
     /// <seealso cref="http://www.codeproject.com/Articles/140713/Download-and-Upload-Images-from-SQL-Server-via-ASP"/>
-    public class DbBinaryColumnStream : Stream
+    public class DataReaderBinaryStream : Stream
     {
         private IDataReader _reader = null;
         private int _columnIndex = 0;
@@ -100,7 +100,7 @@ namespace Cflashsoft.Framework.Data
         /// </summary>
         /// <param name="reader">The DataReader that contains the data.</param>
         /// <param name="binaryColumnIndex">The column position that contains the byte data.</param>
-        public DbBinaryColumnStream(IDataReader reader, int binaryColumnIndex)
+        public DataReaderBinaryStream(IDataReader reader, int binaryColumnIndex)
             : this(reader, binaryColumnIndex, "application/octet-stream")
         {
 
@@ -112,7 +112,7 @@ namespace Cflashsoft.Framework.Data
         /// <param name="reader">The DataReader that contains the data.</param>
         /// <param name="binaryColumnIndex">The column position that contains the byte data.</param>
         /// <param name="mimeType">The mime type of the file contained in the byte data.</param>
-        public DbBinaryColumnStream(IDataReader reader, int binaryColumnIndex, string mimeType)
+        public DataReaderBinaryStream(IDataReader reader, int binaryColumnIndex, string mimeType)
         {
             _reader = reader;
             _columnIndex = binaryColumnIndex;
