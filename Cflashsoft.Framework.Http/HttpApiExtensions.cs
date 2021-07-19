@@ -136,47 +136,45 @@ namespace Cflashsoft.Framework.Http
 
             if (content != null)
             {
-                string contentValue = await content.ReadAsStringAsync();
-
-                if (!string.IsNullOrEmpty(contentValue))
+                try
                 {
-                    try
+                    if (content.Headers.ContentType != null && content.Headers.ContentType.MediaType.Equals("application/xml", StringComparison.OrdinalIgnoreCase))
                     {
-                        string json = null;
+                        XmlDocument xmlDocument = new XmlDocument();
 
-                        if (content.Headers.ContentType != null && content.Headers.ContentType.MediaType.Equals("application/xml", StringComparison.OrdinalIgnoreCase))
-                        {
-                            XmlDocument xmlDocument = new XmlDocument();
+                        using (Stream stream = await content.ReadAsStreamAsync())
+                            xmlDocument.Load(stream);
 
-                            try { xmlDocument.LoadXml(contentValue); json = JsonConvert.SerializeXmlNode(xmlDocument); }
-                            catch { json = null; }
-                        }
-                        else
-                        {
-                            json = contentValue;
-                        }
+                        string json = JsonConvert.SerializeXmlNode(xmlDocument);
 
-                        if (!string.IsNullOrEmpty(json))
-                            result = JToken.Parse(json);
+                        result = JToken.Parse(json);
                     }
-                    catch (JsonReaderException)
+                    else
                     {
-                        if (isSuccessStatusCode)
+                        using (Stream stream = await content.ReadAsStreamAsync())
+                        using (StreamReader reader = new StreamReader(stream))
+                        using (JsonTextReader textReader = new JsonTextReader(reader))
                         {
-                            throw; //this is unexpected and should not happen
+                            result = await JToken.LoadAsync(textReader);
+                        }
+                    }
+                }
+                catch (JsonReaderException)
+                {
+                    if (isSuccessStatusCode)
+                    {
+                        throw; //this is unexpected and should not happen
+                    }
+                    else
+                    {
+                        if (ignoreParsingErrorOnBadStatusCode)
+                        {
+                            result = new JObject();
+                            //result["RawServerResponse"] = contentValue;
                         }
                         else
                         {
-                            if (ignoreParsingErrorOnBadStatusCode)
-                            {
-                                result = new JObject();
-
-                                result["RawServerResponse"] = contentValue;
-                            }
-                            else
-                            {
-                                throw;
-                            }
+                            throw;
                         }
                     }
                 }
@@ -184,5 +182,60 @@ namespace Cflashsoft.Framework.Http
 
             return result;
         }
+
+        //public static async Task<JToken> ReadAsJTokenAsync(this HttpContent content, bool isSuccessStatusCode, bool ignoreParsingErrorOnBadStatusCode)
+        //{
+        //    JToken result = null;
+
+        //    if (content != null)
+        //    {
+        //        string contentValue = await content.ReadAsStringAsync();
+
+        //        if (!string.IsNullOrEmpty(contentValue))
+        //        {
+        //            try
+        //            {
+        //                string json = null;
+
+        //                if (content.Headers.ContentType != null && content.Headers.ContentType.MediaType.Equals("application/xml", StringComparison.OrdinalIgnoreCase))
+        //                {
+        //                    XmlDocument xmlDocument = new XmlDocument();
+
+        //                    try { xmlDocument.LoadXml(contentValue); json = JsonConvert.SerializeXmlNode(xmlDocument); }
+        //                    catch { json = null; }
+        //                }
+        //                else
+        //                {
+        //                    json = contentValue;
+        //                }
+
+        //                if (!string.IsNullOrEmpty(json))
+        //                    result = JToken.Parse(json);
+        //            }
+        //            catch (JsonReaderException)
+        //            {
+        //                if (isSuccessStatusCode)
+        //                {
+        //                    throw; //this is unexpected and should not happen
+        //                }
+        //                else
+        //                {
+        //                    if (ignoreParsingErrorOnBadStatusCode)
+        //                    {
+        //                        result = new JObject();
+
+        //                        result["RawServerResponse"] = contentValue;
+        //                    }
+        //                    else
+        //                    {
+        //                        throw;
+        //                    }
+        //                }
+        //            }
+        //        }
+        //    }
+
+        //    return result;
+        //}
     }
 }
