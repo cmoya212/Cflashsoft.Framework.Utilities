@@ -9,9 +9,9 @@ using System.Net.Http.Headers;
 using System.Security.Claims;
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
-using Cflashsoft.Framework.Security;
 using Cflashsoft.Framework.Types;
 using Microsoft.AspNetCore.Http;
+using System.Security.Cryptography;
 
 namespace Cflashsoft.Framework.AspNetCore.Identity
 {
@@ -20,14 +20,6 @@ namespace Cflashsoft.Framework.AspNetCore.Identity
     /// </summary>
     public static class CfFxAppAuth
     {
-        /// <summary>
-        /// Create an encypted Cflashsoft Framework Identity token.
-        /// </summary>
-        public static string EncryptToken(Guid token, IConfiguration configuration)
-        {
-            return TokenUtility.CreateToken(token.ToString("N"), configuration.GetSection("CfFxAuth")["EncryptionKey"]);
-        }
-
         /// <summary>
         /// Set an Cflashsoft Framework Identity auth cookie.
         /// </summary>
@@ -79,7 +71,7 @@ namespace Cflashsoft.Framework.AspNetCore.Identity
     /// <summary>
     /// Delegate for retrieveing User information from the store and creating an authentication ticket.
     /// </summary>
-    public delegate Task<AuthenticateResult> CreateAuthenticationTicketAsyncDelegate(IServiceProvider serviceProvider, IAppSystemUser systemAppUser, Guid? loginToken, string authKey, string authenticationScheme);
+    public delegate Task<AuthenticateResult> CreateAuthenticationTicketAsyncDelegate(IServiceProvider serviceProvider, IAppSystemUser systemAppUser, string authKey, string authenticationScheme);
 
     /// <summary>
     /// Represents Authentication Scheme options for Cflashsoft Framework Identity authentication. 
@@ -98,7 +90,6 @@ namespace Cflashsoft.Framework.AspNetCore.Identity
     public class CfFxAppAuthHandler : AuthenticationHandler<CfFxAppAuthSchemeOptions>
     {
         private IServiceProvider _serviceProvider { get; }
-        private IConfiguration _configuration { get; }
         private IConfigurationSection _authConfig { get; }
         private IAppSystemUser _systemUser { get; }
 
@@ -109,7 +100,6 @@ namespace Cflashsoft.Framework.AspNetCore.Identity
             : base(options, logger, encoder, clock)
         {
             _serviceProvider = serviceProvider;
-            _configuration = configuration;
             _authConfig = configuration.GetSection("CfFxAuth");
             _systemUser = systemUser;
         }
@@ -222,21 +212,7 @@ namespace Cflashsoft.Framework.AspNetCore.Identity
 
             if (!string.IsNullOrWhiteSpace(authKey))
             {
-                Guid? token = null;
-                string secret = _authConfig["EncryptionKey"];
-                
-                if (!string.IsNullOrEmpty(secret))
-                {
-                    string tokenValue = null;
-
-                    try { tokenValue = TokenUtility.DecryptToken(authKey, secret); }
-                    catch { }
-
-                    if (!string.IsNullOrWhiteSpace(tokenValue) && Guid.TryParseExact(tokenValue, "N", out Guid tokenGuid))
-                        token = tokenGuid;
-                }
-
-                result = await this.Options.CreateAuthenticationTicketAsync(_serviceProvider, _systemUser, token, authKey, this.Scheme.Name);
+                result = await this.Options.CreateAuthenticationTicketAsync(_serviceProvider, _systemUser, authKey, this.Scheme.Name);
             }
 
             return result ?? AuthenticateResult.NoResult();

@@ -22,7 +22,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "NugetPack", "NugetPack", "{
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Cflashsoft.Framework.Optimization", "Cflashsoft.Framework.Optimization\Cflashsoft.Framework.Optimization.csproj", "{3425C23D-8162-4D5E-B559-307C5224D3AC}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Cflashsoft.Framework.Data", "Cflashsoft.Framework.Data\Cflashsoft.Framework.Data.csproj", "{8609687A-F359-49B0-A7F9-C3D5491E30B6}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Cflashsoft.Framework.Data", "Cflashsoft.Framework.Data\Cflashsoft.Framework.Data.csproj", "{8609687A-F359-49B0-A7F9-C3D5491E30B6}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Cflashsoft.Framework.Logging", "Cflashsoft.Framework.Logging\Cflashsoft.Framework.Logging.csproj", "{BE8A6D01-62E3-4D63-BD63-060AABD14BE9}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -62,6 +64,10 @@ Global
 		{8609687A-F359-49B0-A7F9-C3D5491E30B6}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8609687A-F359-49B0-A7F9-C3D5491E30B6}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8609687A-F359-49B0-A7F9-C3D5491E30B6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BE8A6D01-62E3-4D63-BD63-060AABD14BE9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BE8A6D01-62E3-4D63-BD63-060AABD14BE9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BE8A6D01-62E3-4D63-BD63-060AABD14BE9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BE8A6D01-62E3-4D63-BD63-060AABD14BE9}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

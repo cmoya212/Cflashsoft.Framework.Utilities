@@ -32,7 +32,7 @@ namespace Cflashsoft.Framework.Http
                 {
                     using (HttpResponseMessage response = await client.SendAsync(message, HttpCompletionOption.ResponseContentRead))
                     {
-                        return await response.Content.ReadAsApiResponseAsync<TResult>(response.StatusCode, response.IsSuccessStatusCode);
+                        return await ReadAsApiResponseAsync<TResult>(response.Content, response.StatusCode, response.IsSuccessStatusCode);
                     }
                 }
                 catch (HttpRequestException ex)
@@ -82,7 +82,7 @@ namespace Cflashsoft.Framework.Http
                     if (resultType != typeof(JToken))
                         throw new FormatException("Use JToken base type instead of JObject or JArray.");
 
-                    JToken rootToken = await content.ReadAsJTokenAsync(isSuccessStatusCode, true);
+                    JToken rootToken = await ReadAsJTokenAsync(content, isSuccessStatusCode, true);
 
                     result = new HttpApiResult<TResult>();
 
@@ -104,13 +104,16 @@ namespace Cflashsoft.Framework.Http
 
                     await content.LoadIntoBufferAsync();
 
-                    result = new HttpApiResult<TResult>();
+                    HttpApiResultDetails details = null;
 
-                    result.Details = await content.ReadAsAsync<HttpApiResultDetails>();
+                    try { details = await content.ReadAsAsync<HttpApiResultDetails>(); }
+                    catch { }
 
                     (await content.ReadAsStreamAsync()).Seek(0, SeekOrigin.Begin);
 
-                    result.Value = await content.ReadAsAsync<TResult>();
+                    TResult value = await content.ReadAsAsync<TResult>();
+
+                    result = new HttpApiResult<TResult>(value, details);
                 }
             }
 

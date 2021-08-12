@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.Extensions.Caching.Memory;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.Caching;
@@ -8,37 +9,37 @@ using System.Threading.Tasks;
 namespace Cflashsoft.Framework.Optimization
 {
     /// <summary>
-    /// Extension methods for the .NET MemoryCache class.
+    /// Extension methods for the .NET IMemoryCache.
     /// </summary>
-    public static class MemoryCacheExtensions
+    public static class MemoryCacheExtensions2
     {
         private static NamedSemaphoreSlimLockFactory _namedLocks = null;
-        private static CacheEntryRemovedCallback _removedCallback = null;
+        private static PostEvictionDelegate _removedCallback = null;
 
-        static MemoryCacheExtensions()
+        static MemoryCacheExtensions2()
         {
             _namedLocks = new NamedSemaphoreSlimLockFactory();
-            _removedCallback = new CacheEntryRemovedCallback(OnRemove);
+            _removedCallback = new PostEvictionDelegate(OnRemove);
         }
 
         /// <summary>
         /// Return an item from the memory cache or insert it using the provided function.
         /// </summary>
-        public static object SyncedGetOrSet(this MemoryCache cache, string key, Func<object> getValue, int expirationSeconds = 0, string regionName = null)
+        public static object SyncedGetOrSet(this IMemoryCache cache, string key, Func<object> getValue, int expirationSeconds = 0)
         {
-            return SyncedGetOrSet(cache, key, getValue, expirationSeconds > 0 ? DateTime.Now.AddSeconds(expirationSeconds) : DateTimeOffset.MinValue, regionName);
+            return SyncedGetOrSet(cache, key, getValue, expirationSeconds > 0 ? DateTime.Now.AddSeconds(expirationSeconds) : DateTimeOffset.MinValue);
         }
 
         /// <summary>
         /// Return an item from the memory cache or insert it using the provided function.
         /// </summary>
-        public static object SyncedGetOrSet(this MemoryCache cache, string key, Func<object> getValue, DateTimeOffset absoluteExpiration, string regionName = null)
+        public static object SyncedGetOrSet(this IMemoryCache cache, string key, Func<object> getValue, DateTimeOffset absoluteExpiration)
         {
             object result = cache.Get(key);
 
             if (result == null)
             {
-                var keyLock = _namedLocks.Get($"{cache.Name}_{key}");
+                var keyLock = _namedLocks.Get(key);
 
                 try
                 {
@@ -50,7 +51,7 @@ namespace Cflashsoft.Framework.Optimization
                     {
                         result = getValue();
 
-                        Set(cache, key, result, absoluteExpiration, regionName);
+                        Set(cache, key, result, absoluteExpiration);
                     }
                 }
                 finally
@@ -65,24 +66,24 @@ namespace Cflashsoft.Framework.Optimization
         /// <summary>
         /// Return an item from the memory cache or insert it using the provided function.
         /// </summary>
-        public static T SyncedGetOrSet<T>(this MemoryCache cache, string key, Func<T> getValue, int expirationSeconds = 0, string regionName = null)
+        public static T SyncedGetOrSet<T>(this IMemoryCache cache, string key, Func<T> getValue, int expirationSeconds = 0)
             where T : class
         {
-            return SyncedGetOrSet<T>(cache, key, getValue, expirationSeconds > 0 ? DateTime.Now.AddSeconds(expirationSeconds) : DateTimeOffset.MinValue, regionName);
+            return SyncedGetOrSet<T>(cache, key, getValue, expirationSeconds > 0 ? DateTime.Now.AddSeconds(expirationSeconds) : DateTimeOffset.MinValue);
         }
 
 
         /// <summary>
         /// Return an item from the memory cache or insert it using the provided function.
         /// </summary>
-        public static T SyncedGetOrSet<T>(this MemoryCache cache, string key, Func<T> getValue, DateTimeOffset absoluteExpiration, string regionName = null)
+        public static T SyncedGetOrSet<T>(this IMemoryCache cache, string key, Func<T> getValue, DateTimeOffset absoluteExpiration)
             where T : class
         {
             T result = (T)cache.Get(key);
 
             if (result == null)
             {
-                var keyLock = _namedLocks.Get($"{cache.Name}_{key}");
+                var keyLock = _namedLocks.Get(key);
 
                 try
                 {
@@ -94,7 +95,7 @@ namespace Cflashsoft.Framework.Optimization
                     {
                         result = getValue();
 
-                        Set(cache, key, result, absoluteExpiration, regionName);
+                        Set(cache, key, result, absoluteExpiration);
                     }
                 }
                 finally
@@ -109,21 +110,21 @@ namespace Cflashsoft.Framework.Optimization
         /// <summary>
         /// Return an item from the memory cache or insert it using the provided function.
         /// </summary>
-        public static Task<object> SyncedGetOrSetAsync(this MemoryCache cache, string key, Func<Task<object>> getValueAsync, int expirationSeconds = 0, string regionName = null)
+        public static Task<object> SyncedGetOrSetAsync(this IMemoryCache cache, string key, Func<Task<object>> getValueAsync, int expirationSeconds = 0)
         {
-            return SyncedGetOrSetAsync(cache, key, getValueAsync, expirationSeconds > 0 ? DateTime.Now.AddSeconds(expirationSeconds) : DateTimeOffset.MinValue, regionName);
+            return SyncedGetOrSetAsync(cache, key, getValueAsync, expirationSeconds > 0 ? DateTime.Now.AddSeconds(expirationSeconds) : DateTimeOffset.MinValue);
         }
 
         /// <summary>
         /// Return an item from the memory cache or insert it using the provided function.
         /// </summary>
-        public static async Task<object> SyncedGetOrSetAsync(this MemoryCache cache, string key, Func<Task<object>> getValueAsync, DateTimeOffset absoluteExpiration, string regionName = null)
+        public static async Task<object> SyncedGetOrSetAsync(this IMemoryCache cache, string key, Func<Task<object>> getValueAsync, DateTimeOffset absoluteExpiration)
         {
             object result = cache.Get(key);
 
             if (result == null)
             {
-                var keyLock = _namedLocks.Get($"{cache.Name}_{key}");
+                var keyLock = _namedLocks.Get(key);
 
                 try
                 {
@@ -135,7 +136,7 @@ namespace Cflashsoft.Framework.Optimization
                     {
                         result = await getValueAsync();
 
-                        Set(cache, key, result, absoluteExpiration, regionName);
+                        Set(cache, key, result, absoluteExpiration);
                     }
                 }
                 finally
@@ -150,23 +151,23 @@ namespace Cflashsoft.Framework.Optimization
         /// <summary>
         /// Return an item from the memory cache or insert it using the provided function.
         /// </summary>
-        public static Task<T> SyncedGetOrSetAsync<T>(this MemoryCache cache, string key, Func<Task<T>> getValueAsync, int expirationSeconds = 0, string regionName = null)
+        public static Task<T> SyncedGetOrSetAsync<T>(this IMemoryCache cache, string key, Func<Task<T>> getValueAsync, int expirationSeconds = 0)
             where T : class
         {
-            return SyncedGetOrSetAsync<T>(cache, key, getValueAsync, expirationSeconds > 0 ? DateTime.Now.AddSeconds(expirationSeconds) : DateTimeOffset.MinValue, regionName);
+            return SyncedGetOrSetAsync<T>(cache, key, getValueAsync, expirationSeconds > 0 ? DateTime.Now.AddSeconds(expirationSeconds) : DateTimeOffset.MinValue);
         }
 
         /// <summary>
         /// Return an item from the memory cache or insert it using the provided function.
         /// </summary>
-        public static async Task<T> SyncedGetOrSetAsync<T>(this MemoryCache cache, string key, Func<Task<T>> getValueAsync, DateTimeOffset absoluteExpiration, string regionName = null)
+        public static async Task<T> SyncedGetOrSetAsync<T>(this IMemoryCache cache, string key, Func<Task<T>> getValueAsync, DateTimeOffset absoluteExpiration)
             where T : class
         {
             T result = (T)cache.Get(key);
 
             if (result == null)
             {
-                var keyLock = _namedLocks.Get($"{cache.Name}_{key}");
+                var keyLock = _namedLocks.Get(key);
 
                 try
                 {
@@ -178,7 +179,7 @@ namespace Cflashsoft.Framework.Optimization
                     {
                         result = await getValueAsync();
 
-                        Set(cache, key, result, absoluteExpiration, regionName);
+                        Set(cache, key, result, absoluteExpiration);
                     }
                 }
                 finally
@@ -190,27 +191,24 @@ namespace Cflashsoft.Framework.Optimization
             return result;
         }
 
-        private static void Set(MemoryCache cache, string key, object value, DateTimeOffset absoluteExpiration, string regionName = null)
+        private static void Set(IMemoryCache cache, string key, object value, DateTimeOffset absoluteExpiration, string regionName = null)
         {
-            CacheItemPolicy cacheItemPolicy = null;
+            MemoryCacheEntryOptions options = new MemoryCacheEntryOptions();
 
             if (absoluteExpiration > DateTimeOffset.MinValue)
-            {
-                cacheItemPolicy = new CacheItemPolicy() { AbsoluteExpiration = absoluteExpiration };
-            }
-            else
-            {
-                cacheItemPolicy = new CacheItemPolicy();
-            }
+                options.SetAbsoluteExpiration(absoluteExpiration);
 
-            cacheItemPolicy.RemovedCallback = _removedCallback;
+            options.RegisterPostEvictionCallback(_removedCallback);
 
-            cache.Set(key, value, cacheItemPolicy, regionName);
+            cache.Set(key, value, options);
         }
 
-        private static void OnRemove(CacheEntryRemovedArguments args)
+        private static void OnRemove(object key, object value, EvictionReason reason, object state)
         {
-            _namedLocks.Remove($"{args.Source.Name}_{args.CacheItem.Key}");
+            string keyString = key as string;
+
+            if (keyString != null)
+                _namedLocks.Remove((string)key);
         }
     }
 }

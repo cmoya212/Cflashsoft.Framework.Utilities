@@ -38,3 +38,8 @@ cd Cflashsoft.Framework.AspNetCore.Identity
 nuget pack -prop Configuration=Release
 
 cd ..
+
+cd Cflashsoft.Framework.Logging
+nuget pack -prop Configuration=Release
+
+cd ..

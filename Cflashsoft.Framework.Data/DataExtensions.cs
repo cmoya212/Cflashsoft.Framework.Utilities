@@ -503,6 +503,11 @@ namespace Cflashsoft.Framework.Data
             return result;
         }
 
+        public static string GetNullableString(this IDataReader reader, int i)
+        {
+            return reader.IsDBNull(i) ? null : reader.GetString(i);
+        }
+
         public static bool? GetNullableBoolean(this IDataReader reader, int i)
         {
             return reader.IsDBNull(i) ? (bool?)null : reader.GetBoolean(i);
@@ -556,6 +561,126 @@ namespace Cflashsoft.Framework.Data
         public static long? GetNullableInt64(this IDataReader reader, int i)
         {
             return reader.IsDBNull(i) ? (long?)null : reader.GetInt64(i);
+        }
+
+        public static string GetNullableString(this IDataReader reader, string name)
+        {
+            return GetNullableString(reader, reader.GetOrdinal(name));
+        }
+
+        public static bool? GetNullableBoolean(this IDataReader reader, string name)
+        {
+            return GetNullableBoolean(reader, reader.GetOrdinal(name));
+        }
+
+        public static byte? GetNullableByte(this IDataReader reader, string name)
+        {
+            return GetNullableByte(reader, reader.GetOrdinal(name));
+        }
+
+        public static char? GetNullableChar(this IDataReader reader, string name)
+        {
+            return GetNullableChar(reader, reader.GetOrdinal(name));
+        }
+
+        public static DateTime? GetNullableDateTime(this IDataReader reader, string name)
+        {
+            return GetNullableDateTime(reader, reader.GetOrdinal(name));
+        }
+
+        public static decimal? GetNullableDecimal(this IDataReader reader, string name)
+        {
+            return GetNullableDecimal(reader, reader.GetOrdinal(name));
+        }
+
+        public static double? GetNullableDouble(this IDataReader reader, string name)
+        {
+            return GetNullableDouble(reader, reader.GetOrdinal(name));
+        }
+
+        public static float? GetNullableFloat(this IDataReader reader, string name)
+        {
+            return GetNullableFloat(reader, reader.GetOrdinal(name));
+        }
+
+        public static Guid? GetNullableGuid(this IDataReader reader, string name)
+        {
+            return GetNullableGuid(reader, reader.GetOrdinal(name));
+        }
+
+        public static short? GetNullableInt16(this IDataReader reader, string name)
+        {
+            return GetNullableInt16(reader, reader.GetOrdinal(name));
+        }
+
+        public static int? GetNullableInt32(this IDataReader reader, string name)
+        {
+            return GetNullableInt32(reader, reader.GetOrdinal(name));
+        }
+
+        public static long? GetNullableInt64(this IDataReader reader, string name)
+        {
+            return GetNullableInt64(reader, reader.GetOrdinal(name));
+        }
+
+        public static string GetString(this IDataReader reader, string name)
+        {
+            return reader.GetString(reader.GetOrdinal(name));
+        }
+
+        public static bool GetBoolean(this IDataReader reader, string name)
+        {
+            return reader.GetBoolean(reader.GetOrdinal(name));
+        }
+
+        public static byte GetByte(this IDataReader reader, string name)
+        {
+            return reader.GetByte(reader.GetOrdinal(name));
+        }
+
+        public static char GetChar(this IDataReader reader, string name)
+        {
+            return reader.GetChar(reader.GetOrdinal(name));
+        }
+
+        public static DateTime GetDateTime(this IDataReader reader, string name)
+        {
+            return reader.GetDateTime(reader.GetOrdinal(name));
+        }
+
+        public static decimal GetDecimal(this IDataReader reader, string name)
+        {
+            return reader.GetDecimal(reader.GetOrdinal(name));
+        }
+
+        public static double GetDouble(this IDataReader reader, string name)
+        {
+            return reader.GetDouble(reader.GetOrdinal(name));
+        }
+
+        public static float GetFloat(this IDataReader reader, string name)
+        {
+            return reader.GetFloat(reader.GetOrdinal(name));
+        }
+
+        public static Guid GetGuid(this IDataReader reader, string name)
+        {
+            return reader.GetGuid(reader.GetOrdinal(name));
+        }
+
+        public static short GetInt16(this IDataReader reader, string name)
+        {
+            return reader.GetInt16(reader.GetOrdinal(name));
+        }
+
+        public static int GetInt32(this IDataReader reader, string name)
+        {
+            return reader.GetInt32(reader.GetOrdinal(name));
+        }
+
+        public static long GetInt64(this IDataReader reader, string name)
+        {
+            return reader.GetInt64(reader.GetOrdinal(name));
         }
     }
 }

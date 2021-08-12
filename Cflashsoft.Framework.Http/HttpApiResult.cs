@@ -65,6 +65,23 @@ namespace Cflashsoft.Framework.Http
         public bool HasErrors => !this.IsSuccessStatusCode || this.HasClientException || this.HasModelStateErrors || this.HasGenericErrors;
 
         /// <summary>
+        /// Initializes a new instance of the HttpApiResult class.
+        /// </summary>
+        public HttpApiResult()
+        {
+
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the HttpApiResult class.
+        /// </summary>
+        public HttpApiResult(T value, HttpApiResultDetails details)
+        {
+            this.Value = value;
+            this.Details = details;
+        }
+
+        /// <summary>
         /// Returns a flattened list of all errors including exceptions, model errors, and detected json error collections.
         /// </summary>
         public IEnumerable<string> GetErrors(bool detailed = false)

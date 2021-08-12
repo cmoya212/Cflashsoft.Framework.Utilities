@@ -21,6 +21,14 @@ namespace Cflashsoft.Framework.Security
         /// </summary>
         public static string CreateToken(string value, string key)
         {
+            return CreateToken(Encoding.UTF8.GetBytes(value), key);
+        }
+
+        /// <summary>
+        /// Create a short encrypted token using Rijndael with a randomized salt and optional self-expiration.
+        /// </summary>
+        public static string CreateToken(byte[] value, string key)
+        {
             return CreateToken(value, key, (DateTime?)null);
         }
 
@@ -29,21 +37,29 @@ namespace Cflashsoft.Framework.Security
         /// </summary>
         public static string CreateToken(string value, string key, int expirationMinutes)
         {
-            return CreateToken(value, key, expirationMinutes > 0 ? new DateTime?(DateTime.Now.AddMinutes(expirationMinutes)) : null);
+            return CreateToken(Encoding.UTF8.GetBytes(value), key, expirationMinutes);
         }
 
         /// <summary>
-        /// Create a short encrypted token using Rijndael with a randomized salt and self-expiration.
+        /// Create a short encrypted token using Rijndael with a randomized salt and optional self-expiration.
         /// </summary>
-        public static string CreateToken(string value, string key, DateTime expirationDate)
+        public static string CreateToken(byte[] value, string key, int expirationMinutes)
         {
-            return CreateToken(value, key, new DateTime?(expirationDate));
+            return CreateToken(value, key, expirationMinutes > 0 ? new DateTime?(DateTime.Now.AddMinutes(expirationMinutes)) : null);
         }
 
         /// <summary>
         /// Create a short encrypted token using Rijndael with a randomized salt and optional self-expiration.
         /// </summary>
         public static string CreateToken(string value, string key, DateTime? expirationDate)
+        {
+            return CreateToken(Encoding.UTF8.GetBytes(value), key, expirationDate);
+        }
+
+        /// <summary>
+        /// Create a short encrypted token using Rijndael with a randomized salt and optional self-expiration.
+        /// </summary>
+        public static string CreateToken(byte[] value, string key, DateTime? expirationDate)
         {
             byte[] salt = new byte[16];
 
@@ -60,6 +76,14 @@ namespace Cflashsoft.Framework.Security
         /// </summary>
         public static string CreateToken(string value, string key, string salt)
         {
+            return CreateToken(Encoding.UTF8.GetBytes(value), key, salt);
+        }
+
+        /// <summary>
+        /// Create a short encrypted token using Rijndael and optional self-expiration.
+        /// </summary>
+        public static string CreateToken(byte[] value, string key, string salt)
+        {
             return CreateToken(value, key, Encoding.ASCII.GetBytes(salt));
         }
 
@@ -67,6 +91,14 @@ namespace Cflashsoft.Framework.Security
         /// Create a short encrypted token using Rijndael and optional self-expiration.
         /// </summary>
         public static string CreateToken(string value, string key, byte[] salt)
+        {
+            return CreateToken(Encoding.UTF8.GetBytes(value), key, salt);
+        }
+
+        /// <summary>
+        /// Create a short encrypted token using Rijndael and optional self-expiration.
+        /// </summary>
+        public static string CreateToken(byte[] value, string key, byte[] salt)
         {
             return CreateToken(value, key, salt, (DateTime?)null);
         }
@@ -76,21 +108,29 @@ namespace Cflashsoft.Framework.Security
         /// </summary>
         public static string CreateToken(string value, string key, string salt, int expirationMinutes)
         {
+            return CreateToken(Encoding.UTF8.GetBytes(value), key, salt, expirationMinutes);
+        }
+
+        /// <summary>
+        /// Create a short encrypted token using Rijndael and optional self-expiration.
+        /// </summary>
+        public static string CreateToken(byte[] value, string key, string salt, int expirationMinutes)
+        {
             return CreateToken(value, key, Encoding.ASCII.GetBytes(salt), expirationMinutes > 0 ? new DateTime?(DateTime.Now.AddMinutes(expirationMinutes)) : (DateTime?)null);
         }
 
         /// <summary>
         /// Create a short encrypted token using Rijndael and optional self-expiration.
         /// </summary>
-        public static string CreateToken(string value, string key, string salt, DateTime? expirationDate)
+        public static string CreateToken(string value, string key, byte[] salt, DateTime? expirationDate)
         {
-            return CreateToken(value, key, Encoding.ASCII.GetBytes(salt), expirationDate);
+            return CreateToken(Encoding.UTF8.GetBytes(value), key, salt, expirationDate);
         }
 
         /// <summary>
         /// Create a short encrypted token using Rijndael and optional self-expiration.
         /// </summary>
-        public static string CreateToken(string value, string key, byte[] salt, DateTime? expirationDate)
+        public static string CreateToken(byte[] value, string key, byte[] salt, DateTime? expirationDate)
         {
             if (value == null)
                 throw new ArgumentException("Input value cannot be null");
@@ -105,7 +145,6 @@ namespace Cflashsoft.Framework.Security
 
             using (RijndaelManaged rijndael = new RijndaelManaged())
             {
-                byte[] bytes = Encoding.UTF8.GetBytes(value);
                 PasswordDeriveBytes secretKey = new PasswordDeriveBytes(Encoding.ASCII.GetBytes(key), salt);
 
                 long expirationTicks = expirationDate.HasValue ? expirationDate.Value.ToUniversalTime().Ticks : 0;
@@ -116,7 +155,7 @@ namespace Cflashsoft.Framework.Security
                     {
                         using (CryptoStream cryptoStream = new CryptoStream(memoryStream, encryptor, CryptoStreamMode.Write))
                         {
-                            cryptoStream.Write(bytes, 0, bytes.Length);
+                            cryptoStream.Write(value, 0, value.Length);
 
                             if (expirationTicks > 0)
                             {
@@ -152,6 +191,14 @@ namespace Cflashsoft.Framework.Security
         }
 
         /// <summary>
+        /// Decrypt a token. If the token has expired a SecurityTokenExpiredException will be thrown.
+        /// </summary>
+        public static byte[] DecryptTokenAsBytes(string value, string key)
+        {
+            return DecryptTokenAsBytes(value, key, false);
+        }
+
+        /// <summary>
         /// Decrypt a token even if it has expired.
         /// </summary>
         public static string DecryptTokenUnsafe(string value, string key)
@@ -159,9 +206,22 @@ namespace Cflashsoft.Framework.Security
             return DecryptToken(value, key, true);
         }
 
+        /// <summary>
+        /// Decrypt a token even if it has expired.
+        /// </summary>
+        public static byte[] DecryptTokenUnsafeAsBytes(string value, string key)
+        {
+            return DecryptTokenAsBytes(value, key, true);
+        }
+
         internal static string DecryptToken(string value, string key, bool ignoreExpiration)
         {
-            string result = null;
+            return Encoding.UTF8.GetString(DecryptTokenAsBytes(value, key, ignoreExpiration));
+        }
+
+        internal static byte[] DecryptTokenAsBytes(string value, string key, bool ignoreExpiration)
+        {
+            byte[] result = null;
 
             try
             {
@@ -229,12 +289,12 @@ namespace Cflashsoft.Framework.Security
 
             return result;
 
-            string DecodeResult(MemoryStream stream, int offset)
+            byte[] DecodeResult(MemoryStream stream, int offset)
             {
                 stream.Position = 0;
                 byte[] contents = new byte[(int)stream.Length - 1 - offset];
                 stream.Read(contents, 0, contents.Length);
-                return Encoding.UTF8.GetString(contents);
+                return contents;
             }
         }
 
@@ -255,6 +315,21 @@ namespace Cflashsoft.Framework.Security
             }
 
             return result;
+        }
+
+        /// <summary>
+        /// Generate a unique key.
+        /// </summary>
+        public static string GenerateRandomKey()
+        {
+            byte[] bytes = new byte[10];
+
+            using (RNGCryptoServiceProvider rng = new RNGCryptoServiceProvider())
+            {
+                rng.GetNonZeroBytes(bytes);
+            }
+
+            return Convert.ToBase64String(bytes);
         }
     }
 }
