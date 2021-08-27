@@ -286,5 +286,34 @@ namespace Cflashsoft.Framework.Http
             if (this.HasErrors)
                 throw new HttpApiException(message, (int)this.StatusCode, string.Join("\r\n", GetErrors()));
         }
+
+        /// <summary>
+        /// Throws an exception if the api result is not an HTTP success.
+        /// </summary>
+        public void AssertIsSuccessStatusCode()
+        {
+            if (!this.IsSuccessStatusCode)
+                throw new HttpApiException((int)this.StatusCode, string.Join("\r\n", GetErrors()));
+        }
+
+        /// <summary>
+        /// Throws an exception if the api result is not an HTTP success.
+        /// </summary>
+        public void AssertIsSuccessStatusCode(string message)
+        {
+            if (!this.IsSuccessStatusCode)
+                throw new HttpApiException(message, (int)this.StatusCode, string.Join("\r\n", GetErrors()));
+        }
+
+        /// <summary>
+        /// Returns the api result value if no errors are present, otherwise returns a null or default value.
+        /// </summary>
+        public T GetValueOnSuccess(bool checkAllErrors = false)
+        {
+            if ((!checkAllErrors && this.IsSuccessStatusCode) || (checkAllErrors && !this.HasErrors))
+                return this.Value;
+            else
+                return default(T);
+        }
     }
 }

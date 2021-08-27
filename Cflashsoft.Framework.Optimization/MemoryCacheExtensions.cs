@@ -26,7 +26,10 @@ namespace Cflashsoft.Framework.Optimization
         /// </summary>
         public static object SyncedGetOrSet(this MemoryCache cache, string key, Func<object> getValue, int expirationSeconds = 0, string regionName = null)
         {
-            return SyncedGetOrSet(cache, key, getValue, expirationSeconds > 0 ? DateTime.Now.AddSeconds(expirationSeconds) : DateTimeOffset.MinValue, regionName);
+            if (expirationSeconds >= 0)
+                return SyncedGetOrSet(cache, key, getValue, expirationSeconds > 0 ? DateTime.Now.AddSeconds(expirationSeconds) : DateTimeOffset.MinValue, regionName);
+            else
+                return getValue();
         }
 
         /// <summary>
@@ -68,7 +71,10 @@ namespace Cflashsoft.Framework.Optimization
         public static T SyncedGetOrSet<T>(this MemoryCache cache, string key, Func<T> getValue, int expirationSeconds = 0, string regionName = null)
             where T : class
         {
-            return SyncedGetOrSet<T>(cache, key, getValue, expirationSeconds > 0 ? DateTime.Now.AddSeconds(expirationSeconds) : DateTimeOffset.MinValue, regionName);
+            if (expirationSeconds >= 0)
+                return SyncedGetOrSet<T>(cache, key, getValue, expirationSeconds > 0 ? DateTime.Now.AddSeconds(expirationSeconds) : DateTimeOffset.MinValue, regionName);
+            else
+                return getValue();
         }
 
 
@@ -111,7 +117,10 @@ namespace Cflashsoft.Framework.Optimization
         /// </summary>
         public static Task<object> SyncedGetOrSetAsync(this MemoryCache cache, string key, Func<Task<object>> getValueAsync, int expirationSeconds = 0, string regionName = null)
         {
-            return SyncedGetOrSetAsync(cache, key, getValueAsync, expirationSeconds > 0 ? DateTime.Now.AddSeconds(expirationSeconds) : DateTimeOffset.MinValue, regionName);
+            if (expirationSeconds >= 0)
+                return SyncedGetOrSetAsync(cache, key, getValueAsync, expirationSeconds > 0 ? DateTime.Now.AddSeconds(expirationSeconds) : DateTimeOffset.MinValue, regionName);
+            else
+                return getValueAsync();
         }
 
         /// <summary>
@@ -153,7 +162,10 @@ namespace Cflashsoft.Framework.Optimization
         public static Task<T> SyncedGetOrSetAsync<T>(this MemoryCache cache, string key, Func<Task<T>> getValueAsync, int expirationSeconds = 0, string regionName = null)
             where T : class
         {
-            return SyncedGetOrSetAsync<T>(cache, key, getValueAsync, expirationSeconds > 0 ? DateTime.Now.AddSeconds(expirationSeconds) : DateTimeOffset.MinValue, regionName);
+            if (expirationSeconds >= 0)
+                return SyncedGetOrSetAsync<T>(cache, key, getValueAsync, expirationSeconds > 0 ? DateTime.Now.AddSeconds(expirationSeconds) : DateTimeOffset.MinValue, regionName);
+            else
+                return getValueAsync();
         }
 
         /// <summary>

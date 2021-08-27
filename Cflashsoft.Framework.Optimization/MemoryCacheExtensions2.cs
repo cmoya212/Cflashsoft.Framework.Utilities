@@ -27,7 +27,10 @@ namespace Cflashsoft.Framework.Optimization
         /// </summary>
         public static object SyncedGetOrSet(this IMemoryCache cache, string key, Func<object> getValue, int expirationSeconds = 0)
         {
-            return SyncedGetOrSet(cache, key, getValue, expirationSeconds > 0 ? DateTime.Now.AddSeconds(expirationSeconds) : DateTimeOffset.MinValue);
+            if (expirationSeconds >= 0)
+                return SyncedGetOrSet(cache, key, getValue, expirationSeconds > 0 ? DateTime.Now.AddSeconds(expirationSeconds) : DateTimeOffset.MinValue);
+            else
+                return getValue();
         }
 
         /// <summary>
@@ -69,7 +72,10 @@ namespace Cflashsoft.Framework.Optimization
         public static T SyncedGetOrSet<T>(this IMemoryCache cache, string key, Func<T> getValue, int expirationSeconds = 0)
             where T : class
         {
-            return SyncedGetOrSet<T>(cache, key, getValue, expirationSeconds > 0 ? DateTime.Now.AddSeconds(expirationSeconds) : DateTimeOffset.MinValue);
+            if (expirationSeconds >= 0)
+                return SyncedGetOrSet<T>(cache, key, getValue, expirationSeconds > 0 ? DateTime.Now.AddSeconds(expirationSeconds) : DateTimeOffset.MinValue);
+            else
+                return getValue();
         }
 
 
@@ -112,7 +118,10 @@ namespace Cflashsoft.Framework.Optimization
         /// </summary>
         public static Task<object> SyncedGetOrSetAsync(this IMemoryCache cache, string key, Func<Task<object>> getValueAsync, int expirationSeconds = 0)
         {
-            return SyncedGetOrSetAsync(cache, key, getValueAsync, expirationSeconds > 0 ? DateTime.Now.AddSeconds(expirationSeconds) : DateTimeOffset.MinValue);
+            if (expirationSeconds >= 0)
+                return SyncedGetOrSetAsync(cache, key, getValueAsync, expirationSeconds > 0 ? DateTime.Now.AddSeconds(expirationSeconds) : DateTimeOffset.MinValue);
+            else
+                return getValueAsync();
         }
 
         /// <summary>
@@ -154,7 +163,10 @@ namespace Cflashsoft.Framework.Optimization
         public static Task<T> SyncedGetOrSetAsync<T>(this IMemoryCache cache, string key, Func<Task<T>> getValueAsync, int expirationSeconds = 0)
             where T : class
         {
-            return SyncedGetOrSetAsync<T>(cache, key, getValueAsync, expirationSeconds > 0 ? DateTime.Now.AddSeconds(expirationSeconds) : DateTimeOffset.MinValue);
+            if (expirationSeconds >= 0)
+                return SyncedGetOrSetAsync<T>(cache, key, getValueAsync, expirationSeconds > 0 ? DateTime.Now.AddSeconds(expirationSeconds) : DateTimeOffset.MinValue);
+            else
+                return getValueAsync();
         }
 
         /// <summary>

@@ -20,10 +20,10 @@ var cflashsoftUtil = {
         this.queryString = this.parseQueryString(window.location.search.substring(1));
         this.isAndroid = /android/i.test(navigator.userAgent.toLowerCase());
         var body = $("body");
-        this.waitSpinner = $("<div style=\"position:absolute;z-index:10001;width:100px;height:100px;display:none\"><img src=\"" + this.rootPath + "images/spinner.gif\" width=\"100\" height=\"100\" /></div>").appendTo(body);
+        this.waitSpinner = $("<div style=\"position:absolute;z-index:10001;width:100px;height:100px;display:none\"><img src=\"" + this.rootPath + "images/cflashsoft/spinner.gif\" width=\"100\" height=\"100\" /></div>").appendTo(body);
         this.overlays = [$("<div class=\"overlay1\" style=\"position:fixed;z-index:10000;width:5px;height:5px;display:none\"></div>").appendTo(body),
         $("<div class=\"overlay2\" style=\"position:fixed;z-index:10000;width:5px;height:5px;display:none\"></div>").appendTo(body)];
-        this.alertBox = $("<div id=\"chatsoftAlertBox\" class=\"modal fade\" data-keyboard=\"false\" data-backdrop=\"static\" data-focus=\"true\" style=\"display:none;\"><div class=\"modal-dialog\"><div class=\"modal-content\"><div class=\"modal-body\"><span id=\"chatsoftAlertBoxOkIcon\" class=\"text-success glyphicon glyphicon-ok\" style=\"display:none;\"></span><span id=\"chatsoftAlertBoxHandIcon\" class=\"text-primary glyphicon glyphicon-hand-right\" style=\"display:none;\"></span><span id=\"chatsoftAlertBoxInfoIcon\" class=\"text-info glyphicon glyphicon-info-sign\" style=\"display:none;\"></span><span id=\"chatsoftAlertBoxQuestIcon\" class=\"text-primary glyphicon glyphicon-question-sign\" style=\"display:none;\"></span><span id=\"chatsoftAlertBoxExclIcon\" class=\"text-warning glyphicon glyphicon-exclamation-sign\" style=\"display:none;\"></span><span id=\"chatsoftAlertBoxErrIcon\" class=\"text-danger glyphicon glyphicon-remove-sign\" style=\"display:none;\"></span>&nbsp;<span id=\"chatsoftAlertBoxMessage\"></span></div><div class=\"modal-footer\"><button id=\"chatsoftAlertOk\" type=\"button\" class=\"btn btn-success\" onclick=\"cflashsoftUtil.alertOk();\"><span class=\"glyphicon glyphicon-ok\" aria-hidden=\"true\"></span> Ok</button><button id=\"chatsoftAlertCancel\" type=\"button\" class=\"btn btn-default\" onclick=\"cflashsoftUtil.alertCancel();\">Cancel</button></div></div></div></div>").appendTo(body);
+        this.alertBox = $("<div id=\"cflashsoftAlertBox\" class=\"modal fade\" data-keyboard=\"false\" data-backdrop=\"static\" data-focus=\"true\" style=\"display:none;\"><div class=\"modal-dialog\"><div class=\"modal-content\"><div class=\"modal-body\"><span id=\"cflashsoftAlertBoxOkIcon\" class=\"text-success glyphicon glyphicon-ok\" style=\"display:none;\"></span><span id=\"cflashsoftAlertBoxHandIcon\" class=\"text-primary glyphicon glyphicon-hand-right\" style=\"display:none;\"></span><span id=\"cflashsoftAlertBoxInfoIcon\" class=\"text-info glyphicon glyphicon-info-sign\" style=\"display:none;\"></span><span id=\"cflashsoftAlertBoxQuestIcon\" class=\"text-primary glyphicon glyphicon-question-sign\" style=\"display:none;\"></span><span id=\"cflashsoftAlertBoxExclIcon\" class=\"text-warning glyphicon glyphicon-exclamation-sign\" style=\"display:none;\"></span><span id=\"cflashsoftAlertBoxErrIcon\" class=\"text-danger glyphicon glyphicon-remove-sign\" style=\"display:none;\"></span>&nbsp;<span id=\"cflashsoftAlertBoxMessage\"></span></div><div class=\"modal-footer\"><button id=\"cflashsoftAlertOk\" type=\"button\" class=\"btn btn-success\" onclick=\"cflashsoftUtil.alertOk();\"><span class=\"glyphicon glyphicon-ok\" aria-hidden=\"true\"></span> Ok</button><button id=\"cflashsoftAlertCancel\" type=\"button\" class=\"btn btn-default\" onclick=\"cflashsoftUtil.alertCancel();\">Cancel</button></div></div></div></div>").appendTo(body);
         this.alertBox.on('shown.bs.modal', function () {
             cflashsoftUtil.alertBox.find("button:first").focus();
         });
@@ -648,10 +648,10 @@ var cflashsoftUtil = {
                 if (destKey != null) {
                     destValue = data[key];
                     if (destValue != null && typeof destValue === "string") {
-                        if (destValue === "#chatsofttruefunc") {
+                        if (destValue === "#cflashsofttruefunc") {
                             destValue = cflashsoftUtil.trueFunc;
                         }
-                        else if (destValue === "#chatsoftfalsefunc") {
+                        else if (destValue === "#cflashsoftfalsefunc") {
                             destValue = cflashsoftUtil.falseFunc;
                         }
                         else if (destValue.substring(0, 6) == "#JSON{") {
@@ -690,9 +690,9 @@ var cflashsoftUtil = {
             this.alertBoxCancelCallback = ok;
         }
         this.updateAlertIcon(icon);
-        $("#chatsoftAlertBoxMessage").html(msg);
-        $("#chatsoftAlertCancel").hide();
-        $("#chatsoftAlertBox").modal("show");
+        $("#cflashsoftAlertBoxMessage").html(msg);
+        $("#cflashsoftAlertCancel").hide();
+        $("#cflashsoftAlertBox").modal("show");
     },
 
     confirm: function (msg, ok, cancel, icon) {
@@ -705,48 +705,48 @@ var cflashsoftUtil = {
             this.alertBoxCancelCallback = cancel;
         }
         this.updateAlertIcon(icon);
-        $("#chatsoftAlertBoxMessage").html(msg);
-        $("#chatsoftAlertCancel").show();
-        $("#chatsoftAlertBox").modal("show");
+        $("#cflashsoftAlertBoxMessage").html(msg);
+        $("#cflashsoftAlertCancel").show();
+        $("#cflashsoftAlertBox").modal("show");
     },
 
     updateAlertIcon: function (icon) {
-        $("#chatsoftAlertBoxOkIcon").hide();
-        $("#chatsoftAlertBoxHandIcon").hide();
-        $("#chatsoftAlertBoxInfoIcon").hide();
-        $("#chatsoftAlertBoxQuestIcon").hide();
-        $("#chatsoftAlertBoxExclIcon").hide();
-        $("#chatsoftAlertBoxErrIcon").hide();
+        $("#cflashsoftAlertBoxOkIcon").hide();
+        $("#cflashsoftAlertBoxHandIcon").hide();
+        $("#cflashsoftAlertBoxInfoIcon").hide();
+        $("#cflashsoftAlertBoxQuestIcon").hide();
+        $("#cflashsoftAlertBoxExclIcon").hide();
+        $("#cflashsoftAlertBoxErrIcon").hide();
         if (icon != null) {
             switch (icon.toLowerCase()) {
                 case "ok":
                 case "success":
-                    $("#chatsoftAlertBoxOkIcon").show();
+                    $("#cflashsoftAlertBoxOkIcon").show();
                     break;
                 case "hand":
-                    $("#chatsoftAlertBoxHandIcon").show();
+                    $("#cflashsoftAlertBoxHandIcon").show();
                     break;
                 case "info":
                 case "information":
-                    $("#chatsoftAlertBoxInfoIcon").show();
+                    $("#cflashsoftAlertBoxInfoIcon").show();
                     break;
                 case "question":
-                    $("#chatsoftAlertBoxQuestIcon").show();
+                    $("#cflashsoftAlertBoxQuestIcon").show();
                     break;
                 case "exclamation":
                 case "warning":
-                    $("#chatsoftAlertBoxExclIcon").show();
+                    $("#cflashsoftAlertBoxExclIcon").show();
                     break;
                 case "error":
                 case "danger":
-                    $("#chatsoftAlertBoxErrIcon").show();
+                    $("#cflashsoftAlertBoxErrIcon").show();
                     break;
             }
         }
     },
 
     hideAlert: function () {
-        $("#chatsoftAlertBox").modal("hide");
+        $("#cflashsoftAlertBox").modal("hide");
     },
 
     alertOk: function () {
@@ -781,7 +781,7 @@ var cflashsoftUtil = {
 
     initAutoLogout: function () {
         this.autoLogoutEnabled = true;
-        $("<div id=\"chatsoftAutoLogoutBox\" class=\"modal fade\" style=\"display:none;\"><div class=\"modal-dialog\"><div class=\"modal-content\"><div class=\"modal-body\"><img src=\"" + cflashsoftUtil.rootPath + "images/timeout2.gif\" /> <span id=\"chatsoftAutoLogoutMessage\"></span></div><div class=\"modal-footer\"><button type=\"button\" class=\"btn btn-success\" onclick=\"cflashsoftUtil.resetAutoLogout(true);\"><span class=\"glyphicon glyphicon-ok\" aria-hidden=\"true\"></span> Continue</button></div></div></div></div>").appendTo($("body"));
+        $("<div id=\"cflashsoftAutoLogoutBox\" class=\"modal fade\" style=\"display:none;\"><div class=\"modal-dialog\"><div class=\"modal-content\"><div class=\"modal-body\"><img src=\"" + cflashsoftUtil.rootPath + "images/cflashsoft/timeout2.gif\" /> <span id=\"cflashsoftAutoLogoutMessage\"></span></div><div class=\"modal-footer\"><button type=\"button\" class=\"btn btn-success\" onclick=\"cflashsoftUtil.resetAutoLogout(true);\"><span class=\"glyphicon glyphicon-ok\" aria-hidden=\"true\"></span> Continue</button></div></div></div></div>").appendTo($("body"));
         this.resetAutoLogout(false);
     },
 
@@ -796,8 +796,8 @@ var cflashsoftUtil = {
                 $.ajax({ url: this.rootPath + this.autoLogoutPingUrl, cache: false, type: "GET" });
             this.autoLogoutStartTime = new Date();
             this.autoLogoutTimer = window.setInterval(this.onAutoLogoutInterval, 20000);
-            if ($("#chatsoftAutoLogoutBox").is(":visible"))
-                $("#chatsoftAutoLogoutBox").modal("hide");
+            if ($("#cflashsoftAutoLogoutBox").is(":visible"))
+                $("#cflashsoftAutoLogoutBox").modal("hide");
         }
     },
 
@@ -806,9 +806,9 @@ var cflashsoftUtil = {
         if (cflashsoftUtil.autoLogoutWarnMinutes > 0) {
             if (timeDiffMinutes >= cflashsoftUtil.autoLogoutMinutes - cflashsoftUtil.autoLogoutWarnMinutes) {
                 var timeLeftMinutes = cflashsoftUtil.autoLogoutMinutes - timeDiffMinutes;
-                $("#chatsoftAutoLogoutMessage").html("You will be logged out in " + timeLeftMinutes + " " + (timeLeftMinutes == 1 ? "minute" : "minutes") + " unless you click 'Continue'");
-                if (!$("#chatsoftAutoLogoutBox").is(":visible"))
-                    $("#chatsoftAutoLogoutBox").modal("show");
+                $("#cflashsoftAutoLogoutMessage").html("You will be logged out in " + timeLeftMinutes + " " + (timeLeftMinutes == 1 ? "minute" : "minutes") + " unless you click 'Continue'");
+                if (!$("#cflashsoftAutoLogoutBox").is(":visible"))
+                    $("#cflashsoftAutoLogoutBox").modal("show");
             }
         }
         if (timeDiffMinutes >= cflashsoftUtil.autoLogoutMinutes)

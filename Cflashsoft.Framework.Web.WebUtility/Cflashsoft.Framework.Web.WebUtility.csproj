@@ -72,5 +72,9 @@
       <DependentUpon>cflashsoft-util.js</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
+  <ItemGroup>
+    <Content Include="Images\cflashsoft\spinner.gif" />
+    <Content Include="Images\cflashsoft\timeout2.gif" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
