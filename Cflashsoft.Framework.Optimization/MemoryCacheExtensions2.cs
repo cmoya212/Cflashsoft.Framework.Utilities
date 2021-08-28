@@ -203,7 +203,7 @@ namespace Cflashsoft.Framework.Optimization
             return result;
         }
 
-        private static void Set(IMemoryCache cache, string key, object value, DateTimeOffset absoluteExpiration, string regionName = null)
+        private static void Set(IMemoryCache cache, string key, object value, DateTimeOffset absoluteExpiration)
         {
             MemoryCacheEntryOptions options = new MemoryCacheEntryOptions();
 
@@ -220,7 +220,7 @@ namespace Cflashsoft.Framework.Optimization
             string keyString = key as string;
 
             if (keyString != null)
-                _namedLocks.Remove((string)key);
+                _namedLocks.Remove(keyString);
         }
     }
 }
