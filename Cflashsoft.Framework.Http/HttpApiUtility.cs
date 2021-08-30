@@ -94,7 +94,7 @@ namespace Cflashsoft.Framework.Http
             switch (contentType)
             {
                 case HttpContentType.Form:
-                    return new FormUrlEncodedContent((IEnumerable<KeyValuePair<string, string>>)value);
+                    return GetFormUrlEncodedContent(value);
                 case HttpContentType.Json:
                 case HttpContentType.Xml:
                 case HttpContentType.Bson:
@@ -104,13 +104,38 @@ namespace Cflashsoft.Framework.Http
             }
         }
 
+        private static FormUrlEncodedContent GetFormUrlEncodedContent(object value)
+        {
+            if (value != null)
+            {
+                Type type = value.GetType();
+
+                if (typeof(IEnumerable<KeyValuePair<string, string>>).IsAssignableFrom(type))
+                {
+                    return new FormUrlEncodedContent((IEnumerable<KeyValuePair<string, string>>)value);
+                }
+                else if (typeof(IEnumerable<(string, string)>).IsAssignableFrom(type))
+                {
+                    return new FormUrlEncodedContent(((IEnumerable<(string, string)>)value).Select(i => new KeyValuePair<string, string>(i.Item1, i.Item2)).ToList());
+                }
+                else
+                {
+                    return new FormUrlEncodedContent(type.GetProperties().Select(p => new KeyValuePair<string, string>(p.Name, p.GetValue(value).ToString())).ToList());
+                }
+            }
+            else
+            {
+                return new FormUrlEncodedContent(Enumerable.Empty<KeyValuePair<string, string>>());
+            }
+        }
+
         private static HttpContent GetFormattedObjectContent(object value, HttpContentType contentType)
         {
             if (value != null)
             {
-                Type valueType = value.GetType();
+                Type type = value.GetType();
 
-                if (typeof(JToken).IsAssignableFrom(valueType))
+                if (typeof(JToken).IsAssignableFrom(type))
                 {
                     switch (contentType)
                     {
@@ -132,11 +157,11 @@ namespace Cflashsoft.Framework.Http
                     switch (contentType)
                     {
                         case HttpContentType.Json:
-                            return new ObjectContent(valueType, value, new JsonMediaTypeFormatter());
+                            return new ObjectContent(type, value, new JsonMediaTypeFormatter());
                         case HttpContentType.Xml:
-                            return new ObjectContent(valueType, value, new XmlMediaTypeFormatter());
+                            return new ObjectContent(type, value, new XmlMediaTypeFormatter());
                         case HttpContentType.Bson:
-                            return new ObjectContent(valueType, value, new BsonMediaTypeFormatter());
+                            return new ObjectContent(type, value, new BsonMediaTypeFormatter());
                         default:
                             throw new ArgumentOutOfRangeException("ContentType is not recognized for the provided input type.");
                     }
