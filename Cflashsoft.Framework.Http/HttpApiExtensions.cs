@@ -82,7 +82,7 @@ namespace Cflashsoft.Framework.Http
                     if (resultType != typeof(JToken))
                         throw new FormatException("Use JToken base type instead of JObject or JArray.");
 
-                    JToken rootToken = await ReadAsJTokenAsync(content, isSuccessStatusCode, true);
+                    JToken rootToken = await ReadAsJTokenAsync(content, isSuccessStatusCode, true, true);
 
                     result = new HttpApiResult<TResult>();
 
@@ -133,7 +133,7 @@ namespace Cflashsoft.Framework.Http
             return ReadAsJTokenAsync(content, true, false);
         }
 
-        public static async Task<JToken> ReadAsJTokenAsync(this HttpContent content, bool isSuccessStatusCode, bool ignoreParsingErrorOnBadStatusCode)
+        public static async Task<JToken> ReadAsJTokenAsync(this HttpContent content, bool isSuccessStatusCode, bool ignoreParsingErrorOnBadStatusCode, bool ignoreAllParsingErrors = false)
         {
             JToken result = null;
 
@@ -164,15 +164,16 @@ namespace Cflashsoft.Framework.Http
                 }
                 catch (JsonReaderException)
                 {
-                    if (isSuccessStatusCode)
+                    if (isSuccessStatusCode && !ignoreAllParsingErrors)
                     {
                         throw; //this is unexpected and should not happen
                     }
                     else
                     {
-                        if (ignoreParsingErrorOnBadStatusCode)
+                        if (ignoreParsingErrorOnBadStatusCode || ignoreAllParsingErrors)
                         {
-                            result = new JObject();
+                            //do nothing
+                            //result = new JObject();
                             //result["RawServerResponse"] = contentValue;
                         }
                         else
