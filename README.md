@@ -46,7 +46,7 @@ var apiResult2 = await httpClient.ApiAsJTokenAsync(HttpVerb.Get, "http://www.som
 
 - **[Cfx Utilities Documentation](http://riverfront.solutions/docs/cfxutilities/index.html)**
 
-## Nuget Packages
+## NuGet Packages
 
 - **[Cflashsoft.Framework.Data](https://www.nuget.org/packages/Cflashsoft.Framework.Data/)** (.NET Standard 2.0)
 - **[Cflashsoft.Framework.Http](https://www.nuget.org/packages/Cflashsoft.Framework.Http/)** (.NET Standard 2.0)
