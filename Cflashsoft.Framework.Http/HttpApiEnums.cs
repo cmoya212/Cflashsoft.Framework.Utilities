@@ -62,7 +62,15 @@ namespace Cflashsoft.Framework.Http
         /// <summary>
         /// Bson
         /// </summary>
-        Bson = 4
+        Bson = 4,
+        /// <summary>
+        /// Multipart
+        /// </summary>
+        Multipart = 5,
+        /// <summary>
+        /// String
+        /// </summary>
+        String = 6
     }
 
     /// <summary>

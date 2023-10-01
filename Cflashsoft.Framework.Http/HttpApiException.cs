@@ -25,6 +25,8 @@ namespace Cflashsoft.Framework.Http
         /// <summary>
         /// Initializes a new instance of the HttpApiException class.
         /// </summary>
+        /// <param name="statusCode">The HTTP status code of the response.</param>
+        /// <param name="content">The string content of the response.</param>
         public HttpApiException(int statusCode = 500, string content = null)
             :base()
         {
@@ -35,6 +37,9 @@ namespace Cflashsoft.Framework.Http
         /// <summary>
         /// Initializes a new instance of the HttpApiException class.
         /// </summary>
+        /// <param name="message">A message that describes the current exception.</param>
+        /// <param name="statusCode">The HTTP status code of the response.</param>
+        /// <param name="content">The string content of the response.</param>
         public HttpApiException(string message, int statusCode = 500, string content = null)
             : base(message)
         {
@@ -45,6 +50,10 @@ namespace Cflashsoft.Framework.Http
         /// <summary>
         /// Initializes a new instance of the HttpApiException class.
         /// </summary>
+        /// <param name="message">A message that describes the current exception.</param>
+        /// <param name="statusCode">The HTTP status code of the response.</param>
+        /// <param name="content">The string content of the response.</param>
+        /// <param name="innerException">The inner exception.</param>
         public HttpApiException(string message, Exception innerException, int statusCode = 500, string content = null)
             : base(message, innerException)
         {

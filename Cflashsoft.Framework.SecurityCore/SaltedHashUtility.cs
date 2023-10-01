@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 namespace Cflashsoft.Framework.Security
 {
     /// <summary>
-    /// Utility to hash passwords with a random salt and store the salt along with the hash.
+    /// Utility to hash passwords with a random salt and store the salt along with the hash in the same structure.
     /// Author: C. Moya
     /// </summary>
     public static class SaltedHashUtility

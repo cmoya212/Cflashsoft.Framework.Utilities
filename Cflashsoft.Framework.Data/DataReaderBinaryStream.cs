@@ -6,16 +6,17 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using static System.Net.WebRequestMethods;
 
 namespace Cflashsoft.Framework.Data
 {
-    //NOTE: For use with FileStreamResult ActionResult in ASP.NET MVC.
-    //NOTE: Adapted from http://www.codeproject.com/Articles/140713/Download-and-Upload-Images-from-SQL-Server-via-ASP 
-
     /// <summary>
     /// Exposes a forward-only stream whose source is a DB binary column for use with FileStreamResult ActionResult in ASP.NET MVC.
     /// </summary>
-    /// <seealso cref="http://www.codeproject.com/Articles/140713/Download-and-Upload-Images-from-SQL-Server-via-ASP"/>
+    /// <remarks>
+    /// For use with FileStreamResult ActionResult in ASP.NET MVC.
+    /// Adapted from http://www.codeproject.com/Articles/140713/Download-and-Upload-Images-from-SQL-Server-via-ASP 
+    /// </remarks>
     public class DataReaderBinaryStream : Stream
     {
         private IDataReader _reader = null;

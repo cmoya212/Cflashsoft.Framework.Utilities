@@ -9,8 +9,9 @@ using System.Runtime.Caching;
 namespace Cflashsoft.Framework.Optimization
 {
     /// <summary>
-    /// Represents a hybrid cache that uses the in-process .NET MemoryCache and a remote cache in an L1 and L2 cache fashion.
+    /// Represents an abstract hybrid cache that uses the in-process .NET MemoryCache and a remote cache in an L1 and L2 cache fashion.
     /// </summary>
+    /// <remarks>A Redis implementation of this hybrid cache exists. Contact RiverFront Solutions for info.</remarks>
     public abstract class HybridCacheBase
     {
         private NamedSemaphoreSlimLockFactory _namedLocks = new NamedSemaphoreSlimLockFactory();

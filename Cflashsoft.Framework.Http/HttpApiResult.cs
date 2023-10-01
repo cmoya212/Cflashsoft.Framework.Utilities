@@ -17,6 +17,11 @@ namespace Cflashsoft.Framework.Http
     public class HttpApiResult<T>
     {
         /// <summary>
+        /// Headers returned in the response.
+        /// </summary>
+        public IEnumerable<KeyValuePair<string, IEnumerable<string>>> ResponseHeaders { get; set; }
+
+        /// <summary>
         /// Error information and exception details for the response.
         /// </summary>
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
@@ -75,6 +80,8 @@ namespace Cflashsoft.Framework.Http
         /// <summary>
         /// Initializes a new instance of the HttpApiResult class.
         /// </summary>
+        /// <param name="value">The underlying response object.</param>
+        /// <param name="details">Additional meta details returned by the response.</param>
         public HttpApiResult(T value, HttpApiResultDetails details)
         {
             this.Value = value;
@@ -314,6 +321,24 @@ namespace Cflashsoft.Framework.Http
                 return this.Value;
             else
                 return default(T);
+        }
+
+        /// <summary>
+        /// Extract response set-cookie values from the response headers.
+        /// </summary>
+        public IEnumerable<Cookie> GetResponseCookies()
+        {
+            List<Cookie> result = new List<Cookie>();
+
+            if (this.ResponseHeaders != null)
+            {
+                foreach (var cookieHeader in this.ResponseHeaders.Where(h => h.Key != null && h.Key.Equals("Set-Cookie", StringComparison.OrdinalIgnoreCase)))
+                {
+                    result.AddRange(cookieHeader.Value.Select(c => HttpApiUtility.ParseCookieHeaderValue(c)));
+                }
+            }
+
+            return result;
         }
     }
 }

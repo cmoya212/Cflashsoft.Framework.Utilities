@@ -91,16 +91,27 @@ namespace Cflashsoft.Framework.Http
 
         public static HttpContent GetFormattedContent(object value, HttpContentType contentType)
         {
-            switch (contentType)
+            if (value is HttpContent)
             {
-                case HttpContentType.Form:
-                    return GetFormUrlEncodedContent(value);
-                case HttpContentType.Json:
-                case HttpContentType.Xml:
-                case HttpContentType.Bson:
-                    return GetFormattedObjectContent(value, contentType);
-                default:
-                    throw new ArgumentOutOfRangeException("ContentType is not recognized.");
+                return value as HttpContent;
+            }
+            else
+            {
+                switch (contentType)
+                {
+                    case HttpContentType.Form:
+                        return GetFormUrlEncodedContent(value);
+                    case HttpContentType.Json:
+                    case HttpContentType.Xml:
+                    case HttpContentType.Bson:
+                        return GetFormattedObjectContent(value, contentType);
+                    case HttpContentType.Multipart:
+                        return GetMultipartFormDataContent(value);
+                    case HttpContentType.NotSet:
+                        throw new FormatException("When content type is not set, content must be an HttpContent derived object.");
+                    default:
+                        throw new ArgumentOutOfRangeException("ContentType is not recognized.");
+                }
             }
         }
 
@@ -110,7 +121,11 @@ namespace Cflashsoft.Framework.Http
             {
                 Type type = value.GetType();
 
-                if (typeof(IEnumerable<KeyValuePair<string, string>>).IsAssignableFrom(type))
+                if (typeof(FormUrlEncodedContent).IsAssignableFrom(type))
+                {
+                    return (FormUrlEncodedContent)value;
+                }
+                else if (typeof(IEnumerable<KeyValuePair<string, string>>).IsAssignableFrom(type))
                 {
                     return new FormUrlEncodedContent((IEnumerable<KeyValuePair<string, string>>)value);
                 }
@@ -129,20 +144,52 @@ namespace Cflashsoft.Framework.Http
             }
         }
 
+        private static MultipartFormDataContent GetMultipartFormDataContent(object value)
+        {
+            if (value != null)
+            {
+                if (value is MultipartFormDataContent)
+                {
+                    return (MultipartFormDataContent)value;
+                }
+                else if (value is IEnumerable<(HttpContent, string, string)>)
+                {
+                    var result = new MultipartFormDataContent();
+
+                    foreach (var item in (IEnumerable<(HttpContent, string, string)>)value)
+                    {
+                        result.Add(item.Item1, item.Item2, item.Item3);
+                    }
+
+                    return result;
+                }
+                else
+                {
+                    throw new ArgumentException("Unsupported object type.");
+                }
+            }
+            else
+            {
+                return new MultipartFormDataContent();
+            }
+        }
+
         private static HttpContent GetFormattedObjectContent(object value, HttpContentType contentType)
         {
             if (value != null)
             {
                 Type type = value.GetType();
-
+                
                 if (typeof(JToken).IsAssignableFrom(type))
                 {
                     switch (contentType)
                     {
                         case HttpContentType.Json:
-                            return new StringContent(((JToken)value).ToString());
+                            return new StringContent(((JToken)value).ToString(), Encoding.UTF8, "application/json");
                         case HttpContentType.Xml:
-                            return new StringContent(JsonConvert.DeserializeXmlNode(((JToken)value).ToString()).OuterXml);
+                            return new StringContent(JsonConvert.DeserializeXmlNode(((JToken)value).ToString()).OuterXml, Encoding.UTF8, "application/xml");
+                        case HttpContentType.String:
+                            return new StringContent(((JToken)value).ToString(), Encoding.UTF8);
                         //TODO: Add JToken to Bson conversion?
                         default:
                             throw new ArgumentOutOfRangeException("ContentType is not recognized for the provided input type.");
@@ -150,7 +197,15 @@ namespace Cflashsoft.Framework.Http
                 }
                 else if (value is string)
                 {
-                    return new StringContent(value as string);
+                    switch (contentType)
+                    {
+                        case HttpContentType.Json:
+                            return new StringContent(value as string, Encoding.UTF8, "application/json");
+                        case HttpContentType.Xml:
+                            return new StringContent(value as string, Encoding.UTF8, "application/xml");
+                        default:
+                            return new StringContent(value as string);
+                    }
                 }
                 else
                 {
@@ -185,9 +240,70 @@ namespace Cflashsoft.Framework.Http
                     return HttpContentType.Xml;
                 case "application/bson":
                     return HttpContentType.Bson;
+                case "multipart/form-data":
+                    return HttpContentType.Multipart;
                 default:
                     throw new ArgumentOutOfRangeException("ContentType is not recognized.");
             }
+        }
+
+        public static Cookie ParseCookieHeaderValue(string headerValue)
+        {
+            if (string.IsNullOrWhiteSpace(headerValue))
+                return null;
+
+            string[] properties = headerValue.Split(new[] { ';' }, StringSplitOptions.RemoveEmptyEntries);
+
+            properties = properties.Select(p => p.Trim()).ToArray();
+
+            if (properties == null || properties.Length == 0)
+                return null;
+
+            int firstIndex = properties[0].IndexOf('=');
+
+            if (firstIndex < 0)
+                return null;
+
+            Cookie cookie = new Cookie(properties[0].Substring(0, firstIndex).Trim(), properties[0].Substring(firstIndex + 1, properties[0].Length - firstIndex - 1).Trim());
+
+            for (int index = 1; index < properties.Length; index++)
+            {
+                string property = properties[index].Trim();
+
+                if (property.Equals("secure", StringComparison.OrdinalIgnoreCase))
+                {
+                    cookie.Secure = true;
+                }
+                else if (property.Equals("httponly", StringComparison.OrdinalIgnoreCase))
+                {
+                    cookie.HttpOnly = true;
+                }
+                else
+                {
+                    firstIndex = property.IndexOf('=');
+
+                    if (firstIndex >= 0)
+                    {
+                        string key = property.Substring(0, firstIndex).Trim();
+                        string value = property.Substring(firstIndex + 1, property.Length - firstIndex - 1).Trim();
+
+                        if (key.Equals("path", StringComparison.OrdinalIgnoreCase))
+                        {
+                            cookie.Path = value;
+                        }
+                        else if (key.Equals("expires", StringComparison.OrdinalIgnoreCase))
+                        {
+                            cookie.Expires = DateTime.Parse(value);
+                        }
+                        else if (key.Equals("domain", StringComparison.OrdinalIgnoreCase))
+                        {
+                            cookie.Domain = value;
+                        }
+                    }
+                }
+            }
+
+            return cookie;
         }
     }
 }
