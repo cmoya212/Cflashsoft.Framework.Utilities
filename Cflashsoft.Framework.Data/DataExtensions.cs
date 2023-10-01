@@ -483,7 +483,7 @@ namespace Cflashsoft.Framework.Data
         }
 
         /// <summary>
-        /// Enumerates an IDataReader and returns rows as a custom object.
+        /// Enumerates an IDataReader and returns rows as custom objects.
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="reader">The IDataReader.</param>
@@ -530,13 +530,20 @@ namespace Cflashsoft.Framework.Data
         }
 
         /// <summary>
-        /// Enumerates an IDataReader and returns rows as a List of Dictionary column/value items.
+        /// Enumerates an IDataReader and returns rows as custom concrete or anonymous objects.
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="reader">The IDataReader.</param>
         /// <param name="selector">Function to convert the data.</param>
         /// <param name="closeReader">Indicates whether to close the connection when the enumeration completes.</param>
-        /// <returns>A List of Dictionary column/value items.</returns>
+        /// <returns>A List of custom concrete or anonymous objects.</returns>
+        /// <example><![CDATA[ ToList((reader) => new
+        /// {
+        ///	Field1 = reader.GetNullableString(0), //by key works too
+        ///	Field2 = reader.GetNullableInt32(1), //by key works too
+        /// });
+        /// ]]>
+        /// </example>
         public static List<T> ToList<T>(this IDataReader reader, Func<IDataReader, T> selector, bool closeReader = true)
         {
             List<T> result = new List<T>();
@@ -561,7 +568,6 @@ namespace Cflashsoft.Framework.Data
         /// <param name="reader">The IDataReader.</param>
         /// <param name="closeReader">Indicates whether to close the connection when the enumeration completes.</param>
         /// <returns>A List of Dictionary column/value items.</returns>
-
         public static async Task<List<Dictionary<string, object>>> ToListAsync(this DbDataReader reader, bool closeReader = true)
         {
             List<Dictionary<string, object>> result = new List<Dictionary<string, object>>();
@@ -582,14 +588,20 @@ namespace Cflashsoft.Framework.Data
         }
 
         /// <summary>
-        /// Enumerates an IDataReader and returns rows as a List of Dictionary column/value items.
+        /// Enumerates an IDataReader and returns rows as custom concrete or anonymous objects.
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="reader">The IDataReader.</param>
         /// <param name="selector">Function to convert the data.</param>
         /// <param name="closeReader">Indicates whether to close the connection when the enumeration completes.</param>
-        /// <returns>A List of Dictionary column/value items.</returns>
-
+        /// <returns>A List of custom concrete or anonymous objects.</returns>
+        /// <example><![CDATA[ ToListAsync((reader) => new
+        /// {
+        ///	Field1 = reader.GetNullableString(0), //by key works too
+        ///	Field2 = reader.GetNullableInt32(1), //by key works too
+        /// });
+        /// ]]>
+        /// </example>
         public static async Task<List<T>> ToListAsync<T>(this DbDataReader reader, Func<IDataReader, T> selector, bool closeReader = true)
         {
             List<T> result = new List<T>();
@@ -633,13 +645,22 @@ namespace Cflashsoft.Framework.Data
         }
 
         /// <summary>
-        /// Enumerates an IDataReader and returns the first row as a Dictionary of column/value items.
+        /// Enumerates an IDataReader and returns the first row as a custom concrete or anonymous object.
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="reader">The IDataReader.</param>
         /// <param name="selector">Function to convert the data.</param>
         /// <param name="closeReader">Indicates whether to close the connection when the enumeration completes.</param>
-        /// <returns>A Dictionary of column/value items.</returns>
+        /// <returns>A custom concrete or anonymous object.</returns>
+        /// <example><![CDATA[ FirstOrDefault((reader) => new
+        /// {
+        ///	Field1 = reader.GetNullableString(0), //by key works too
+        ///	Field2 = reader.GetNullableInt32(1), //by key works too
+        /// });
+        /// 
+        /// See also NullableFirstOrDefault<T>
+        /// ]]>
+        /// </example>
         public static T FirstOrDefault<T>(this IDataReader reader, Func<IDataReader, T> selector, bool closeReader = true) 
         {
             try
@@ -657,13 +678,20 @@ namespace Cflashsoft.Framework.Data
         }
 
         /// <summary>
-        /// Enumerates an IDataReader and returns the first row as a Dictionary of column/value items.
+        /// Enumerates an IDataReader and returns the first row as a custom concrete or anonymous object.
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="reader">The IDataReader.</param>
         /// <param name="selector">Function to convert the data.</param>
         /// <param name="closeReader">Indicates whether to close the connection when the enumeration completes.</param>
-        /// <returns>A Dictionary of column/value items.</returns>
+        /// <returns>A custom concrete or anonymous object.</returns>
+        /// <example><![CDATA[ NullableFirstOrDefault((reader) => new
+        /// {
+        ///	Field1 = reader.GetNullableString(0), //by key works too
+        ///	Field2 = reader.GetNullableInt32(1), //by key works too
+        /// });
+        /// ]]>
+        /// </example>
         public static T? NullableFirstOrDefault<T>(this IDataReader reader, Func<IDataReader, T> selector, bool closeReader = true) where T : struct
         {
             try
@@ -705,13 +733,22 @@ namespace Cflashsoft.Framework.Data
         }
 
         /// <summary>
-        /// Enumerates an IDataReader and returns the first row as a Dictionary of column/value items.
+        /// Enumerates an IDataReader and returns the first row as a custom concrete or anonymous object.
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="reader">The IDataReader.</param>
         /// <param name="selector">Function to convert the data.</param>
         /// <param name="closeReader">Indicates whether to close the connection when the enumeration completes.</param>
-        /// <returns>A Dictionary of column/value items.</returns>
+        /// <returns>A custom concrete or anonymous object.</returns>
+        /// <example><![CDATA[ FirstOrDefaultAsync((reader) => new
+        /// {
+        ///	Field1 = reader.GetNullableString(0), //by key works too
+        ///	Field2 = reader.GetNullableInt32(1), //by key works too
+        /// });
+        /// 
+        /// See also NullableFirstOrDefaultAsync<T>
+        /// ]]>
+        /// </example>
         public static async Task<T> FirstOrDefaultAsync<T>(this DbDataReader reader, Func<IDataReader, T> selector, bool closeReader = true)
         {
             try
@@ -729,13 +766,20 @@ namespace Cflashsoft.Framework.Data
         }
 
         /// <summary>
-        /// Enumerates an IDataReader and returns the first row as a Dictionary of column/value items.
+        /// Enumerates an IDataReader and returns the first row as a custom concrete or anonymous object.
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="reader">The IDataReader.</param>
         /// <param name="selector">Function to convert the data.</param>
         /// <param name="closeReader">Indicates whether to close the connection when the enumeration completes.</param>
-        /// <returns>A Dictionary of column/value items.</returns>
+        /// <returns>A custom concrete or anonymous object.</returns>
+        /// <example><![CDATA[ NullableFirstOrDefaultAAsync((reader) => new
+        /// {
+        ///	Field1 = reader.GetNullableString(0), //by key works too
+        ///	Field2 = reader.GetNullableInt32(1), //by key works too
+        /// });
+        /// ]]>
+        /// </example>
         public static async Task<T?> NullableFirstOrDefaultAsync<T>(this DbDataReader reader, Func<IDataReader, T> selector, bool closeReader = true) where T : struct
         {
             try
