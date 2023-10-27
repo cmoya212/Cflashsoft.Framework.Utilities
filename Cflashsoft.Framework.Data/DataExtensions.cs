@@ -671,7 +671,7 @@ namespace Cflashsoft.Framework.Data
         /// <param name="commandText">The text command to run against the data source.</param>
         /// <param name="commandType">Indicates or specifies how the CommandText property is interpreted.</param>
         /// <param name="parameters">The parameters of the SQL statement or stored procedure.</param>
-        /// <returns>A IDbCommand object.</returns>
+        /// <returns>A IDbCommand object for chaining.</returns>
         public static IDbCommand ConfigureCommand(this IDbCommand cmd, string commandText, CommandType commandType, params (string ParameterName, object Value)[] parameters)
         {
             cmd.CommandText = commandText;
@@ -695,7 +695,7 @@ namespace Cflashsoft.Framework.Data
         /// <param name="commandText">The text command to run against the data source.</param>
         /// <param name="commandType">Indicates or specifies how the CommandText property is interpreted.</param>
         /// <param name="parameters">The parameters of the SQL statement or stored procedure.</param>
-        /// <returns>A IDbCommand object.</returns>
+        /// <returns>A IDbCommand object for chaining.</returns>
         public static IDbCommand ConfigureCommand(this IDbCommand cmd, string commandText, CommandType commandType, params IDbDataParameter[] parameters)
         {
             cmd.CommandText = commandText;
@@ -725,7 +725,7 @@ namespace Cflashsoft.Framework.Data
         /// <param name="direction">Indicates whether the parameter is input-only, output-only, bidirectional, or a stored procedure return value parameter</param>
         /// <param name="sourceColumn">Indicates the name of the source column that is mapped to the DataSet and used for loading or returning the Value.</param>
         /// <param name="sourceVersion">Indicates the DataRowVersion to use when loading Value.</param>
-        /// <returns>A IDbDataParameter object.</returns>
+        /// <returns>A IDbCommand object for chaining.</returns>
         public static IDbCommand AddParameter(this IDbCommand cmd, string parameterName, object value, DbType? paramType = null, int? size = null, byte? precision = null, byte? scale = null, ParameterDirection? direction = null, string sourceColumn = null, DataRowVersion? sourceVersion = null)
         {
             cmd.Parameters.Add(CreateParameter(cmd, parameterName, value, paramType, size, precision, scale, direction, sourceColumn, sourceVersion));
@@ -734,9 +734,9 @@ namespace Cflashsoft.Framework.Data
         }
 
         /// <summary>
-        /// Utility method to add parameters to a IDbCommand object in a single call.
+        /// Utility method to create a IDbDataParameter in a single call.
         /// </summary>
-        /// <param name="cmd">The command object to add parameters to.</param>
+        /// <param name="cmd">The command object to create parameters for.</param>
         /// <param name="parameterName">The name of the parameter.</param>
         /// <param name="value">The value of the parameter.</param>
         /// <param name="paramType">The DbType of the parameter.</param>
