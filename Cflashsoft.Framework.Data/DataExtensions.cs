@@ -5,6 +5,7 @@ using System.Data.Common;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
+using System.Xml.XPath;
 
 namespace Cflashsoft.Framework.Data
 {
@@ -30,35 +31,10 @@ namespace Cflashsoft.Framework.Data
         /// </summary>
         /// <param name="cn">The database connection to execute the query on. The connection will be opened if it is closed.</param>
         /// <param name="commandText">The text command to run against the data source.</param>
-        /// <param name="parameters">The parameters of the SQL statement or stored procedure.</param>
-        /// <returns>An IDataReader object.</returns>
-        public static IDataReader ExecuteQuery(this IDbConnection cn, string commandText, params IDbDataParameter[] parameters)
-        {
-            return ExecuteQuery(cn, commandText, CommandType.Text, parameters);
-        }
-
-        /// <summary>
-        /// Executes the CommandText against the Connection and builds an IDataReader.
-        /// </summary>
-        /// <param name="cn">The database connection to execute the query on. The connection will be opened if it is closed.</param>
-        /// <param name="commandText">The text command to run against the data source.</param>
         /// <param name="commandType">Indicates or specifies how the CommandText property is interpreted.</param>
         /// <param name="parameters">The parameters of the SQL statement or stored procedure.</param>
         /// <returns>An IDataReader object.</returns>
         public static IDataReader ExecuteQuery(this IDbConnection cn, string commandText, CommandType commandType, params (string ParameterName, object Value)[] parameters)
-        {
-            return ExecuteQuery(cn, commandText, commandType, CommandBehavior.Default, parameters);
-        }
-
-        /// <summary>
-        /// Executes the CommandText against the Connection and builds an IDataReader.
-        /// </summary>
-        /// <param name="cn">The database connection to execute the query on. The connection will be opened if it is closed.</param>
-        /// <param name="commandText">The text command to run against the data source.</param>
-        /// <param name="commandType">Indicates or specifies how the CommandText property is interpreted.</param>
-        /// <param name="parameters">The parameters of the SQL statement or stored procedure.</param>
-        /// <returns>An IDataReader object.</returns>
-        public static IDataReader ExecuteQuery(this IDbConnection cn, string commandText, CommandType commandType, params IDbDataParameter[] parameters)
         {
             return ExecuteQuery(cn, commandText, commandType, CommandBehavior.Default, parameters);
         }
@@ -90,7 +66,7 @@ namespace Cflashsoft.Framework.Data
         /// <param name="behavior">One of the CommandBehavior values.</param>
         /// <param name="parameters">The parameters of the SQL statement or stored procedure.</param>
         /// <returns>An IDataReader object.</returns>
-        public static IDataReader ExecuteQuery(this IDbConnection cn, string commandText, CommandType commandType, CommandBehavior behavior, params IDbDataParameter[] parameters)
+        public static IDataReader ExecuteQuery(this IDbConnection cn, string commandText, CommandType commandType, CommandBehavior behavior, IEnumerable<IDbDataParameter> parameters)
         {
             using (var cmd = CreateCommand(cn, commandText, commandType, parameters))
             {
@@ -116,35 +92,10 @@ namespace Cflashsoft.Framework.Data
         /// </summary>
         /// <param name="cn">The database connection to execute the query on. The connection will be opened if it is closed.</param>
         /// <param name="commandText">The text command to run against the data source.</param>
-        /// <param name="parameters">The parameters of the SQL statement or stored procedure.</param>
-        /// <returns>An IDataReader object.</returns>
-        public static Task<DbDataReader> ExecuteQueryAsync(this DbConnection cn, string commandText, params IDbDataParameter[] parameters)
-        {
-            return ExecuteQueryAsync(cn, commandText, CommandType.Text, parameters);
-        }
-
-        /// <summary>
-        /// Executes the CommandText against the Connection and builds an IDataReader.
-        /// </summary>
-        /// <param name="cn">The database connection to execute the query on. The connection will be opened if it is closed.</param>
-        /// <param name="commandText">The text command to run against the data source.</param>
         /// <param name="commandType">Indicates or specifies how the CommandText property is interpreted.</param>
         /// <param name="parameters">The parameters of the SQL statement or stored procedure.</param>
         /// <returns>An IDataReader object.</returns>
         public static Task<DbDataReader> ExecuteQueryAsync(this DbConnection cn, string commandText, CommandType commandType, params (string ParameterName, object Value)[] parameters)
-        {
-            return ExecuteQueryAsync(cn, commandText, commandType, CommandBehavior.Default, parameters);
-        }
-
-        /// <summary>
-        /// Executes the CommandText against the Connection and builds an IDataReader.
-        /// </summary>
-        /// <param name="cn">The database connection to execute the query on. The connection will be opened if it is closed.</param>
-        /// <param name="commandText">The text command to run against the data source.</param>
-        /// <param name="commandType">Indicates or specifies how the CommandText property is interpreted.</param>
-        /// <param name="parameters">The parameters of the SQL statement or stored procedure.</param>
-        /// <returns>An IDataReader object.</returns>
-        public static Task<DbDataReader> ExecuteQueryAsync(this DbConnection cn, string commandText, CommandType commandType, params IDbDataParameter[] parameters)
         {
             return ExecuteQueryAsync(cn, commandText, commandType, CommandBehavior.Default, parameters);
         }
@@ -176,7 +127,7 @@ namespace Cflashsoft.Framework.Data
         /// <param name="behavior">One of the CommandBehavior values.</param>
         /// <param name="parameters">The parameters of the SQL statement or stored procedure.</param>
         /// <returns>An IDataReader object.</returns>
-        public static async Task<DbDataReader> ExecuteQueryAsync(this DbConnection cn, string commandText, CommandType commandType, CommandBehavior behavior, params IDbDataParameter[] parameters)
+        public static async Task<DbDataReader> ExecuteQueryAsync(this DbConnection cn, string commandText, CommandType commandType, CommandBehavior behavior, IEnumerable<IDbDataParameter> parameters)
         {
             using (var cmd = CreateCommand(cn, commandText, commandType, parameters))
             {
@@ -206,7 +157,7 @@ namespace Cflashsoft.Framework.Data
         /// <param name="commandType">Indicates or specifies how the CommandText property is interpreted.</param>
         /// <param name="parameters">The parameters of the SQL statement or stored procedure.</param>
         /// <returns>An IDataReader object.</returns>
-        public static IDataReader ExecuteSequential(this IDbConnection cn, string commandText, CommandType commandType, params IDbDataParameter[] parameters)
+        public static IDataReader ExecuteSequential(this IDbConnection cn, string commandText, CommandType commandType, IEnumerable<IDbDataParameter> parameters)
         {
             return ExecuteQuery(cn, commandText, commandType, CommandBehavior.SingleResult | CommandBehavior.SingleRow | CommandBehavior.SequentialAccess, parameters);
         }
@@ -232,7 +183,7 @@ namespace Cflashsoft.Framework.Data
         /// <param name="commandType">Indicates or specifies how the CommandText property is interpreted.</param>
         /// <param name="parameters">The parameters of the SQL statement or stored procedure.</param>
         /// <returns>An IDataReader object.</returns>
-        public static Task<DbDataReader> ExecuteSequentialAsync(this DbConnection cn, string commandText, CommandType commandType, params IDbDataParameter[] parameters)
+        public static Task<DbDataReader> ExecuteSequentialAsync(this DbConnection cn, string commandText, CommandType commandType, IEnumerable<IDbDataParameter> parameters)
         {
             return ExecuteQueryAsync(cn, commandText, commandType, CommandBehavior.SingleResult | CommandBehavior.SingleRow | CommandBehavior.SequentialAccess, parameters);
         }
@@ -245,18 +196,6 @@ namespace Cflashsoft.Framework.Data
         /// <param name="parameters">The parameters of the SQL statement or stored procedure.</param>
         /// <returns>The number of rows affected.</returns>
         public static int ExecuteNonQuery(this IDbConnection cn, string commandText, params (string ParameterName, object Value)[] parameters)
-        {
-            return ExecuteNonQuery(cn, commandText, CommandType.Text, parameters);
-        }
-
-        /// <summary>
-        /// Executes an SQL statement against the Connection object of a .NET data provider, and returns the number of rows affected.
-        /// </summary>
-        /// <param name="cn">The database connection to execute the query on. The connection will be opened if it is closed.</param>
-        /// <param name="commandText">The text command to run against the data source.</param>
-        /// <param name="parameters">The parameters of the SQL statement or stored procedure.</param>
-        /// <returns>The number of rows affected.</returns>
-        public static int ExecuteNonQuery(this IDbConnection cn, string commandText, params IDbDataParameter[] parameters)
         {
             return ExecuteNonQuery(cn, commandText, CommandType.Text, parameters);
         }
@@ -286,7 +225,7 @@ namespace Cflashsoft.Framework.Data
         /// <param name="commandType">Indicates or specifies how the CommandText property is interpreted.</param>
         /// <param name="parameters">The parameters of the SQL statement or stored procedure.</param>
         /// <returns>The number of rows affected.</returns>
-        public static int ExecuteNonQuery(this IDbConnection cn, string commandText, CommandType commandType, params IDbDataParameter[] parameters)
+        public static int ExecuteNonQuery(this IDbConnection cn, string commandText, CommandType commandType, IEnumerable<IDbDataParameter> parameters)
         {
             using (var cmd = CreateCommand(cn, commandText, commandType, parameters))
             {
@@ -303,18 +242,6 @@ namespace Cflashsoft.Framework.Data
         /// <param name="parameters">The parameters of the SQL statement or stored procedure.</param>
         /// <returns>The number of rows affected.</returns>
         public static Task<int> ExecuteNonQueryAsync(this DbConnection cn, string commandText, params (string ParameterName, object Value)[] parameters)
-        {
-            return ExecuteNonQueryAsync(cn, commandText, CommandType.Text, parameters);
-        }
-
-        /// <summary>
-        /// Executes an SQL statement against the Connection object of a .NET data provider, and returns the number of rows affected.
-        /// </summary>
-        /// <param name="cn">The database connection to execute the query on. The connection will be opened if it is closed.</param>
-        /// <param name="commandText">The text command to run against the data source.</param>
-        /// <param name="parameters">The parameters of the SQL statement or stored procedure.</param>
-        /// <returns>The number of rows affected.</returns>
-        public static Task<int> ExecuteNonQueryAsync(this DbConnection cn, string commandText, params IDbDataParameter[] parameters)
         {
             return ExecuteNonQueryAsync(cn, commandText, CommandType.Text, parameters);
         }
@@ -344,7 +271,7 @@ namespace Cflashsoft.Framework.Data
         /// <param name="commandType">Indicates or specifies how the CommandText property is interpreted.</param>
         /// <param name="parameters">The parameters of the SQL statement or stored procedure.</param>
         /// <returns>The number of rows affected.</returns>
-        public static async Task<int> ExecuteNonQueryAsync(this DbConnection cn, string commandText, CommandType commandType, params IDbDataParameter[] parameters)
+        public static async Task<int> ExecuteNonQueryAsync(this DbConnection cn, string commandText, CommandType commandType, IEnumerable<IDbDataParameter> parameters)
         {
             using (var cmd = CreateCommand(cn, commandText, commandType, parameters))
             {
@@ -361,18 +288,6 @@ namespace Cflashsoft.Framework.Data
         /// <param name="parameters">The parameters of the SQL statement or stored procedure.</param>
         /// <returns>The first column of the first row in the resultset.</returns>
         public static object ExecuteScalar(this IDbConnection cn, string commandText, params (string ParameterName, object Value)[] parameters)
-        {
-            return ExecuteScalar(cn, commandText, CommandType.Text, parameters);
-        }
-
-        /// <summary>
-        /// Executes the query, and returns the first column of the first row in the resultset returned by the query. Extra columns or rows are ignored.
-        /// </summary>
-        /// <param name="cn">The database connection to execute the query on. The connection will be opened if it is closed.</param>
-        /// <param name="commandText">The text command to run against the data source.</param>
-        /// <param name="parameters">The parameters of the SQL statement or stored procedure.</param>
-        /// <returns>The first column of the first row in the resultset.</returns>
-        public static object ExecuteScalar(this IDbConnection cn, string commandText, params IDbDataParameter[] parameters)
         {
             return ExecuteScalar(cn, commandText, CommandType.Text, parameters);
         }
@@ -408,7 +323,7 @@ namespace Cflashsoft.Framework.Data
         /// <param name="commandType">Indicates or specifies how the CommandText property is interpreted.</param>
         /// <param name="parameters">The parameters of the SQL statement or stored procedure.</param>
         /// <returns>The first column of the first row in the resultset.</returns>
-        public static object ExecuteScalar(this IDbConnection cn, string commandText, CommandType commandType, params IDbDataParameter[] parameters)
+        public static object ExecuteScalar(this IDbConnection cn, string commandText, CommandType commandType, IEnumerable<IDbDataParameter> parameters)
         {
             using (var cmd = CreateCommand(cn, commandText, commandType, parameters))
             {
@@ -431,18 +346,6 @@ namespace Cflashsoft.Framework.Data
         /// <param name="parameters">The parameters of the SQL statement or stored procedure.</param>
         /// <returns>The first column of the first row in the resultset.</returns>
         public static Task<object> ExecuteScalarAsync(this DbConnection cn, string commandText, params (string ParameterName, object Value)[] parameters)
-        {
-            return ExecuteScalarAsync(cn, commandText, CommandType.Text, parameters);
-        }
-
-        /// <summary>
-        /// Executes the query, and returns the first column of the first row in the resultset returned by the query. Extra columns or rows are ignored.
-        /// </summary>
-        /// <param name="cn">The database connection to execute the query on. The connection will be opened if it is closed.</param>
-        /// <param name="commandText">The text command to run against the data source.</param>
-        /// <param name="parameters">The parameters of the SQL statement or stored procedure.</param>
-        /// <returns>The first column of the first row in the resultset.</returns>
-        public static Task<object> ExecuteScalarAsync(this DbConnection cn, string commandText, params IDbDataParameter[] parameters)
         {
             return ExecuteScalarAsync(cn, commandText, CommandType.Text, parameters);
         }
@@ -478,7 +381,7 @@ namespace Cflashsoft.Framework.Data
         /// <param name="commandType">Indicates or specifies how the CommandText property is interpreted.</param>
         /// <param name="parameters">The parameters of the SQL statement or stored procedure.</param>
         /// <returns>The first column of the first row in the resultset.</returns>
-        public static async Task<object> ExecuteScalarAsync(this DbConnection cn, string commandText, CommandType commandType, params IDbDataParameter[] parameters)
+        public static async Task<object> ExecuteScalarAsync(this DbConnection cn, string commandText, CommandType commandType, IEnumerable<IDbDataParameter> parameters)
         {
             using (var cmd = CreateCommand(cn, commandText, commandType, parameters))
             {
@@ -612,51 +515,10 @@ namespace Cflashsoft.Framework.Data
         /// </summary>
         /// <param name="cn">The connection to be associated with the command.</param>
         /// <param name="commandText">The text command to run against the data source.</param>
-        /// <param name="parameters">The parameters of the SQL statement or stored procedure.</param>
-        /// <returns>A IDbCommand object.</returns>
-        public static IDbCommand CreateCommand(this IDbConnection cn, string commandText, params IDbDataParameter[] parameters)
-        {
-            return CreateCommand(cn, commandText, CommandType.Text, parameters);
-        }
-
-        /// <summary>
-        /// Utility method to create and configure a IDbCommand object in a single call.
-        /// </summary>
-        /// <param name="cn">The connection to be associated with the command.</param>
-        /// <param name="commandText">The text command to run against the data source.</param>
         /// <param name="commandType">Indicates or specifies how the CommandText property is interpreted.</param>
         /// <param name="parameters">The parameters of the SQL statement or stored procedure.</param>
         /// <returns>A IDbCommand object.</returns>
-        public static IDbCommand CreateCommand(this IDbConnection cn, string commandText, CommandType commandType, params IDbDataParameter[] parameters)
-        {
-            IDbCommand cmd = cn.CreateCommand();
-
-            ConfigureCommand(cmd, commandText, commandType, parameters);
-
-            return cmd;
-        }
-
-        /// <summary>
-        /// Utility method to create and configure a IDbCommand object in a single call.
-        /// </summary>
-        /// <param name="cn">The connection to be associated with the command.</param>
-        /// <param name="commandText">The text command to run against the data source.</param>
-        /// <param name="parameters">The parameters of the SQL statement or stored procedure.</param>
-        /// <returns>A IDbCommand object.</returns>
-        public static DbCommand CreateCommand(this DbConnection cn, string commandText, params IDbDataParameter[] parameters)
-        {
-            return CreateCommand(cn, commandText, CommandType.Text, parameters);
-        }
-
-        /// <summary>
-        /// Utility method to create and configure a IDbCommand object in a single call.
-        /// </summary>
-        /// <param name="cn">The connection to be associated with the command.</param>
-        /// <param name="commandText">The text command to run against the data source.</param>
-        /// <param name="commandType">Indicates or specifies how the CommandText property is interpreted.</param>
-        /// <param name="parameters">The parameters of the SQL statement or stored procedure.</param>
-        /// <returns>A IDbCommand object.</returns>
-        public static DbCommand CreateCommand(this DbConnection cn, string commandText, CommandType commandType, params IDbDataParameter[] parameters)
+        public static DbCommand CreateCommand(this DbConnection cn, string commandText, CommandType commandType, IEnumerable<IDbDataParameter> parameters)
         {
             DbCommand cmd = cn.CreateCommand();
 
@@ -697,7 +559,7 @@ namespace Cflashsoft.Framework.Data
         /// <param name="commandType">Indicates or specifies how the CommandText property is interpreted.</param>
         /// <param name="parameters">The parameters of the SQL statement or stored procedure.</param>
         /// <returns>A IDbCommand object for chaining.</returns>
-        public static IDbCommand ConfigureCommand(this IDbCommand cmd, string commandText, CommandType commandType, params IDbDataParameter[] parameters)
+        public static IDbCommand ConfigureCommand(this IDbCommand cmd, string commandText, CommandType commandType, IEnumerable<IDbDataParameter> parameters)
         {
             cmd.CommandText = commandText;
             cmd.CommandType = commandType;
@@ -771,6 +633,29 @@ namespace Cflashsoft.Framework.Data
                 param.SourceVersion = sourceVersion.Value;
 
             return param;
+        }
+
+        /// <summary>
+        /// Utility method to create a collection of IDbDataParameters in a single call.
+        /// </summary>
+        /// <param name="cmd">The command object to create parameters for.</param>
+        /// <param name="parameters">The tuple collection to convert.</param>
+        /// <returns>A list of IDbDataParameter items.</returns>
+        public static List<IDbDataParameter> CreateParameters(this IDbCommand cmd, (string ParameterName, object Value)[] parameters)
+        {
+            List<IDbDataParameter> result = null;
+
+            if (parameters != null)
+            {
+                result = new List<IDbDataParameter>(parameters.Length);
+
+                foreach (var param in parameters)
+                {
+                    result.Add(CreateParameter(cmd, param.ParameterName, param.Value));
+                }
+            }
+
+            return result;
         }
 
         /// <summary>
