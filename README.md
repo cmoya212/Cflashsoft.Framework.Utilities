@@ -36,7 +36,7 @@ public partial class MyModel : DbContext
     public async Task DeleteSomeEntity(int entityId)
 	{
 	    await this.Database.GetDbConnection()
-		    .ExecuteNonQueryAsync("delete from SomeTable where Id = @EntityId")
+		    .ExecuteNonQueryAsync("delete from SomeTable where Id = @EntityId",
 			("EntityId", entityId));
 	}
 }
