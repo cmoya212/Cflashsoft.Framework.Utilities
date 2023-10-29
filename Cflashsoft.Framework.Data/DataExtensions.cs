@@ -590,6 +590,22 @@ namespace Cflashsoft.Framework.Data
         }
 
         /// <summary>
+        /// Utility method to add parameters to a IDbCommand object in a single call.
+        /// </summary>
+        /// <param name="cmd">The command object to add parameters to.</param>
+        /// <param name="parameters">The parameters to add to the command.</param>
+        /// <returns>A IDbCommand object for chaining.</returns>
+        public static IDbCommand AddParameters(this IDbCommand cmd, IEnumerable<IDbDataParameter> parameters)
+        {
+            foreach (var param in parameters)
+            {
+                cmd.Parameters.Add(param);
+            }
+
+            return cmd;
+        }
+
+        /// <summary>
         /// Utility method to create a IDbDataParameter in a single call.
         /// </summary>
         /// <param name="cmd">The command object to create parameters for.</param>
@@ -634,13 +650,13 @@ namespace Cflashsoft.Framework.Data
         /// <param name="cmd">The command object to create parameters for.</param>
         /// <param name="parameters">The tuple collection to convert.</param>
         /// <returns>A list of IDbDataParameter items.</returns>
-        public static List<IDbDataParameter> CreateParameters(this IDbCommand cmd, (string ParameterName, object Value)[] parameters)
+        public static List<IDbDataParameter> CreateParameters(this IDbCommand cmd, IEnumerable<(string ParameterName, object Value)> parameters)
         {
             List<IDbDataParameter> result = null;
 
             if (parameters != null)
             {
-                result = new List<IDbDataParameter>(parameters.Length);
+                result = new List<IDbDataParameter>();
 
                 foreach (var param in parameters)
                 {
