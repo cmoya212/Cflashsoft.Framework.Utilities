@@ -4,7 +4,7 @@ Cfx Utilities is a set of extensions to make some of the more verbose .NET under
 
 ## Examples
 
-Here's an example of ADO.NET code (yeah, even with EF we should know how to perform actions directly on the database) that is normally way more verbose and unweildy. The extensions were inspired by the elegant MySQL commands for Node.JS.
+For instance, simplified data access similar to Dapper but even simpler:
 ```C#
 //Note: Could use DbContext.Database.Connection as well in a partial class
 //for your Entity Framework DbContext such as quick Deletes, SP's, or 
@@ -20,13 +20,25 @@ using (var cn = new SqlConnection(ConnectionString))
         .ToListAsync();
 
     //Returns List of anonymous objects or concrete class
-    var data12 = await (await cn.ExecuteQueryAsync("select Field1, Field2 from MyTable where Field1 = @Field1",
+    var data2 = await (await cn.ExecuteQueryAsync("select Field1, Field2 from MyTable where Field1 = @Field1",
         ("Field1", "SomeValue")))
         .ToListAsync((reader) => new
         {
             Field1 = reader.GetNullableString(0), //by key works too
             Field2 = reader.GetNullableInt32(1), //by key works too
         });
+}
+```
+And using a DbContext partial:
+```C#
+public partial class MyModel : DbContext
+{
+    public async Task DeleteSomeEntity(int entityId)
+	{
+	    await this.Database.GetDbConnection()
+		    .ExecuteNonQueryAsync("delete from SomeTable where Id = @EntityId")
+			("EntityId", entityId));
+	}
 }
 ```
 
