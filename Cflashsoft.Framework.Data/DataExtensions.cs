@@ -457,18 +457,6 @@ namespace Cflashsoft.Framework.Data
         /// </summary>
         /// <param name="cn">The connection to be associated with the command.</param>
         /// <param name="commandText">The text command to run against the data source.</param>
-        /// <param name="parameters">The parameters of the SQL statement or stored procedure.</param>
-        /// <returns>A IDbCommand object.</returns>
-        public static IDbCommand CreateCommand(this IDbConnection cn, string commandText, params (string ParameterName, object Value)[] parameters)
-        {
-            return CreateCommand(cn, commandText, CommandType.Text, parameters);
-        }
-
-        /// <summary>
-        /// Utility method to create and configure a IDbCommand object in a single call.
-        /// </summary>
-        /// <param name="cn">The connection to be associated with the command.</param>
-        /// <param name="commandText">The text command to run against the data source.</param>
         /// <param name="commandType">Indicates or specifies how the CommandText property is interpreted.</param>
         /// <param name="parameters">The parameters of the SQL statement or stored procedure.</param>
         /// <returns>A IDbCommand object.</returns>
@@ -486,11 +474,16 @@ namespace Cflashsoft.Framework.Data
         /// </summary>
         /// <param name="cn">The connection to be associated with the command.</param>
         /// <param name="commandText">The text command to run against the data source.</param>
+        /// <param name="commandType">Indicates or specifies how the CommandText property is interpreted.</param>
         /// <param name="parameters">The parameters of the SQL statement or stored procedure.</param>
         /// <returns>A IDbCommand object.</returns>
-        public static DbCommand CreateCommand(this DbConnection cn, string commandText, params (string ParameterName, object Value)[] parameters)
+        public static DbCommand CreateCommand(this DbConnection cn, string commandText, CommandType commandType, params (string ParameterName, object Value)[] parameters)
         {
-            return CreateCommand(cn, commandText, CommandType.Text, parameters);
+            DbCommand cmd = cn.CreateCommand();
+
+            ConfigureCommand(cmd, commandText, commandType, parameters);
+
+            return cmd;
         }
 
         /// <summary>
@@ -501,9 +494,9 @@ namespace Cflashsoft.Framework.Data
         /// <param name="commandType">Indicates or specifies how the CommandText property is interpreted.</param>
         /// <param name="parameters">The parameters of the SQL statement or stored procedure.</param>
         /// <returns>A IDbCommand object.</returns>
-        public static DbCommand CreateCommand(this DbConnection cn, string commandText, CommandType commandType, params (string ParameterName, object Value)[] parameters)
+        public static IDbCommand CreateCommand(this IDbConnection cn, string commandText, CommandType commandType, IEnumerable<IDbDataParameter> parameters)
         {
-            DbCommand cmd = cn.CreateCommand();
+            IDbCommand cmd = cn.CreateCommand();
 
             ConfigureCommand(cmd, commandText, commandType, parameters);
 
