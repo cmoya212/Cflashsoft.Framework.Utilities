@@ -185,41 +185,49 @@ namespace Cflashsoft.Framework.Security
         /// <summary>
         /// Decrypt a token. If the token has expired a SecurityTokenExpiredException will be thrown.
         /// </summary>
-        public static string DecryptToken(string value, string key)
+        public static string DecryptToken(string value, string key, bool ignoreDecryptErrors = false)
         {
-            return DecryptToken(value, key, false);
+            return DecryptToken(value, key, false, ignoreDecryptErrors);
         }
 
         /// <summary>
         /// Decrypt a token. If the token has expired a SecurityTokenExpiredException will be thrown.
         /// </summary>
-        public static byte[] DecryptTokenAsBytes(string value, string key)
+        public static byte[] DecryptTokenAsBytes(string value, string key, bool ignoreDecryptErrors = false)
         {
-            return DecryptTokenAsBytes(value, key, false);
+            return DecryptTokenAsBytes(value, key, false, ignoreDecryptErrors);
         }
 
         /// <summary>
         /// Decrypt a token even if it has expired.
         /// </summary>
-        public static string DecryptTokenUnsafe(string value, string key)
+        public static string DecryptTokenUnsafe(string value, string key, bool ignoreDecryptErrors = false)
         {
-            return DecryptToken(value, key, true);
+            return DecryptToken(value, key, true, ignoreDecryptErrors);
         }
 
         /// <summary>
         /// Decrypt a token even if it has expired.
         /// </summary>
-        public static byte[] DecryptTokenUnsafeAsBytes(string value, string key)
+        public static byte[] DecryptTokenUnsafeAsBytes(string value, string key, bool ignoreDecryptErrors = false)
         {
-            return DecryptTokenAsBytes(value, key, true);
+            return DecryptTokenAsBytes(value, key, true, ignoreDecryptErrors);
         }
 
-        internal static string DecryptToken(string value, string key, bool ignoreExpiration)
+        internal static string DecryptToken(string value, string key, bool ignoreExpiration, bool ignoreDecryptErrors = false)
         {
-            return Encoding.UTF8.GetString(DecryptTokenAsBytes(value, key, ignoreExpiration));
+            if (string.IsNullOrEmpty(value))
+                return null;
+
+            var result = DecryptTokenAsBytes(value, key, ignoreExpiration, ignoreDecryptErrors);
+
+            if (result != null)
+                return Encoding.UTF8.GetString(result);
+            else
+                return null;
         }
 
-        internal static byte[] DecryptTokenAsBytes(string value, string key, bool ignoreExpiration)
+        internal static byte[] DecryptTokenAsBytes(string value, string key, bool ignoreExpiration, bool ignoreDecryptErrors)
         {
             byte[] result = null;
 
@@ -276,15 +284,18 @@ namespace Cflashsoft.Framework.Security
             }
             catch (SecurityTokenExpiredException)
             {
-                throw;
+                if (!ignoreDecryptErrors)
+                    throw;
             }
             catch (UnauthorizedAccessException)
             {
-                throw;
+                if (!ignoreDecryptErrors)
+                    throw;
             }
             catch (Exception ex)
             {
-                throw new UnauthorizedAccessException("Error decrypting string. See inner exception for details.", ex);
+                if (!ignoreDecryptErrors)
+                    throw new UnauthorizedAccessException("Error decrypting string. See inner exception for details.", ex);
             }
 
             return result;

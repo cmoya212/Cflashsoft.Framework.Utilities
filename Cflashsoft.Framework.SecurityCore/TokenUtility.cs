@@ -184,106 +184,123 @@ namespace Cflashsoft.Framework.Security
         /// <summary>
         /// Decrypt a token. If the token has expired a SecurityTokenExpiredException will be thrown.
         /// </summary>
-        public static string DecryptToken(string value, string key)
+        public static string DecryptToken(string value, string key, bool ignoreDecryptErrors = false)
         {
-            return DecryptToken(value, key, false);
+            return DecryptToken(value, key, false, ignoreDecryptErrors);
         }
 
         /// <summary>
         /// Decrypt a token. If the token has expired a SecurityTokenExpiredException will be thrown.
         /// </summary>
-        public static byte[] DecryptTokenAsBytes(string value, string key)
+        public static byte[] DecryptTokenAsBytes(string value, string key, bool ignoreDecryptErrors = false)
         {
-            return DecryptTokenAsBytes(value, key, false);
+            return DecryptTokenAsBytes(value, key, false, ignoreDecryptErrors);
         }
 
         /// <summary>
         /// Decrypt a token even if it has expired.
         /// </summary>
-        public static string DecryptTokenUnsafe(string value, string key)
+        public static string DecryptTokenUnsafe(string value, string key, bool ignoreDecryptErrors = false)
         {
-            return DecryptToken(value, key, true);
+            return DecryptToken(value, key, true, ignoreDecryptErrors);
         }
 
         /// <summary>
         /// Decrypt a token even if it has expired.
         /// </summary>
-        public static byte[] DecryptTokenUnsafeAsBytes(string value, string key)
+        public static byte[] DecryptTokenUnsafeAsBytes(string value, string key, bool ignoreDecryptErrors = false)
         {
-            return DecryptTokenAsBytes(value, key, true);
+            return DecryptTokenAsBytes(value, key, true, ignoreDecryptErrors);
         }
 
-        internal static string DecryptToken(string value, string key, bool ignoreExpiration)
+        internal static string DecryptToken(string value, string key, bool ignoreExpiration, bool ignoreDecryptErrors)
         {
-            return Encoding.UTF8.GetString(DecryptTokenAsBytes(value, key, ignoreExpiration));
+            if (string.IsNullOrEmpty(value))
+                return null;
+
+            var result = DecryptTokenAsBytes(value, key, ignoreExpiration, ignoreDecryptErrors);
+
+            if (result != null)
+                return Encoding.UTF8.GetString(result);
+            else
+                return null;
         }
 
-        internal static byte[] DecryptTokenAsBytes(string value, string key, bool ignoreExpiration)
+        internal static byte[] DecryptTokenAsBytes(string value, string key, bool ignoreExpiration, bool ignoreDecryptErrors)
         {
+            if (string.IsNullOrEmpty(key))
+                throw new ArgumentException("Key is not provided.");
+
             byte[] result = null;
 
-            try
+            if (!string.IsNullOrEmpty(value))
             {
-                using (RijndaelManaged rijndael = new RijndaelManaged())
+                try
                 {
-                    byte[] bytes = Convert.FromBase64String(value);
-                    byte[] salt = new byte[16];
-
-                    Array.Copy(bytes, bytes.Length - 16, salt, 0, 16);
-
-                    PasswordDeriveBytes secretKey = new PasswordDeriveBytes(Encoding.ASCII.GetBytes(key), salt);
-
-                    using (ICryptoTransform decryptor = rijndael.CreateDecryptor(secretKey.GetBytes(32), secretKey.GetBytes(16)))
+                    using (RijndaelManaged rijndael = new RijndaelManaged())
                     {
-                        using (MemoryStream memoryStream = new MemoryStream())
+                        byte[] bytes = Convert.FromBase64String(value);
+                        byte[] salt = new byte[16];
+
+                        Array.Copy(bytes, bytes.Length - 16, salt, 0, 16);
+
+                        PasswordDeriveBytes secretKey = new PasswordDeriveBytes(Encoding.ASCII.GetBytes(key), salt);
+
+                        using (ICryptoTransform decryptor = rijndael.CreateDecryptor(secretKey.GetBytes(32), secretKey.GetBytes(16)))
                         {
-                            using (CryptoStream cryptoStream = new CryptoStream(memoryStream, decryptor, CryptoStreamMode.Write))
+                            using (MemoryStream memoryStream = new MemoryStream())
                             {
-                                cryptoStream.Write(bytes, 0, bytes.Length - 16);
-
-                                cryptoStream.FlushFinalBlock();
-
-                                memoryStream.Position = memoryStream.Length - 1;
-
-                                if (memoryStream.ReadByte() == 1)
+                                using (CryptoStream cryptoStream = new CryptoStream(memoryStream, decryptor, CryptoStreamMode.Write))
                                 {
-                                    byte[] expirationBytes = new byte[8];
+                                    cryptoStream.Write(bytes, 0, bytes.Length - 16);
 
-                                    memoryStream.Position = memoryStream.Length - 1 - expirationBytes.Length;
+                                    cryptoStream.FlushFinalBlock();
 
-                                    memoryStream.Read(expirationBytes, 0, expirationBytes.Length);
+                                    memoryStream.Position = memoryStream.Length - 1;
 
-                                    DateTime expirationDate = new DateTime(BitConverter.ToInt64(expirationBytes, 0));
-
-                                    if (ignoreExpiration || expirationDate > DateTime.UtcNow)
+                                    if (memoryStream.ReadByte() == 1)
                                     {
-                                        result = DecodeResult(memoryStream, expirationBytes.Length);
+                                        byte[] expirationBytes = new byte[8];
+
+                                        memoryStream.Position = memoryStream.Length - 1 - expirationBytes.Length;
+
+                                        memoryStream.Read(expirationBytes, 0, expirationBytes.Length);
+
+                                        DateTime expirationDate = new DateTime(BitConverter.ToInt64(expirationBytes, 0));
+
+                                        if (ignoreExpiration || expirationDate > DateTime.UtcNow)
+                                        {
+                                            result = DecodeResult(memoryStream, expirationBytes.Length);
+                                        }
+                                        else
+                                        {
+                                            throw new TokenExpiredException();
+                                        }
                                     }
                                     else
                                     {
-                                        throw new TokenExpiredException();
+                                        result = DecodeResult(memoryStream, 0);
                                     }
-                                }
-                                else
-                                {
-                                    result = DecodeResult(memoryStream, 0);
                                 }
                             }
                         }
                     }
                 }
-            }
-            catch (TokenExpiredException)
-            {
-                throw;
-            }
-            catch (UnauthorizedAccessException)
-            {
-                throw;
-            }
-            catch (Exception ex)
-            {
-                throw new UnauthorizedAccessException("Error decrypting string. See inner exception for details.", ex);
+                catch (TokenExpiredException)
+                {
+                    if (!ignoreDecryptErrors)
+                        throw;
+                }
+                catch (UnauthorizedAccessException)
+                {
+                    if (!ignoreDecryptErrors)
+                        throw;
+                }
+                catch (Exception ex)
+                {
+                    if (!ignoreDecryptErrors)
+                        throw new UnauthorizedAccessException("Error decrypting string. See inner exception for details.", ex);
+                }
             }
 
             return result;

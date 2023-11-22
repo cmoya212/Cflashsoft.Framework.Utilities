@@ -533,13 +533,7 @@ namespace Cflashsoft.Framework.Data
             cmd.CommandText = commandText;
             cmd.CommandType = commandType;
 
-            if (parameters != null)
-            {
-                foreach (var parameter in parameters)
-                {
-                    AddParameter(cmd, parameter.ParameterName, parameter.Value);
-                }
-            }
+            AddParameters(cmd, parameters);
 
             return cmd;
         }
@@ -557,13 +551,7 @@ namespace Cflashsoft.Framework.Data
             cmd.CommandText = commandText;
             cmd.CommandType = commandType;
 
-            if (parameters != null)
-            {
-                foreach (var parameter in parameters)
-                {
-                    cmd.Parameters.Add(parameter);
-                }
-            }
+            AddParameters(cmd, parameters);
 
             return cmd;
         }
@@ -595,11 +583,33 @@ namespace Cflashsoft.Framework.Data
         /// <param name="cmd">The command object to add parameters to.</param>
         /// <param name="parameters">The parameters to add to the command.</param>
         /// <returns>A IDbCommand object for chaining.</returns>
+        public static IDbCommand AddParameters(this IDbCommand cmd, params (string ParameterName, object Value)[] parameters)
+        {
+            if (parameters != null)
+            {
+                foreach (var param in parameters)
+                {
+                    AddParameter(cmd, param.ParameterName, param.Value);
+                }
+            }
+
+            return cmd;
+        }
+
+        /// <summary>
+        /// Utility method to add parameters to a IDbCommand object in a single call.
+        /// </summary>
+        /// <param name="cmd">The command object to add parameters to.</param>
+        /// <param name="parameters">The parameters to add to the command.</param>
+        /// <returns>A IDbCommand object for chaining.</returns>
         public static IDbCommand AddParameters(this IDbCommand cmd, IEnumerable<IDbDataParameter> parameters)
         {
-            foreach (var param in parameters)
+            if (parameters != null)
             {
-                cmd.Parameters.Add(param);
+                foreach (var param in parameters)
+                {
+                    cmd.Parameters.Add(param);
+                }
             }
 
             return cmd;
@@ -686,7 +696,7 @@ namespace Cflashsoft.Framework.Data
         /// Returns a row from an IDataReader as a Dictionary of column and value.
         /// </summary>
         /// <param name="reader">The IDataReader.</param>
-        /// <returns>A Dictionary of column and value.</returns>
+        /// <returns>A Dictionary of columns and their value.</returns>
         public static Dictionary<string, object> GetReaderRow(this IDataReader reader)
         {
             Dictionary<string, object> result = new Dictionary<string, object>();
@@ -702,7 +712,7 @@ namespace Cflashsoft.Framework.Data
         /// </summary>
         /// <param name="reader">The IDataReader.</param>
         /// <param name="closeReader">Indicates whether to close the connection when the enumeration completes.</param>
-        /// <returns>Enumerable of dictionary column/value pairs.</returns>
+        /// <returns>Enumerable list of rows as dictionary column/value pairs.</returns>
         public static IEnumerable<Dictionary<string, object>> AsEnumerable(this IDataReader reader, bool closeReader = true)
         {
             try
@@ -745,7 +755,7 @@ namespace Cflashsoft.Framework.Data
         /// </summary>
         /// <param name="reader">The IDataReader.</param>
         /// <param name="closeReader">Indicates whether to close the connection when the enumeration completes.</param>
-        /// <returns>A List of Dictionary column/value items.</returns>
+        /// <returns>A List of rows as Dictionary column/value items.</returns>
         public static List<Dictionary<string, object>> ToList(this IDataReader reader, bool closeReader = true)
         {
             List<Dictionary<string, object>> result = new List<Dictionary<string, object>>();
@@ -805,7 +815,7 @@ namespace Cflashsoft.Framework.Data
         /// </summary>
         /// <param name="reader">The IDataReader.</param>
         /// <param name="closeReader">Indicates whether to close the connection when the enumeration completes.</param>
-        /// <returns>A List of Dictionary column/value items.</returns>
+        /// <returns>A List of rows as Dictionary column/value items.</returns>
         public static async Task<List<Dictionary<string, object>>> ToListAsync(this DbDataReader reader, bool closeReader = true)
         {
             List<Dictionary<string, object>> result = new List<Dictionary<string, object>>();
@@ -865,7 +875,7 @@ namespace Cflashsoft.Framework.Data
         /// </summary>
         /// <param name="reader">The IDataReader.</param>
         /// <param name="closeReader">Indicates whether to close the connection when the enumeration completes.</param>
-        /// <returns>A Dictionary of column/value items.</returns>
+        /// <returns>A Dictionary of column/value items that represent the first row in the resultset.</returns>
         /// <remarks>It is recommended to use the CommandBehavior.SingleRow option in the Execute portion.</remarks>
         public static Dictionary<string, object> FirstOrDefault(this IDataReader reader, bool closeReader = true)
         {
@@ -927,7 +937,7 @@ namespace Cflashsoft.Framework.Data
         /// <param name="reader">The IDataReader.</param>
         /// <param name="selector">Function to convert the data.</param>
         /// <param name="closeReader">Indicates whether to close the connection when the enumeration completes.</param>
-        /// <returns>A custom concrete or anonymous object.</returns>
+        /// <returns>A nullable custom concrete or anonymous object.</returns>
         /// <remarks>It is recommended to use the CommandBehavior.SingleRow option in the Execute portion.</remarks>
         /// <example>
         /// <code>
@@ -959,7 +969,7 @@ namespace Cflashsoft.Framework.Data
         /// </summary>
         /// <param name="reader">The IDataReader.</param>
         /// <param name="closeReader">Indicates whether to close the connection when the enumeration completes.</param>
-        /// <returns>A Dictionary of column/value items.</returns>
+        /// <returns>A Dictionary of column/value items that represent the first row in the resultset.</returns>
         /// <remarks>It is recommended to use the CommandBehavior.SingleRow option in the Execute portion.</remarks>
         public static async Task<Dictionary<string, object>> FirstOrDefaultAsync(this DbDataReader reader, bool closeReader = true)
         {
@@ -1021,7 +1031,7 @@ namespace Cflashsoft.Framework.Data
         /// <param name="reader">The IDataReader.</param>
         /// <param name="selector">Function to convert the data.</param>
         /// <param name="closeReader">Indicates whether to close the connection when the enumeration completes.</param>
-        /// <returns>A custom concrete or anonymous object.</returns>
+        /// <returns>A nullable custom concrete or anonymous object.</returns>
         /// <remarks>It is recommended to use the CommandBehavior.SingleRow option in the Execute portion.</remarks>
         /// <example>
         /// <code>
@@ -1129,7 +1139,7 @@ namespace Cflashsoft.Framework.Data
         /// </summary>
         /// <param name="reader">The IDataReader.</param>
         /// <param name="i">The index of the field to find.</param>
-        /// <returns>The string value of the specified field.</returns>
+        /// <returns>The string value of the specified field or NULL if the value is DbNull.</returns>
         public static string GetNullableString(this IDataReader reader, int i)
         {
             return reader.IsDBNull(i) ? null : reader.GetString(i);
@@ -1140,7 +1150,7 @@ namespace Cflashsoft.Framework.Data
         /// </summary>
         /// <param name="reader">The IDataReader.</param>
         /// <param name="i">The index of the field to find.</param>
-        /// <returns>A boolean.</returns>
+        /// <returns>A nullable boolean.</returns>
         public static bool? GetNullableBoolean(this IDataReader reader, int i)
         {
             return reader.IsDBNull(i) ? (bool?)null : reader.GetBoolean(i);
@@ -1151,7 +1161,7 @@ namespace Cflashsoft.Framework.Data
         /// </summary>
         /// <param name="reader">The IDataReader.</param>
         /// <param name="i">The index of the field to find.</param>
-        /// <returns>The 8-bit unsigned integer value of the specified column.</returns>
+        /// <returns>The nullable 8-bit unsigned integer value of the specified column.</returns>
         public static byte? GetNullableByte(this IDataReader reader, int i)
         {
             return reader.IsDBNull(i) ? (byte?)null : reader.GetByte(i);
@@ -1162,7 +1172,7 @@ namespace Cflashsoft.Framework.Data
         /// </summary>
         /// <param name="reader">The IDataReader.</param>
         /// <param name="i">The index of the field to find.</param>
-        /// <returns>The character value of the specified column.</returns>
+        /// <returns>The nullable character value of the specified column.</returns>
         public static char? GetNullableChar(this IDataReader reader, int i)
         {
             return reader.IsDBNull(i) ? (char?)null : reader.GetChar(i);
@@ -1173,7 +1183,7 @@ namespace Cflashsoft.Framework.Data
         /// </summary>
         /// <param name="reader">The IDataReader.</param>
         /// <param name="i">The index of the field to find.</param>
-        /// <returns>The date and time data value of the specified field.</returns>
+        /// <returns>The nullable date and time data value of the specified field.</returns>
         public static DateTime? GetNullableDateTime(this IDataReader reader, int i)
         {
             return reader.IsDBNull(i) ? (DateTime?)null : reader.GetDateTime(i);
@@ -1184,7 +1194,7 @@ namespace Cflashsoft.Framework.Data
         /// </summary>
         /// <param name="reader">The IDataReader.</param>
         /// <param name="i">The index of the field to find.</param>
-        /// <returns>The fixed-position numeric value of the specified field.</returns>
+        /// <returns>The nullable fixed-position numeric value of the specified field.</returns>
         public static decimal? GetNullableDecimal(this IDataReader reader, int i)
         {
             return reader.IsDBNull(i) ? (decimal?)null : reader.GetDecimal(i);
@@ -1195,7 +1205,7 @@ namespace Cflashsoft.Framework.Data
         /// </summary>
         /// <param name="reader">The IDataReader.</param>
         /// <param name="i">The index of the field to find.</param>
-        /// <returns>The double-precision floating point number of the specified field.</returns>
+        /// <returns>The nullable double-precision floating point number of the specified field.</returns>
         public static double? GetNullableDouble(this IDataReader reader, int i)
         {
             return reader.IsDBNull(i) ? (double?)null : reader.GetDouble(i);
@@ -1206,7 +1216,7 @@ namespace Cflashsoft.Framework.Data
         /// </summary>
         /// <param name="reader">The IDataReader.</param>
         /// <param name="i">The index of the field to find.</param>
-        /// <returns>The single-precision floating point number of the specified field.</returns>
+        /// <returns>The nullable single-precision floating point number of the specified field.</returns>
         public static float? GetNullableFloat(this IDataReader reader, int i)
         {
             return reader.IsDBNull(i) ? (float?)null : reader.GetFloat(i);
@@ -1217,7 +1227,7 @@ namespace Cflashsoft.Framework.Data
         /// </summary>
         /// <param name="reader">The IDataReader.</param>
         /// <param name="i">The index of the field to find.</param>
-        /// <returns>The GUID value of the specified field.</returns>
+        /// <returns>The nullable GUID value of the specified field.</returns>
         public static Guid? GetNullableGuid(this IDataReader reader, int i)
         {
             return reader.IsDBNull(i) ? (Guid?)null : reader.GetGuid(i);
@@ -1228,7 +1238,7 @@ namespace Cflashsoft.Framework.Data
         /// </summary>
         /// <param name="reader">The IDataReader.</param>
         /// <param name="i">The index of the field to find.</param>
-        /// <returns>The 16-bit signed integer value of the specified field.</returns>
+        /// <returns>The nullable 16-bit signed integer value of the specified field.</returns>
         public static short? GetNullableInt16(this IDataReader reader, int i)
         {
             return reader.IsDBNull(i) ? (short?)null : reader.GetInt16(i);
@@ -1239,7 +1249,7 @@ namespace Cflashsoft.Framework.Data
         /// </summary>
         /// <param name="reader">The IDataReader.</param>
         /// <param name="i">The index of the field to find.</param>
-        /// <returns>The 32-bit signed integer value of the specified field.</returns>
+        /// <returns>The nullable 32-bit signed integer value of the specified field.</returns>
         public static int? GetNullableInt32(this IDataReader reader, int i)
         {
             return reader.IsDBNull(i) ? (int?)null : reader.GetInt32(i);
@@ -1250,7 +1260,7 @@ namespace Cflashsoft.Framework.Data
         /// </summary>
         /// <param name="reader">The IDataReader.</param>
         /// <param name="i">The index of the field to find.</param>
-        /// <returns>The 64-bit signed integer value of the specified field.</returns>
+        /// <returns>The nullable 64-bit signed integer value of the specified field.</returns>
         public static long? GetNullableInt64(this IDataReader reader, int i)
         {
             return reader.IsDBNull(i) ? (long?)null : reader.GetInt64(i);
@@ -1261,7 +1271,7 @@ namespace Cflashsoft.Framework.Data
         /// </summary>
         /// <param name="reader">The IDataReader.</param>
         /// <param name="name">The name of the field.</param>
-        /// <returns>The string value of the specified field.</returns>
+        /// <returns>The string value of the specified field or NULL if the value is DbNull.</returns>
         public static string GetNullableString(this IDataReader reader, string name)
         {
             return GetNullableString(reader, reader.GetOrdinal(name));
@@ -1272,7 +1282,7 @@ namespace Cflashsoft.Framework.Data
         /// </summary>
         /// <param name="reader">The IDataReader.</param>
         /// <param name="name">The name of the field.</param>
-        /// <returns>A boolean.</returns>
+        /// <returns>A nullable boolean.</returns>
         public static bool? GetNullableBoolean(this IDataReader reader, string name)
         {
             return GetNullableBoolean(reader, reader.GetOrdinal(name));
@@ -1283,7 +1293,7 @@ namespace Cflashsoft.Framework.Data
         /// </summary>
         /// <param name="reader">The IDataReader.</param>
         /// <param name="name">The name of the field.</param>
-        /// <returns>The 8-bit unsigned integer value of the specified column.</returns>
+        /// <returns>The nullable 8-bit unsigned integer value of the specified column.</returns>
         public static byte? GetNullableByte(this IDataReader reader, string name)
         {
             return GetNullableByte(reader, reader.GetOrdinal(name));
@@ -1294,7 +1304,7 @@ namespace Cflashsoft.Framework.Data
         /// </summary>
         /// <param name="reader">The IDataReader.</param>
         /// <param name="name">The name of the field.</param>
-        /// <returns>The character value of the specified column.</returns>
+        /// <returns>The nullable character value of the specified column.</returns>
         public static char? GetNullableChar(this IDataReader reader, string name)
         {
             return GetNullableChar(reader, reader.GetOrdinal(name));
@@ -1305,7 +1315,7 @@ namespace Cflashsoft.Framework.Data
         /// </summary>
         /// <param name="reader">The IDataReader.</param>
         /// <param name="name">The name of the field.</param>
-        /// <returns>The date and time data value of the specified field.</returns>
+        /// <returns>The nullable date and time data value of the specified field.</returns>
         public static DateTime? GetNullableDateTime(this IDataReader reader, string name)
         {
             return GetNullableDateTime(reader, reader.GetOrdinal(name));
@@ -1316,7 +1326,7 @@ namespace Cflashsoft.Framework.Data
         /// </summary>
         /// <param name="reader">The IDataReader.</param>
         /// <param name="name">The name of the field.</param>
-        /// <returns>The fixed-position numeric value of the specified field.</returns>
+        /// <returns>The nullable fixed-position numeric value of the specified field.</returns>
         public static decimal? GetNullableDecimal(this IDataReader reader, string name)
         {
             return GetNullableDecimal(reader, reader.GetOrdinal(name));
@@ -1327,7 +1337,7 @@ namespace Cflashsoft.Framework.Data
         /// </summary>
         /// <param name="reader">The IDataReader.</param>
         /// <param name="name">The name of the field.</param>
-        /// <returns>The double-precision floating point number of the specified field.</returns>
+        /// <returns>The nullable double-precision floating point number of the specified field.</returns>
         public static double? GetNullableDouble(this IDataReader reader, string name)
         {
             return GetNullableDouble(reader, reader.GetOrdinal(name));
@@ -1338,7 +1348,7 @@ namespace Cflashsoft.Framework.Data
         /// </summary>
         /// <param name="reader">The IDataReader.</param>
         /// <param name="name">The name of the field.</param>
-        /// <returns>The single-precision floating point number of the specified field.</returns>
+        /// <returns>The nullable single-precision floating point number of the specified field.</returns>
         public static float? GetNullableFloat(this IDataReader reader, string name)
         {
             return GetNullableFloat(reader, reader.GetOrdinal(name));
@@ -1349,7 +1359,7 @@ namespace Cflashsoft.Framework.Data
         /// </summary>
         /// <param name="reader">The IDataReader.</param>
         /// <param name="name">The name of the field.</param>
-        /// <returns>The GUID value of the specified field.</returns>
+        /// <returns>The nullable GUID value of the specified field.</returns>
         public static Guid? GetNullableGuid(this IDataReader reader, string name)
         {
             return GetNullableGuid(reader, reader.GetOrdinal(name));
@@ -1360,7 +1370,7 @@ namespace Cflashsoft.Framework.Data
         /// </summary>
         /// <param name="reader">The IDataReader.</param>
         /// <param name="name">The name of the field.</param>
-        /// <returns>The 16-bit signed integer value of the specified field.</returns>
+        /// <returns>The nullable 16-bit signed integer value of the specified field.</returns>
         public static short? GetNullableInt16(this IDataReader reader, string name)
         {
             return GetNullableInt16(reader, reader.GetOrdinal(name));
@@ -1371,7 +1381,7 @@ namespace Cflashsoft.Framework.Data
         /// </summary>
         /// <param name="reader">The IDataReader.</param>
         /// <param name="name">The name of the field.</param>
-        /// <returns>The 32-bit signed integer value of the specified field.</returns>
+        /// <returns>The nullable 32-bit signed integer value of the specified field.</returns>
         public static int? GetNullableInt32(this IDataReader reader, string name)
         {
             return GetNullableInt32(reader, reader.GetOrdinal(name));
@@ -1382,7 +1392,7 @@ namespace Cflashsoft.Framework.Data
         /// </summary>
         /// <param name="reader">The IDataReader.</param>
         /// <param name="name">The name of the field.</param>
-        /// <returns>The 64-bit signed integer value of the specified field.</returns>
+        /// <returns>The nullable 64-bit signed integer value of the specified field.</returns>
         public static long? GetNullableInt64(this IDataReader reader, string name)
         {
             return GetNullableInt64(reader, reader.GetOrdinal(name));
@@ -1394,6 +1404,7 @@ namespace Cflashsoft.Framework.Data
         /// <param name="reader">The IDataReader.</param>
         /// <param name="name">The name of the field.</param>
         /// <returns>The string value of the specified field.</returns>
+        /// <remarks>Shorthand for reader.Get...(reader.GetOrdinal(name)</remarks>
         public static string GetString(this IDataReader reader, string name)
         {
             return reader.GetString(reader.GetOrdinal(name));
@@ -1405,6 +1416,7 @@ namespace Cflashsoft.Framework.Data
         /// <param name="reader">The IDataReader.</param>
         /// <param name="name">The name of the field.</param>
         /// <returns>A boolean.</returns>
+        /// <remarks>Shorthand for reader.Get...(reader.GetOrdinal(name)</remarks>
         public static bool GetBoolean(this IDataReader reader, string name)
         {
             return reader.GetBoolean(reader.GetOrdinal(name));
@@ -1416,6 +1428,7 @@ namespace Cflashsoft.Framework.Data
         /// <param name="reader">The IDataReader.</param>
         /// <param name="name">The name of the field.</param>
         /// <returns>The 8-bit unsigned integer value of the specified column.</returns>
+        /// <remarks>Shorthand for reader.Get...(reader.GetOrdinal(name)</remarks>
         public static byte GetByte(this IDataReader reader, string name)
         {
             return reader.GetByte(reader.GetOrdinal(name));
@@ -1427,6 +1440,7 @@ namespace Cflashsoft.Framework.Data
         /// <param name="reader">The IDataReader.</param>
         /// <param name="name">The name of the field.</param>
         /// <returns>The character value of the specified column.</returns>
+        /// <remarks>Shorthand for reader.Get...(reader.GetOrdinal(name)</remarks>
         public static char GetChar(this IDataReader reader, string name)
         {
             return reader.GetChar(reader.GetOrdinal(name));
@@ -1438,6 +1452,7 @@ namespace Cflashsoft.Framework.Data
         /// <param name="reader">The IDataReader.</param>
         /// <param name="name">The name of the field.</param>
         /// <returns>The date and time data value of the specified field.</returns>
+        /// <remarks>Shorthand for reader.Get...(reader.GetOrdinal(name)</remarks>
         public static DateTime GetDateTime(this IDataReader reader, string name)
         {
             return reader.GetDateTime(reader.GetOrdinal(name));
@@ -1449,6 +1464,7 @@ namespace Cflashsoft.Framework.Data
         /// <param name="reader">The IDataReader.</param>
         /// <param name="name">The name of the field.</param>
         /// <returns>The fixed-position numeric value of the specified field.</returns>
+        /// <remarks>Shorthand for reader.Get...(reader.GetOrdinal(name)</remarks>
         public static decimal GetDecimal(this IDataReader reader, string name)
         {
             return reader.GetDecimal(reader.GetOrdinal(name));
@@ -1460,6 +1476,7 @@ namespace Cflashsoft.Framework.Data
         /// <param name="reader">The IDataReader.</param>
         /// <param name="name">The name of the field.</param>
         /// <returns>The double-precision floating point number of the specified field.</returns>
+        /// <remarks>Shorthand for reader.Get...(reader.GetOrdinal(name)</remarks>
         public static double GetDouble(this IDataReader reader, string name)
         {
             return reader.GetDouble(reader.GetOrdinal(name));
@@ -1471,6 +1488,7 @@ namespace Cflashsoft.Framework.Data
         /// <param name="reader">The IDataReader.</param>
         /// <param name="name">The name of the field.</param>
         /// <returns>The single-precision floating point number of the specified field.</returns>
+        /// <remarks>Shorthand for reader.Get...(reader.GetOrdinal(name)</remarks>
         public static float GetFloat(this IDataReader reader, string name)
         {
             return reader.GetFloat(reader.GetOrdinal(name));
@@ -1482,6 +1500,7 @@ namespace Cflashsoft.Framework.Data
         /// <param name="reader">The IDataReader.</param>
         /// <param name="name">The name of the field.</param>
         /// <returns>The GUID value of the specified field.</returns>
+        /// <remarks>Shorthand for reader.Get...(reader.GetOrdinal(name)</remarks>
         public static Guid GetGuid(this IDataReader reader, string name)
         {
             return reader.GetGuid(reader.GetOrdinal(name));
@@ -1493,6 +1512,7 @@ namespace Cflashsoft.Framework.Data
         /// <param name="reader">The IDataReader.</param>
         /// <param name="name">The name of the field.</param>
         /// <returns>The 16-bit signed integer value of the specified field.</returns>
+        /// <remarks>Shorthand for reader.Get...(reader.GetOrdinal(name)</remarks>
         public static short GetInt16(this IDataReader reader, string name)
         {
             return reader.GetInt16(reader.GetOrdinal(name));
@@ -1504,6 +1524,7 @@ namespace Cflashsoft.Framework.Data
         /// <param name="reader">The IDataReader.</param>
         /// <param name="name">The name of the field.</param>
         /// <returns>The 32-bit signed integer value of the specified field.</returns>
+        /// <remarks>Shorthand for reader.Get...(reader.GetOrdinal(name)</remarks>
         public static int GetInt32(this IDataReader reader, string name)
         {
             return reader.GetInt32(reader.GetOrdinal(name));
@@ -1515,6 +1536,7 @@ namespace Cflashsoft.Framework.Data
         /// <param name="reader">The IDataReader.</param>
         /// <param name="name">The name of the field.</param>
         /// <returns>The 64-bit signed integer value of the specified field.</returns>
+        /// <remarks>Shorthand for reader.Get...(reader.GetOrdinal(name)</remarks>
         public static long GetInt64(this IDataReader reader, string name)
         {
             return reader.GetInt64(reader.GetOrdinal(name));
