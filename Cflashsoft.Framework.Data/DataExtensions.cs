@@ -684,7 +684,7 @@ namespace Cflashsoft.Framework.Data
         /// <returns>A KeyValuePair collection.</returns>
         public static IEnumerable<KeyValuePair<string, Type>> GetReaderColumns(this IDataReader reader)
         {
-            List<KeyValuePair<string, Type>> result = new List<KeyValuePair<string, Type>>();
+            List<KeyValuePair<string, Type>> result = new List<KeyValuePair<string, Type>>(reader.FieldCount);
 
             for (int i = 0; i < reader.FieldCount; i++)
                 result.Add(new KeyValuePair<string, Type>(reader.GetName(i), reader.GetFieldType(i)));
@@ -699,7 +699,7 @@ namespace Cflashsoft.Framework.Data
         /// <returns>A Dictionary of columns and their value.</returns>
         public static Dictionary<string, object> GetReaderRow(this IDataReader reader)
         {
-            Dictionary<string, object> result = new Dictionary<string, object>();
+            Dictionary<string, object> result = new Dictionary<string, object>(reader.FieldCount);
 
             for (int i = 0; i < reader.FieldCount; i++)
                 result.Add(reader.GetName(i), reader.IsDBNull(i) ? null : reader.GetValue(i));
