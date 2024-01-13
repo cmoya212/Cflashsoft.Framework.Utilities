@@ -43,3 +43,8 @@ cd Cflashsoft.Framework.Logging
 nuget pack -prop Configuration=Release
 
 cd ..
+
+cd Cflashsoft.Framework.S3
+nuget pack -prop Configuration=Release
+
+cd ..
