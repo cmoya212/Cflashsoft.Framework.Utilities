@@ -66,4 +66,5 @@ var apiResult2 = await httpClient.ApiAsJTokenAsync(HttpVerb.Get, "http://www.som
 - **[Cflashsoft.Framework.Optimization](https://www.nuget.org/packages/Cflashsoft.Framework.Optimization/)** (.NET Standard 2.0)
 - **[Cflashsoft.Framework.Security](https://www.nuget.org/packages/Cflashsoft.Framework.Security/)** (.NET Framework 4.6.1)
 - **[Cflashsoft.Framework.SecurityCore](https://www.nuget.org/packages/Cflashsoft.Framework.SecurityCore/)** (.NET Core 2.1)
+- **[Cflashsoft.Framework.S3](https://www.nuget.org/packages/Cflashsoft.Framework.S3/)** (.NET Standard 2.0)
 
