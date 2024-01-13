@@ -50,7 +50,22 @@ namespace Cflashsoft.Framework.Data
         /// <returns>An IDataReader object.</returns>
         public static IDataReader ExecuteQuery(this IDbConnection cn, string commandText, CommandType commandType, CommandBehavior behavior, params (string ParameterName, object Value)[] parameters)
         {
-            using (var cmd = CreateCommand(cn, commandText, commandType, parameters))
+            return ExecuteQuery(cn, commandText, commandType, behavior, (IDbTransaction)null, parameters);
+        }
+
+        /// <summary>
+        /// Executes the CommandText against the Connection and builds an IDataReader.
+        /// </summary>
+        /// <param name="cn">The database connection to execute the query on. The connection will be opened if it is closed.</param>
+        /// <param name="commandText">The text command to run against the data source.</param>
+        /// <param name="commandType">Indicates or specifies how the CommandText property is interpreted.</param>
+        /// <param name="behavior">One of the CommandBehavior values.</param>
+        /// <param name="parameters">The parameters of the SQL statement or stored procedure.</param>
+        /// <param name="trx">The transaction to use for the command.</param>
+        /// <returns>An IDataReader object.</returns>
+        public static IDataReader ExecuteQuery(this IDbConnection cn, string commandText, CommandType commandType, CommandBehavior behavior, IDbTransaction trx, params (string ParameterName, object Value)[] parameters)
+        {
+            using (var cmd = CreateCommand(cn, commandText, commandType, trx, parameters))
             {
                 OpenIfClosed(cn);
                 return cmd.ExecuteReader(behavior);
@@ -65,10 +80,11 @@ namespace Cflashsoft.Framework.Data
         /// <param name="commandType">Indicates or specifies how the CommandText property is interpreted.</param>
         /// <param name="behavior">One of the CommandBehavior values.</param>
         /// <param name="parameters">The parameters of the SQL statement or stored procedure.</param>
+        /// <param name="trx">The transaction to use for the command.</param>
         /// <returns>An IDataReader object.</returns>
-        public static IDataReader ExecuteQuery(this IDbConnection cn, string commandText, CommandType commandType, CommandBehavior behavior, IEnumerable<IDbDataParameter> parameters)
+        public static IDataReader ExecuteQuery(this IDbConnection cn, string commandText, CommandType commandType, CommandBehavior behavior, IDbTransaction trx, IEnumerable<IDbDataParameter> parameters)
         {
-            using (var cmd = CreateCommand(cn, commandText, commandType, parameters))
+            using (var cmd = CreateCommand(cn, commandText, commandType, trx, parameters))
             {
                 OpenIfClosed(cn);
                 return cmd.ExecuteReader(behavior);
@@ -109,9 +125,24 @@ namespace Cflashsoft.Framework.Data
         /// <param name="behavior">One of the CommandBehavior values.</param>
         /// <param name="parameters">The parameters of the SQL statement or stored procedure.</param>
         /// <returns>An IDataReader object.</returns>
-        public static async Task<DbDataReader> ExecuteQueryAsync(this DbConnection cn, string commandText, CommandType commandType, CommandBehavior behavior, params (string ParameterName, object Value)[] parameters)
+        public static Task<DbDataReader> ExecuteQueryAsync(this DbConnection cn, string commandText, CommandType commandType, CommandBehavior behavior, params (string ParameterName, object Value)[] parameters)
         {
-            using (var cmd = CreateCommand(cn, commandText, commandType, parameters))
+            return ExecuteQueryAsync(cn, commandText, commandType, behavior, (DbTransaction)null, parameters);
+        }
+
+        /// <summary>
+        /// Executes the CommandText against the Connection and builds an IDataReader.
+        /// </summary>
+        /// <param name="cn">The database connection to execute the query on. The connection will be opened if it is closed.</param>
+        /// <param name="commandText">The text command to run against the data source.</param>
+        /// <param name="commandType">Indicates or specifies how the CommandText property is interpreted.</param>
+        /// <param name="behavior">One of the CommandBehavior values.</param>
+        /// <param name="parameters">The parameters of the SQL statement or stored procedure.</param>
+        /// <param name="trx">The transaction to use for the command.</param>
+        /// <returns>An IDataReader object.</returns>
+        public static async Task<DbDataReader> ExecuteQueryAsync(this DbConnection cn, string commandText, CommandType commandType, CommandBehavior behavior, DbTransaction trx, params (string ParameterName, object Value)[] parameters)
+        {
+            using (var cmd = CreateCommand(cn, commandText, commandType, trx, parameters))
             {
                 await OpenIfClosedAsync(cn);
                 return await cmd.ExecuteReaderAsync(behavior);
@@ -126,10 +157,11 @@ namespace Cflashsoft.Framework.Data
         /// <param name="commandType">Indicates or specifies how the CommandText property is interpreted.</param>
         /// <param name="behavior">One of the CommandBehavior values.</param>
         /// <param name="parameters">The parameters of the SQL statement or stored procedure.</param>
+        /// <param name="trx">The transaction to use for the command.</param>
         /// <returns>An IDataReader object.</returns>
-        public static async Task<DbDataReader> ExecuteQueryAsync(this DbConnection cn, string commandText, CommandType commandType, CommandBehavior behavior, IEnumerable<IDbDataParameter> parameters)
+        public static async Task<DbDataReader> ExecuteQueryAsync(this DbConnection cn, string commandText, CommandType commandType, CommandBehavior behavior, DbTransaction trx, IEnumerable<IDbDataParameter> parameters)
         {
-            using (var cmd = CreateCommand(cn, commandText, commandType, parameters))
+            using (var cmd = CreateCommand(cn, commandText, commandType, trx, parameters))
             {
                 await OpenIfClosedAsync(cn);
                 return await cmd.ExecuteReaderAsync(behavior);
@@ -137,55 +169,67 @@ namespace Cflashsoft.Framework.Data
         }
 
         /// <summary>
-        /// Executes the CommandText against the Connection and builds an IDataReader and provides a way for the DataReader to handle rows that contain columns with large binary values.
+        /// Executes the CommandText against the Connection and builds an IDataReader to handle rows that contain a large binary column.
         /// </summary>
         /// <param name="cn">The database connection to execute the query on. The connection will be opened if it is closed.</param>
         /// <param name="commandText">The text command to run against the data source.</param>
         /// <param name="commandType">Indicates or specifies how the CommandText property is interpreted.</param>
         /// <param name="parameters">The parameters of the SQL statement or stored procedure.</param>
         /// <returns>An IDataReader object.</returns>
-        public static IDataReader ExecuteSequential(this IDbConnection cn, string commandText, CommandType commandType, params (string ParameterName, object Value)[] parameters)
+        /// <remarks>
+        /// Builds the DataReader with CommandBehavior.SingleResult | CommandBehavior.SingleRow | CommandBehavior.SequentialAccess | CommandBehavior.CloseConnection.
+        /// </remarks>
+        public static IDataReader ExecuteSequentialStream(this IDbConnection cn, string commandText, CommandType commandType = CommandType.Text, params (string ParameterName, object Value)[] parameters)
         {
-            return ExecuteQuery(cn, commandText, commandType, CommandBehavior.SingleResult | CommandBehavior.SingleRow | CommandBehavior.SequentialAccess, parameters);
+            return ExecuteQuery(cn, commandText, commandType, CommandBehavior.SingleResult | CommandBehavior.SingleRow | CommandBehavior.SequentialAccess | CommandBehavior.CloseConnection, (IDbTransaction)null, parameters);
         }
 
         /// <summary>
-        /// Executes the CommandText against the Connection and builds an IDataReader and provides a way for the DataReader to handle rows that contain columns with large binary values.
+        /// Executes the CommandText against the Connection and builds an IDataReader to handle rows that contain a large binary column.
         /// </summary>
         /// <param name="cn">The database connection to execute the query on. The connection will be opened if it is closed.</param>
         /// <param name="commandText">The text command to run against the data source.</param>
         /// <param name="commandType">Indicates or specifies how the CommandText property is interpreted.</param>
         /// <param name="parameters">The parameters of the SQL statement or stored procedure.</param>
         /// <returns>An IDataReader object.</returns>
-        public static IDataReader ExecuteSequential(this IDbConnection cn, string commandText, CommandType commandType, IEnumerable<IDbDataParameter> parameters)
+        /// <remarks>
+        /// Builds the DataReader with CommandBehavior.SingleResult | CommandBehavior.SingleRow | CommandBehavior.SequentialAccess | CommandBehavior.CloseConnection.
+        /// </remarks>
+        public static IDataReader ExecuteSequentialStream(this IDbConnection cn, string commandText, CommandType commandType = CommandType.Text, IEnumerable<IDbDataParameter> parameters = null)
         {
-            return ExecuteQuery(cn, commandText, commandType, CommandBehavior.SingleResult | CommandBehavior.SingleRow | CommandBehavior.SequentialAccess, parameters);
+            return ExecuteQuery(cn, commandText, commandType, CommandBehavior.SingleResult | CommandBehavior.SingleRow | CommandBehavior.SequentialAccess | CommandBehavior.CloseConnection, (IDbTransaction)null, parameters);
         }
 
         /// <summary>
-        /// Executes the CommandText against the Connection and builds an IDataReader and provides a way for the DataReader to handle rows that contain columns with large binary values.
+        /// Executes the CommandText against the Connection and builds an IDataReader to handle rows that contain a large binary column.
         /// </summary>
         /// <param name="cn">The database connection to execute the query on. The connection will be opened if it is closed.</param>
         /// <param name="commandText">The text command to run against the data source.</param>
         /// <param name="commandType">Indicates or specifies how the CommandText property is interpreted.</param>
         /// <param name="parameters">The parameters of the SQL statement or stored procedure.</param>
         /// <returns>An IDataReader object.</returns>
-        public static Task<DbDataReader> ExecuteSequentialAsync(this DbConnection cn, string commandText, CommandType commandType, params (string ParameterName, object Value)[] parameters)
+        /// <remarks>
+        /// Builds the DataReader with CommandBehavior.SingleResult | CommandBehavior.SingleRow | CommandBehavior.SequentialAccess | CommandBehavior.CloseConnection.
+        /// </remarks>
+        public static Task<DbDataReader> ExecuteSequentialStreamAsync(this DbConnection cn, string commandText, CommandType commandType = CommandType.Text, params (string ParameterName, object Value)[] parameters)
         {
-            return ExecuteQueryAsync(cn, commandText, commandType, CommandBehavior.SingleResult | CommandBehavior.SingleRow | CommandBehavior.SequentialAccess, parameters);
+            return ExecuteQueryAsync(cn, commandText, commandType, CommandBehavior.SingleResult | CommandBehavior.SingleRow | CommandBehavior.SequentialAccess | CommandBehavior.CloseConnection, (DbTransaction)null, parameters);
         }
 
         /// <summary>
-        /// Executes the CommandText against the Connection and builds an IDataReader and provides a way for the DataReader to handle rows that contain columns with large binary values.
+        /// Executes the CommandText against the Connection and builds an IDataReader to handle rows that contain a large binary column.
         /// </summary>
         /// <param name="cn">The database connection to execute the query on. The connection will be opened if it is closed.</param>
         /// <param name="commandText">The text command to run against the data source.</param>
         /// <param name="commandType">Indicates or specifies how the CommandText property is interpreted.</param>
         /// <param name="parameters">The parameters of the SQL statement or stored procedure.</param>
         /// <returns>An IDataReader object.</returns>
-        public static Task<DbDataReader> ExecuteSequentialAsync(this DbConnection cn, string commandText, CommandType commandType, IEnumerable<IDbDataParameter> parameters)
+        /// <remarks>
+        /// Builds the DataReader with CommandBehavior.SingleResult | CommandBehavior.SingleRow | CommandBehavior.SequentialAccess | CommandBehavior.CloseConnection.
+        /// </remarks>
+        public static Task<DbDataReader> ExecuteSequentialStreamAsync(this DbConnection cn, string commandText, CommandType commandType = CommandType.Text, IEnumerable<IDbDataParameter> parameters = null)
         {
-            return ExecuteQueryAsync(cn, commandText, commandType, CommandBehavior.SingleResult | CommandBehavior.SingleRow | CommandBehavior.SequentialAccess, parameters);
+            return ExecuteQueryAsync(cn, commandText, commandType, CommandBehavior.SingleResult | CommandBehavior.SingleRow | CommandBehavior.SequentialAccess | CommandBehavior.CloseConnection, (DbTransaction)null, parameters);
         }
 
         /// <summary>
@@ -210,7 +254,21 @@ namespace Cflashsoft.Framework.Data
         /// <returns>The number of rows affected.</returns>
         public static int ExecuteNonQuery(this IDbConnection cn, string commandText, CommandType commandType, params (string ParameterName, object Value)[] parameters)
         {
-            using (var cmd = CreateCommand(cn, commandText, commandType, parameters))
+            return ExecuteNonQuery(cn, commandText, commandType, (IDbTransaction)null, parameters);
+        }
+
+        /// <summary>
+        /// Executes an SQL statement against the Connection object of a .NET data provider, and returns the number of rows affected.
+        /// </summary>
+        /// <param name="cn">The database connection to execute the query on. The connection will be opened if it is closed.</param>
+        /// <param name="commandText">The text command to run against the data source.</param>
+        /// <param name="commandType">Indicates or specifies how the CommandText property is interpreted.</param>
+        /// <param name="parameters">The parameters of the SQL statement or stored procedure.</param>
+        /// <param name="trx">The transaction to use for the command.</param>
+        /// <returns>The number of rows affected.</returns>
+        public static int ExecuteNonQuery(this IDbConnection cn, string commandText, CommandType commandType, IDbTransaction trx, params (string ParameterName, object Value)[] parameters)
+        {
+            using (var cmd = CreateCommand(cn, commandText, commandType, trx, parameters))
             {
                 OpenIfClosed(cn);
                 return cmd.ExecuteNonQuery();
@@ -224,10 +282,11 @@ namespace Cflashsoft.Framework.Data
         /// <param name="commandText">The text command to run against the data source.</param>
         /// <param name="commandType">Indicates or specifies how the CommandText property is interpreted.</param>
         /// <param name="parameters">The parameters of the SQL statement or stored procedure.</param>
+        /// <param name="trx">The transaction to use for the command.</param>
         /// <returns>The number of rows affected.</returns>
-        public static int ExecuteNonQuery(this IDbConnection cn, string commandText, CommandType commandType, IEnumerable<IDbDataParameter> parameters)
+        public static int ExecuteNonQuery(this IDbConnection cn, string commandText, CommandType commandType, DbTransaction trx, IEnumerable<IDbDataParameter> parameters)
         {
-            using (var cmd = CreateCommand(cn, commandText, commandType, parameters))
+            using (var cmd = CreateCommand(cn, commandText, commandType, trx, parameters))
             {
                 OpenIfClosed(cn);
                 return cmd.ExecuteNonQuery();
@@ -243,7 +302,7 @@ namespace Cflashsoft.Framework.Data
         /// <returns>The number of rows affected.</returns>
         public static Task<int> ExecuteNonQueryAsync(this DbConnection cn, string commandText, params (string ParameterName, object Value)[] parameters)
         {
-            return ExecuteNonQueryAsync(cn, commandText, CommandType.Text, parameters);
+            return ExecuteNonQueryAsync(cn, commandText, CommandType.Text, (DbTransaction)null, parameters);
         }
 
         /// <summary>
@@ -254,9 +313,23 @@ namespace Cflashsoft.Framework.Data
         /// <param name="commandType">Indicates or specifies how the CommandText property is interpreted.</param>
         /// <param name="parameters">The parameters of the SQL statement or stored procedure.</param>
         /// <returns>The number of rows affected.</returns>
-        public static async Task<int> ExecuteNonQueryAsync(this DbConnection cn, string commandText, CommandType commandType, params (string ParameterName, object Value)[] parameters)
+        public static Task<int> ExecuteNonQueryAsync(this DbConnection cn, string commandText, CommandType commandType, params (string ParameterName, object Value)[] parameters)
         {
-            using (var cmd = CreateCommand(cn, commandText, commandType, parameters))
+            return ExecuteNonQueryAsync(cn, commandText, commandType, (DbTransaction)null, parameters);
+        }
+
+        /// <summary>
+        /// Executes an SQL statement against the Connection object of a .NET data provider, and returns the number of rows affected.
+        /// </summary>
+        /// <param name="cn">The database connection to execute the query on. The connection will be opened if it is closed.</param>
+        /// <param name="commandText">The text command to run against the data source.</param>
+        /// <param name="commandType">Indicates or specifies how the CommandText property is interpreted.</param>
+        /// <param name="parameters">The parameters of the SQL statement or stored procedure.</param>
+        /// <param name="trx">The transaction to use for the command.</param>
+        /// <returns>The number of rows affected.</returns>
+        public static async Task<int> ExecuteNonQueryAsync(this DbConnection cn, string commandText, CommandType commandType, DbTransaction trx, params (string ParameterName, object Value)[] parameters)
+        {
+            using (var cmd = CreateCommand(cn, commandText, commandType, trx, parameters))
             {
                 await OpenIfClosedAsync(cn);
                 return await cmd.ExecuteNonQueryAsync();
@@ -270,10 +343,11 @@ namespace Cflashsoft.Framework.Data
         /// <param name="commandText">The text command to run against the data source.</param>
         /// <param name="commandType">Indicates or specifies how the CommandText property is interpreted.</param>
         /// <param name="parameters">The parameters of the SQL statement or stored procedure.</param>
+        /// <param name="trx">The transaction to use for the command.</param>
         /// <returns>The number of rows affected.</returns>
-        public static async Task<int> ExecuteNonQueryAsync(this DbConnection cn, string commandText, CommandType commandType, IEnumerable<IDbDataParameter> parameters)
+        public static async Task<int> ExecuteNonQueryAsync(this DbConnection cn, string commandText, CommandType commandType, DbTransaction trx, IEnumerable<IDbDataParameter> parameters)
         {
-            using (var cmd = CreateCommand(cn, commandText, commandType, parameters))
+            using (var cmd = CreateCommand(cn, commandText, commandType, trx, parameters))
             {
                 await OpenIfClosedAsync(cn);
                 return await cmd.ExecuteNonQueryAsync();
@@ -289,7 +363,7 @@ namespace Cflashsoft.Framework.Data
         /// <returns>The first column of the first row in the resultset.</returns>
         public static object ExecuteScalar(this IDbConnection cn, string commandText, params (string ParameterName, object Value)[] parameters)
         {
-            return ExecuteScalar(cn, commandText, CommandType.Text, parameters);
+            return ExecuteScalar(cn, commandText, CommandType.Text, (IDbTransaction)null, parameters);
         }
 
         /// <summary>
@@ -302,7 +376,21 @@ namespace Cflashsoft.Framework.Data
         /// <returns>The first column of the first row in the resultset.</returns>
         public static object ExecuteScalar(this IDbConnection cn, string commandText, CommandType commandType, params (string ParameterName, object Value)[] parameters)
         {
-            using (var cmd = CreateCommand(cn, commandText, commandType, parameters))
+            return ExecuteScalar(cn, commandText, commandType, (IDbTransaction)null, parameters);
+        }
+
+        /// <summary>
+        /// Executes the query, and returns the first column of the first row in the resultset returned by the query. Extra columns or rows are ignored.
+        /// </summary>
+        /// <param name="cn">The database connection to execute the query on. The connection will be opened if it is closed.</param>
+        /// <param name="commandText">The text command to run against the data source.</param>
+        /// <param name="commandType">Indicates or specifies how the CommandText property is interpreted.</param>
+        /// <param name="parameters">The parameters of the SQL statement or stored procedure.</param>
+        /// <param name="trx">The transaction to use for the command.</param>
+        /// <returns>The first column of the first row in the resultset.</returns>
+        public static object ExecuteScalar(this IDbConnection cn, string commandText, CommandType commandType, IDbTransaction trx, params (string ParameterName, object Value)[] parameters)
+        {
+            using (var cmd = CreateCommand(cn, commandText, commandType, trx, parameters))
             {
                 OpenIfClosed(cn);
 
@@ -322,10 +410,11 @@ namespace Cflashsoft.Framework.Data
         /// <param name="commandText">The text command to run against the data source.</param>
         /// <param name="commandType">Indicates or specifies how the CommandText property is interpreted.</param>
         /// <param name="parameters">The parameters of the SQL statement or stored procedure.</param>
+        /// <param name="trx">The transaction to use for the command.</param>
         /// <returns>The first column of the first row in the resultset.</returns>
-        public static object ExecuteScalar(this IDbConnection cn, string commandText, CommandType commandType, IEnumerable<IDbDataParameter> parameters)
+        public static object ExecuteScalar(this IDbConnection cn, string commandText, CommandType commandType, IDbTransaction trx, IEnumerable<IDbDataParameter> parameters)
         {
-            using (var cmd = CreateCommand(cn, commandText, commandType, parameters))
+            using (var cmd = CreateCommand(cn, commandText, commandType, trx, parameters))
             {
                 OpenIfClosed(cn);
 
@@ -347,7 +436,7 @@ namespace Cflashsoft.Framework.Data
         /// <returns>The first column of the first row in the resultset.</returns>
         public static Task<object> ExecuteScalarAsync(this DbConnection cn, string commandText, params (string ParameterName, object Value)[] parameters)
         {
-            return ExecuteScalarAsync(cn, commandText, CommandType.Text, parameters);
+            return ExecuteScalarAsync(cn, commandText, CommandType.Text, (DbTransaction)null, parameters);
         }
 
         /// <summary>
@@ -358,9 +447,23 @@ namespace Cflashsoft.Framework.Data
         /// <param name="commandType">Indicates or specifies how the CommandText property is interpreted.</param>
         /// <param name="parameters">The parameters of the SQL statement or stored procedure.</param>
         /// <returns>The first column of the first row in the resultset.</returns>
-        public static async Task<object> ExecuteScalarAsync(this DbConnection cn, string commandText, CommandType commandType, params (string ParameterName, object Value)[] parameters)
+        public static Task<object> ExecuteScalarAsync(this DbConnection cn, string commandText, CommandType commandType, params (string ParameterName, object Value)[] parameters)
         {
-            using (var cmd = CreateCommand(cn, commandText, commandType, parameters))
+            return ExecuteScalarAsync(cn, commandText, commandType, (DbTransaction)null, parameters);
+        }
+
+        /// <summary>
+        /// Executes the query, and returns the first column of the first row in the resultset returned by the query. Extra columns or rows are ignored.
+        /// </summary>
+        /// <param name="cn">The database connection to execute the query on. The connection will be opened if it is closed.</param>
+        /// <param name="commandText">The text command to run against the data source.</param>
+        /// <param name="commandType">Indicates or specifies how the CommandText property is interpreted.</param>
+        /// <param name="parameters">The parameters of the SQL statement or stored procedure.</param>
+        /// <param name="trx">The transaction to use for the command.</param>
+        /// <returns>The first column of the first row in the resultset.</returns>
+        public static async Task<object> ExecuteScalarAsync(this DbConnection cn, string commandText, CommandType commandType, DbTransaction trx, params (string ParameterName, object Value)[] parameters)
+        {
+            using (var cmd = CreateCommand(cn, commandText, commandType, trx, parameters))
             {
                 await OpenIfClosedAsync(cn);
 
@@ -380,10 +483,11 @@ namespace Cflashsoft.Framework.Data
         /// <param name="commandText">The text command to run against the data source.</param>
         /// <param name="commandType">Indicates or specifies how the CommandText property is interpreted.</param>
         /// <param name="parameters">The parameters of the SQL statement or stored procedure.</param>
+        /// <param name="trx">The transaction to use for the command.</param>
         /// <returns>The first column of the first row in the resultset.</returns>
-        public static async Task<object> ExecuteScalarAsync(this DbConnection cn, string commandText, CommandType commandType, IEnumerable<IDbDataParameter> parameters)
+        public static async Task<object> ExecuteScalarAsync(this DbConnection cn, string commandText, CommandType commandType, DbTransaction trx, IEnumerable<IDbDataParameter> parameters)
         {
-            using (var cmd = CreateCommand(cn, commandText, commandType, parameters))
+            using (var cmd = CreateCommand(cn, commandText, commandType, trx, parameters))
             {
                 await OpenIfClosedAsync(cn);
 
@@ -462,7 +566,24 @@ namespace Cflashsoft.Framework.Data
         /// <returns>A IDbCommand object.</returns>
         public static IDbCommand CreateCommand(this IDbConnection cn, string commandText, CommandType commandType, params (string ParameterName, object Value)[] parameters)
         {
+            return CreateCommand(cn, commandText, commandType, (IDbTransaction)null, parameters);
+        }
+
+        /// <summary>
+        /// Utility method to create and configure a IDbCommand object in a single call.
+        /// </summary>
+        /// <param name="cn">The connection to be associated with the command.</param>
+        /// <param name="commandText">The text command to run against the data source.</param>
+        /// <param name="commandType">Indicates or specifies how the CommandText property is interpreted.</param>
+        /// <param name="parameters">The parameters of the SQL statement or stored procedure.</param>
+        /// <param name="trx">The transaction to use for the command.</param>
+        /// <returns>A IDbCommand object.</returns>
+        public static IDbCommand CreateCommand(this IDbConnection cn, string commandText, CommandType commandType, IDbTransaction trx, params (string ParameterName, object Value)[] parameters)
+        {
             IDbCommand cmd = cn.CreateCommand();
+
+            if (trx != null)
+                cmd.Transaction = trx;
 
             ConfigureCommand(cmd, commandText, commandType, parameters);
 
@@ -479,7 +600,24 @@ namespace Cflashsoft.Framework.Data
         /// <returns>A IDbCommand object.</returns>
         public static DbCommand CreateCommand(this DbConnection cn, string commandText, CommandType commandType, params (string ParameterName, object Value)[] parameters)
         {
+            return CreateCommand(cn, commandText, commandType, (DbTransaction)null, parameters);
+        }
+
+        /// <summary>
+        /// Utility method to create and configure a IDbCommand object in a single call.
+        /// </summary>
+        /// <param name="cn">The connection to be associated with the command.</param>
+        /// <param name="commandText">The text command to run against the data source.</param>
+        /// <param name="commandType">Indicates or specifies how the CommandText property is interpreted.</param>
+        /// <param name="parameters">The parameters of the SQL statement or stored procedure.</param>
+        /// <param name="trx">The transaction to use for the command.</param>
+        /// <returns>A IDbCommand object.</returns>
+        public static DbCommand CreateCommand(this DbConnection cn, string commandText, CommandType commandType, DbTransaction trx, params (string ParameterName, object Value)[] parameters)
+        {
             DbCommand cmd = cn.CreateCommand();
+
+            if (trx != null)
+                cmd.Transaction = trx;
 
             ConfigureCommand(cmd, commandText, commandType, parameters);
 
@@ -496,7 +634,24 @@ namespace Cflashsoft.Framework.Data
         /// <returns>A IDbCommand object.</returns>
         public static IDbCommand CreateCommand(this IDbConnection cn, string commandText, CommandType commandType, IEnumerable<IDbDataParameter> parameters)
         {
+            return CreateCommand(cn, commandText, commandType, (IDbTransaction)null, parameters);
+        }
+
+        /// <summary>
+        /// Utility method to create and configure a IDbCommand object in a single call.
+        /// </summary>
+        /// <param name="cn">The connection to be associated with the command.</param>
+        /// <param name="commandText">The text command to run against the data source.</param>
+        /// <param name="commandType">Indicates or specifies how the CommandText property is interpreted.</param>
+        /// <param name="parameters">The parameters of the SQL statement or stored procedure.</param>
+        /// <param name="trx">The transaction to use for the command.</param>
+        /// <returns>A IDbCommand object.</returns>
+        public static IDbCommand CreateCommand(this IDbConnection cn, string commandText, CommandType commandType, IDbTransaction trx, IEnumerable<IDbDataParameter> parameters)
+        {
             IDbCommand cmd = cn.CreateCommand();
+
+            if (trx != null )
+                cmd.Transaction = trx;
 
             ConfigureCommand(cmd, commandText, commandType, parameters);
 
@@ -513,7 +668,24 @@ namespace Cflashsoft.Framework.Data
         /// <returns>A IDbCommand object.</returns>
         public static DbCommand CreateCommand(this DbConnection cn, string commandText, CommandType commandType, IEnumerable<IDbDataParameter> parameters)
         {
+            return CreateCommand(cn, commandText, commandType, (DbTransaction)null, parameters);
+        }
+
+        /// <summary>
+        /// Utility method to create and configure a IDbCommand object in a single call.
+        /// </summary>
+        /// <param name="cn">The connection to be associated with the command.</param>
+        /// <param name="commandText">The text command to run against the data source.</param>
+        /// <param name="commandType">Indicates or specifies how the CommandText property is interpreted.</param>
+        /// <param name="parameters">The parameters of the SQL statement or stored procedure.</param>
+        /// <param name="trx">The transaction to use for the command.</param>
+        /// <returns>A IDbCommand object.</returns>
+        public static DbCommand CreateCommand(this DbConnection cn, string commandText, CommandType commandType, DbTransaction trx, IEnumerable<IDbDataParameter> parameters)
+        {
             DbCommand cmd = cn.CreateCommand();
+
+            if (trx != null )
+                cmd.Transaction = trx;
 
             ConfigureCommand(cmd, commandText, commandType, parameters);
 
@@ -936,6 +1108,50 @@ namespace Cflashsoft.Framework.Data
         /// <typeparam name="T"></typeparam>
         /// <param name="reader">The IDataReader.</param>
         /// <param name="selector">Function to convert the data.</param>
+        /// <returns>A custom concrete or anonymous object.</returns>
+        /// <remarks>
+        /// Meant to be used with ExecuteSequentialStream(). If the DataReader contains no data, the reader (and connection) are closed, otherwise they are left open to be consumed by the selector.
+        /// </remarks>
+        /// <example>
+        /// <code>
+        /// FirstOrDefault((reader) => new
+        /// {
+        ///    Field1 = reader.GetNullableString(0), //by key works too
+        ///    Field2 = reader.GetNullableInt32(1), //by key works too
+        /// });
+        /// </code>
+        ///	See also NullableFirstOrDefault&lt;T&gt;
+        /// </example>
+        public static T FirstOrDefaultForStream<T>(this IDataReader reader, Func<IDataReader, T> selector)
+        {
+            bool hasData = false;
+
+            try
+            {
+                if (reader.Read())
+                {
+                    var result = selector(reader);
+
+                    hasData = true;
+
+                    return result;
+                }
+            }
+            finally
+            {
+                if (!hasData)
+                    reader.Dispose();
+            }
+
+            return default(T);
+        }
+
+        /// <summary>
+        /// Enumerates an IDataReader and returns the first row as a custom concrete or anonymous object.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="reader">The IDataReader.</param>
+        /// <param name="selector">Function to convert the data.</param>
         /// <param name="closeReader">Indicates whether to close the connection when the enumeration completes.</param>
         /// <returns>A nullable custom concrete or anonymous object.</returns>
         /// <remarks>It is recommended to use the CommandBehavior.SingleRow option in the Execute portion.</remarks>
@@ -1018,6 +1234,50 @@ namespace Cflashsoft.Framework.Data
             finally
             {
                 if (closeReader)
+                    reader.Dispose();
+            }
+
+            return default(T);
+        }
+
+        /// <summary>
+        /// Enumerates an IDataReader and returns the first row as a custom concrete or anonymous object.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="reader">The IDataReader.</param>
+        /// <param name="selector">Function to convert the data.</param>
+        /// <returns>A custom concrete or anonymous object.</returns>
+        /// <remarks>
+        /// Meant to be used with ExecuteSequentialStream(). If the DataReader contains no data, the reader (and connection) are closed, otherwise they are left open to be consumed by the selector.
+        /// </remarks>
+        /// <example>
+        /// <code>
+        /// FirstOrDefaultAsync((reader) => new
+        /// {
+        ///    Field1 = reader.GetNullableString(0), //by key works too
+        ///    Field2 = reader.GetNullableInt32(1), //by key works too
+        /// });
+        /// </code>
+        /// See also NullableFirstOrDefaultAsync&lt;T&gt;
+        /// </example>
+        public static async Task<T> FirstOrDefaultForStreamAsync<T>(this DbDataReader reader, Func<IDataReader, T> selector)
+        {
+            bool hasData = false;
+
+            try
+            {
+                if (await reader.ReadAsync())
+                {
+                    var result = selector(reader);
+
+                    hasData = true;
+
+                    return result;
+                }
+            }
+            finally
+            {
+                if (!hasData)
                     reader.Dispose();
             }
 
@@ -1540,6 +1800,18 @@ namespace Cflashsoft.Framework.Data
         public static long GetInt64(this IDataReader reader, string name)
         {
             return reader.GetInt64(reader.GetOrdinal(name));
+        }
+
+        /// <summary>
+        /// Returns a stream that will close the DataReader when it is closed.
+        /// </summary>
+        /// <param name="reader">The IDataReader.</param>
+        /// <param name="i">The index of the field to find.</param>
+        /// <returns>A stream to the contents of the field.</returns>
+        /// <remarks>Intended for use with large binary columns accessed via ExecuteSequentialStream or CommandBehavior CommandBehavior.SingleResult | CommandBehavior.SingleRow | CommandBehavior.SequentialAccess | CommandBehavior.CloseConnection.</remarks>
+        public static DataReaderBinaryStream GetDataReaderBinaryStream(this IDataReader reader, int i)
+        {
+            return new DataReaderBinaryStream(reader, i);
         }
     }
 }

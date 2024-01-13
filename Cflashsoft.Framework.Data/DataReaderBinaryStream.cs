@@ -1,12 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
-//using System.Data.SqlClient;
+using System.Data.Common;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
-using static System.Net.WebRequestMethods;
 
 namespace Cflashsoft.Framework.Data
 {
@@ -19,7 +19,11 @@ namespace Cflashsoft.Framework.Data
     /// </remarks>
     public class DataReaderBinaryStream : Stream
     {
+        private bool _disposed = false;
+
         private IDataReader _reader = null;
+        private DbDataReader _dbReader = null;
+        private Stream _stream = null;
         private int _columnIndex = 0;
         private long _position = 0;
         private string _mimeType = null;
@@ -97,7 +101,7 @@ namespace Cflashsoft.Framework.Data
         }
 
         /// <summary>
-        /// Inititializes a new instance of the DataContext class.
+        /// Inititializes a new instance of the DataReaderBinaryStream class.
         /// </summary>
         /// <param name="reader">The DataReader that contains the data.</param>
         /// <param name="binaryColumnIndex">The column position that contains the byte data.</param>
@@ -108,7 +112,7 @@ namespace Cflashsoft.Framework.Data
         }
 
         /// <summary>
-        /// Inititializes a new instance of the DataContext class.
+        /// Inititializes a new instance of the DataReaderBinaryStream class.
         /// </summary>
         /// <param name="reader">The DataReader that contains the data.</param>
         /// <param name="binaryColumnIndex">The column position that contains the byte data.</param>
@@ -116,6 +120,7 @@ namespace Cflashsoft.Framework.Data
         public DataReaderBinaryStream(IDataReader reader, int binaryColumnIndex, string mimeType)
         {
             _reader = reader;
+            _dbReader = reader as DbDataReader;
             _columnIndex = binaryColumnIndex;
             _mimeType = mimeType;
         }
@@ -126,6 +131,14 @@ namespace Cflashsoft.Framework.Data
         public override void Flush()
         {
             //do nothing 
+        }
+
+        /// <summary>
+        /// When overridden in a derived class, clears all buffers for this stream and causes any buffered data to be written to the underlying device.
+        /// </summary>
+        public override Task FlushAsync(CancellationToken cancellationToken)
+        {
+            return Task.CompletedTask;
         }
 
         /// <summary>
@@ -171,6 +184,35 @@ namespace Cflashsoft.Framework.Data
         }
 
         /// <summary>
+        /// When overridden in a derived class, reads a sequence of bytes from the current stream and advances the position within the stream by the number of bytes read.
+        /// </summary>
+        /// <param name="buffer">An array of bytes. When this method returns, the buffer contains the specified byte array with the values between <paramref name="offset" /> and (<paramref name="offset" /> + <paramref name="count" /> - 1) replaced by the bytes read from the current source.</param>
+        /// <param name="offset">The zero-based byte offset in <paramref name="buffer" /> at which to begin storing the data read from the current stream.</param>
+        /// <param name="count">The maximum number of bytes to be read from the current stream.</param>
+        /// <param name="cancellationToken">The token to monitor for cancellation requests. The default value is None.</param>
+        /// <returns>
+        /// The total number of bytes read into the buffer. This can be less than the number of bytes requested if that many bytes are not currently available, or zero (0) if the end of the stream has been reached.
+        /// </returns>
+        /// <exception cref="InvalidOperationException">The underlying DataReader does not support this function.</exception>
+        public override async Task<int> ReadAsync(byte[] buffer, int offset, int count, CancellationToken cancellationToken)
+        {
+            if (_dbReader != null)
+            {
+                if (_stream == null)
+                    _stream = _dbReader.GetStream(_columnIndex);
+
+                int bytesRead = await _stream.ReadAsync(buffer, offset, count, cancellationToken);
+
+                _position += bytesRead;
+
+                return bytesRead;
+            }
+            else
+            {
+                return Read(buffer, offset, count);
+            }
+        }
+        /// <summary>
         /// Not supported. When overridden in a derived class, writes a sequence of bytes to the current stream and advances the current position within this stream by the number of bytes written.
         /// </summary>
         /// <param name="buffer">An array of bytes. This method copies <paramref name="count" /> bytes from <paramref name="buffer" /> to the current stream.</param>
@@ -188,18 +230,32 @@ namespace Cflashsoft.Framework.Data
         /// <param name="disposing"><see langword="true" /> to release both managed and unmanaged resources; <see langword="false" /> to release only unmanaged resources.</param>
         protected override void Dispose(bool disposing)
         {
-            if (disposing)
+            if (!_disposed)
             {
-                IDataReader reader = _reader;
-
-                if (reader != null)
+                if (disposing)
                 {
-                    reader.Dispose();
-                    _reader = null;
-                }
-            }
+                    Stream stream = _stream;
 
-            base.Dispose(disposing);
+                    if (stream != null)
+                    {
+                        stream.Dispose();
+                        _stream = null;
+                    }
+
+                    IDataReader reader = _reader;
+
+                    if (reader != null)
+                    {
+                        reader.Dispose();
+                        _reader = null;
+                        _dbReader = null;
+                    }
+                }
+
+                base.Dispose(disposing);
+
+                _disposed = true;
+            }
         }
     }
 }
