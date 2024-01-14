@@ -31,58 +31,28 @@ namespace Cflashsoft.Framework.Data
         /// <summary>
         /// Returns the mime type of the file represented by this stream.
         /// </summary>
-        public string MimeType
-        {
-            get
-            {
-                return _mimeType;
-            }
-        }
+        public string MimeType => _mimeType;
 
         /// <summary>
         /// When overridden in a derived class, gets a value indicating whether the current stream supports reading.
         /// </summary>
-        public override bool CanRead
-        {
-            get
-            {
-                return true;
-            }
-        }
+        public override bool CanRead => true;
 
         /// <summary>
         /// When overridden in a derived class, gets a value indicating whether the current stream supports seeking.
         /// </summary>
-        public override bool CanSeek
-        {
-            get
-            {
-                return false;
-            }
-        }
+        public override bool CanSeek => false;
 
         /// <summary>
         /// When overridden in a derived class, gets a value indicating whether the current stream supports writing.
         /// </summary>
-        public override bool CanWrite
-        {
-            get
-            {
-                return false;
-            }
-        }
+        public override bool CanWrite => false;
 
         /// <summary>
         /// When overridden in a derived class, gets the length in bytes of the stream.
         /// </summary>
         /// <exception cref="NotImplementedException"></exception>
-        public override long Length
-        {
-            get
-            {
-                throw new NotImplementedException();
-            }
-        }
+        public override long Length => throw new NotImplementedException();
 
         /// <summary>
         /// When overridden in a derived class, gets or sets the position within the current stream.
@@ -90,14 +60,8 @@ namespace Cflashsoft.Framework.Data
         /// <exception cref="NotImplementedException"></exception>
         public override long Position
         {
-            get
-            {
-                return _position;
-            }
-            set
-            {
-                throw new NotImplementedException();
-            }
+            get => _position;
+            set => throw new NotImplementedException();
         }
 
         /// <summary>
@@ -150,20 +114,14 @@ namespace Cflashsoft.Framework.Data
         /// The new position within the current stream.
         /// </returns>
         /// <exception cref="NotImplementedException"></exception>
-        public override long Seek(long offset, SeekOrigin origin)
-        {
-            throw new NotImplementedException();
-        }
+        public override long Seek(long offset, SeekOrigin origin) => throw new NotImplementedException();
 
         /// <summary>
         /// Not supported. When overridden in a derived class, sets the length of the current stream.
         /// </summary>
         /// <param name="value">The desired length of the current stream in bytes.</param>
         /// <exception cref="NotImplementedException"></exception>
-        public override void SetLength(long value)
-        {
-            throw new NotImplementedException();
-        }
+        public override void SetLength(long value) => throw new NotImplementedException();
 
         /// <summary>
         /// When overridden in a derived class, reads a sequence of bytes from the current stream and advances the position within the stream by the number of bytes read.
@@ -219,10 +177,7 @@ namespace Cflashsoft.Framework.Data
         /// <param name="offset">The zero-based byte offset in <paramref name="buffer" /> at which to begin copying bytes to the current stream.</param>
         /// <param name="count">The number of bytes to be written to the current stream.</param>
         /// <exception cref="NotImplementedException"></exception>
-        public override void Write(byte[] buffer, int offset, int count)
-        {
-            throw new NotImplementedException();
-        }
+        public override void Write(byte[] buffer, int offset, int count) => throw new NotImplementedException();
 
         /// <summary>
         /// Releases the unmanaged resources used by the <see cref="T:System.IO.Stream" /> and optionally releases the managed resources.
