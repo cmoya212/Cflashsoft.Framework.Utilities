@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
+using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
@@ -173,13 +174,28 @@ namespace Cflashsoft.Framework.Data
         /// </summary>
         /// <param name="cn">The database connection to execute the query on. The connection will be opened if it is closed.</param>
         /// <param name="commandText">The text command to run against the data source.</param>
+        /// <param name="parameters">The parameters of the SQL statement or stored procedure.</param>
+        /// <returns>An IDataReader object.</returns>
+        /// <remarks>
+        /// Builds the DataReader with CommandBehavior.SingleResult | CommandBehavior.SingleRow | CommandBehavior.SequentialAccess | CommandBehavior.CloseConnection.
+        /// </remarks>
+        public static IDataReader ExecuteSequentialSingle(this IDbConnection cn, string commandText, params (string ParameterName, object Value)[] parameters)
+        {
+            return ExecuteQuery(cn, commandText, CommandType.Text, CommandBehavior.SingleResult | CommandBehavior.SingleRow | CommandBehavior.SequentialAccess | CommandBehavior.CloseConnection, (IDbTransaction)null, parameters);
+        }
+
+        /// <summary>
+        /// Executes the CommandText against the Connection and builds an IDataReader to handle rows that contain a large binary column.
+        /// </summary>
+        /// <param name="cn">The database connection to execute the query on. The connection will be opened if it is closed.</param>
+        /// <param name="commandText">The text command to run against the data source.</param>
         /// <param name="commandType">Indicates or specifies how the CommandText property is interpreted.</param>
         /// <param name="parameters">The parameters of the SQL statement or stored procedure.</param>
         /// <returns>An IDataReader object.</returns>
         /// <remarks>
         /// Builds the DataReader with CommandBehavior.SingleResult | CommandBehavior.SingleRow | CommandBehavior.SequentialAccess | CommandBehavior.CloseConnection.
         /// </remarks>
-        public static IDataReader ExecuteSequentialStream(this IDbConnection cn, string commandText, CommandType commandType = CommandType.Text, params (string ParameterName, object Value)[] parameters)
+        public static IDataReader ExecuteSequentialSingle(this IDbConnection cn, string commandText, CommandType commandType = CommandType.Text, params (string ParameterName, object Value)[] parameters)
         {
             return ExecuteQuery(cn, commandText, commandType, CommandBehavior.SingleResult | CommandBehavior.SingleRow | CommandBehavior.SequentialAccess | CommandBehavior.CloseConnection, (IDbTransaction)null, parameters);
         }
@@ -195,9 +211,24 @@ namespace Cflashsoft.Framework.Data
         /// <remarks>
         /// Builds the DataReader with CommandBehavior.SingleResult | CommandBehavior.SingleRow | CommandBehavior.SequentialAccess | CommandBehavior.CloseConnection.
         /// </remarks>
-        public static IDataReader ExecuteSequentialStream(this IDbConnection cn, string commandText, CommandType commandType = CommandType.Text, IEnumerable<IDbDataParameter> parameters = null)
+        public static IDataReader ExecuteSequentialSingle(this IDbConnection cn, string commandText, CommandType commandType = CommandType.Text, IEnumerable<IDbDataParameter> parameters = null)
         {
             return ExecuteQuery(cn, commandText, commandType, CommandBehavior.SingleResult | CommandBehavior.SingleRow | CommandBehavior.SequentialAccess | CommandBehavior.CloseConnection, (IDbTransaction)null, parameters);
+        }
+
+        /// <summary>
+        /// Executes the CommandText against the Connection and builds an IDataReader to handle rows that contain a large binary column.
+        /// </summary>
+        /// <param name="cn">The database connection to execute the query on. The connection will be opened if it is closed.</param>
+        /// <param name="commandText">The text command to run against the data source.</param>
+        /// <param name="parameters">The parameters of the SQL statement or stored procedure.</param>
+        /// <returns>An IDataReader object.</returns>
+        /// <remarks>
+        /// Builds the DataReader with CommandBehavior.SingleResult | CommandBehavior.SingleRow | CommandBehavior.SequentialAccess | CommandBehavior.CloseConnection.
+        /// </remarks>
+        public static Task<DbDataReader> ExecuteSequentialSingleAsync(this DbConnection cn, string commandText, params (string ParameterName, object Value)[] parameters)
+        {
+            return ExecuteQueryAsync(cn, commandText, CommandType.Text, CommandBehavior.SingleResult | CommandBehavior.SingleRow | CommandBehavior.SequentialAccess | CommandBehavior.CloseConnection, (DbTransaction)null, parameters);
         }
 
         /// <summary>
@@ -211,7 +242,7 @@ namespace Cflashsoft.Framework.Data
         /// <remarks>
         /// Builds the DataReader with CommandBehavior.SingleResult | CommandBehavior.SingleRow | CommandBehavior.SequentialAccess | CommandBehavior.CloseConnection.
         /// </remarks>
-        public static Task<DbDataReader> ExecuteSequentialStreamAsync(this DbConnection cn, string commandText, CommandType commandType = CommandType.Text, params (string ParameterName, object Value)[] parameters)
+        public static Task<DbDataReader> ExecuteSequentialSingleAsync(this DbConnection cn, string commandText, CommandType commandType = CommandType.Text, params (string ParameterName, object Value)[] parameters)
         {
             return ExecuteQueryAsync(cn, commandText, commandType, CommandBehavior.SingleResult | CommandBehavior.SingleRow | CommandBehavior.SequentialAccess | CommandBehavior.CloseConnection, (DbTransaction)null, parameters);
         }
@@ -227,7 +258,7 @@ namespace Cflashsoft.Framework.Data
         /// <remarks>
         /// Builds the DataReader with CommandBehavior.SingleResult | CommandBehavior.SingleRow | CommandBehavior.SequentialAccess | CommandBehavior.CloseConnection.
         /// </remarks>
-        public static Task<DbDataReader> ExecuteSequentialStreamAsync(this DbConnection cn, string commandText, CommandType commandType = CommandType.Text, IEnumerable<IDbDataParameter> parameters = null)
+        public static Task<DbDataReader> ExecuteSequentialSingleAsync(this DbConnection cn, string commandText, CommandType commandType = CommandType.Text, IEnumerable<IDbDataParameter> parameters = null)
         {
             return ExecuteQueryAsync(cn, commandText, commandType, CommandBehavior.SingleResult | CommandBehavior.SingleRow | CommandBehavior.SequentialAccess | CommandBehavior.CloseConnection, (DbTransaction)null, parameters);
         }
@@ -1043,6 +1074,48 @@ namespace Cflashsoft.Framework.Data
         }
 
         /// <summary>
+        /// Iterates through a DataReader and performs an action.
+        /// </summary>
+        /// <param name="reader">The IDataReader.</param>
+        /// <param name="action">Action to perform.</param>
+        /// <param name="closeReader">Indicates whether to close the connection when the enumeration completes.</param>
+        public static void ForEachRow(this IDataReader reader, Func<IDataReader, bool> action, bool closeReader = true)
+        {
+            try
+            {
+                while (reader.Read())
+                    if (!action(reader))
+                        return;
+            }
+            finally
+            {
+                if (closeReader)
+                    reader.Dispose();
+            }
+        }
+
+        /// <summary>
+        /// Iterates through a DataReader and performs an action.
+        /// </summary>
+        /// <param name="reader">The DbDataReader.</param>
+        /// <param name="action">Action to perform.</param>
+        /// <param name="closeReader">Indicates whether to close the connection when the enumeration completes.</param>
+        public static async Task ForEachRowAsync(this DbDataReader reader, Func<DbDataReader, Task<bool>> action, bool closeReader = true)
+        {
+            try
+            {
+                while (await reader.ReadAsync())
+                    if (!await action(reader))
+                        return;
+            }
+            finally
+            {
+                if (closeReader)
+                    reader.Dispose();
+            }
+        }
+
+        /// <summary>
         /// Enumerates an IDataReader and returns the first row as a Dictionary of column/value items.
         /// </summary>
         /// <param name="reader">The IDataReader.</param>
@@ -1122,7 +1195,7 @@ namespace Cflashsoft.Framework.Data
         /// </code>
         ///	See also NullableFirstOrDefault&lt;T&gt;
         /// </example>
-        public static T FirstOrDefaultForStream<T>(this IDataReader reader, Func<IDataReader, T> selector)
+        public static T FirstOrDefaultSequentialSingle<T>(this IDataReader reader, Func<IDataReader, T> selector)
         {
             bool hasData = false;
 
@@ -1260,7 +1333,7 @@ namespace Cflashsoft.Framework.Data
         /// </code>
         /// See also NullableFirstOrDefaultAsync&lt;T&gt;
         /// </example>
-        public static async Task<T> FirstOrDefaultForStreamAsync<T>(this DbDataReader reader, Func<IDataReader, T> selector)
+        public static async Task<T> FirstOrDefaultSequentialSingleAsync<T>(this DbDataReader reader, Func<IDataReader, T> selector)
         {
             bool hasData = false;
 
@@ -1527,6 +1600,17 @@ namespace Cflashsoft.Framework.Data
         }
 
         /// <summary>
+        /// Gets a stream to retrieve data from the specified column if IsDBNull is false otherwise returns null.
+        /// </summary>
+        /// <param name="reader">The IDataReader.</param>
+        /// <param name="i">The index of the field to find.</param>
+        /// <returns>A stream.</returns>
+        public static Stream GetNullableStream(this DbDataReader reader, int i)
+        {
+            return reader.IsDBNull(i) ? (Stream)null : reader.GetStream(i);
+        }
+
+        /// <summary>
         /// Gets the string value of the specified field if IsDBNull is false otherwise returns null.
         /// </summary>
         /// <param name="reader">The IDataReader.</param>
@@ -1656,6 +1740,17 @@ namespace Cflashsoft.Framework.Data
         public static long? GetNullableInt64(this IDataReader reader, string name)
         {
             return GetNullableInt64(reader, reader.GetOrdinal(name));
+        }
+
+        /// <summary>
+        /// Gets a stream to retrieve data from the specified column if IsDBNull is false otherwise returns null.
+        /// </summary>
+        /// <param name="reader">The IDataReader.</param>
+        /// <param name="name">The name of the field.</param>
+        /// <returns>A stream.</returns>
+        public static Stream GetNullableStream(this DbDataReader reader, string name)
+        {
+            return GetNullableStream(reader, reader.GetOrdinal(name));
         }
 
         /// <summary>
@@ -1800,6 +1895,18 @@ namespace Cflashsoft.Framework.Data
         public static long GetInt64(this IDataReader reader, string name)
         {
             return reader.GetInt64(reader.GetOrdinal(name));
+        }
+
+        /// <summary>
+        /// Gets a stream to retrieve data from the specified column.
+        /// </summary>
+        /// <param name="reader">The IDataReader.</param>
+        /// <param name="name">The name of the field.</param>
+        /// <returns>TA stream.</returns>
+        /// <remarks>Shorthand for reader.Get...(reader.GetOrdinal(name)</remarks>
+        public static Stream GetStream(this DbDataReader reader, string name)
+        {
+            return reader.GetStream(reader.GetOrdinal(name));
         }
 
         /// <summary>
