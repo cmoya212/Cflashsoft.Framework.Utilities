@@ -14,12 +14,12 @@ namespace Cflashsoft.Framework.Optimization
     public static class IMemoryCacheExtensions
     {
         private static NamedSemaphoreSlimLockFactory _namedLocks = null;
-        private static PostEvictionDelegate _removedCallback = null;
+        private static PostEvictionDelegate _evictionCallback = null;
 
         static IMemoryCacheExtensions()
         {
             _namedLocks = new NamedSemaphoreSlimLockFactory();
-            _removedCallback = new PostEvictionDelegate(OnRemove);
+            _evictionCallback = new PostEvictionDelegate(OnCacheItemEviction);
         }
 
         /// <summary>
@@ -27,61 +27,7 @@ namespace Cflashsoft.Framework.Optimization
         /// </summary>
         /// <param name="cache">The MemoryCache instance.</param>
         /// <param name="key">A unique identifier for the cache entry to get.</param>
-        /// <param name="getValue">Function to retrieve the value on failure such as from a database.</param>
-        /// <param name="expirationSeconds">Seconds in the future that the cache item will expire.</param>
-        /// <returns>An object retrieved or set in the cache.</returns>
-        public static object SyncedGetOrSet(this IMemoryCache cache, string key, Func<object> getValue, int expirationSeconds = 0)
-        {
-            if (expirationSeconds >= 0)
-                return SyncedGetOrSet(cache, key, getValue, expirationSeconds > 0 ? DateTime.Now.AddSeconds(expirationSeconds) : DateTimeOffset.MinValue);
-            else
-                return getValue();
-        }
-
-        /// <summary>
-        /// Return an item from the memory cache or insert it using the provided function in a thread-safe manner.
-        /// </summary>
-        /// <param name="cache">The MemoryCache instance.</param>
-        /// <param name="key">A unique identifier for the cache entry to get.</param>
-        /// <param name="getValue">Function to retrieve the value on failure such as from a database.</param>
-        /// <param name="absoluteExpiration">DateTimeOffset in the future that the cache item will expire.</param>
-        /// <returns>An object retrieved or set in the cache.</returns>
-        public static object SyncedGetOrSet(this IMemoryCache cache, string key, Func<object> getValue, DateTimeOffset absoluteExpiration)
-        {
-            object result = cache.Get(key);
-
-            if (result == null)
-            {
-                var keyLock = _namedLocks.Get(key);
-
-                try
-                {
-                    keyLock.Wait();
-
-                    result = cache.Get(key);
-
-                    if (result == null)
-                    {
-                        result = getValue();
-
-                        Set(cache, key, result, absoluteExpiration);
-                    }
-                }
-                finally
-                {
-                    keyLock.Release();
-                }
-            }
-
-            return result;
-        }
-
-        /// <summary>
-        /// Return an item from the memory cache or insert it using the provided function in a thread-safe manner.
-        /// </summary>
-        /// <param name="cache">The MemoryCache instance.</param>
-        /// <param name="key">A unique identifier for the cache entry to get.</param>
-        /// <param name="getValue">Function to retrieve the value on failure such as from a database.</param>
+        /// <param name="getValue">Function to retrieve the value on failure such as from a database. Note: the value returned cannot be null.</param>
         /// <param name="expirationSeconds">Seconds in the future that the cache item will expire.</param>
         /// <returns>An object retrieved or set in the cache.</returns>
         public static T SyncedGetOrSet<T>(this IMemoryCache cache, string key, Func<T> getValue, int expirationSeconds = 0)
@@ -93,18 +39,23 @@ namespace Cflashsoft.Framework.Optimization
                 return getValue();
         }
 
-
         /// <summary>
         /// Return an item from the memory cache or insert it using the provided function in a thread-safe manner.
         /// </summary>
         /// <param name="cache">The MemoryCache instance.</param>
         /// <param name="key">A unique identifier for the cache entry to get.</param>
-        /// <param name="getValue">Function to retrieve the value on failure such as from a database.</param>
+        /// <param name="getValue">Function to retrieve the value on failure such as from a database. Note: the value returned cannot be null.</param>
         /// <param name="absoluteExpiration">DateTimeOffset in the future that the cache item will expire.</param>
         /// <returns>An object retrieved or set in the cache.</returns>
         public static T SyncedGetOrSet<T>(this IMemoryCache cache, string key, Func<T> getValue, DateTimeOffset absoluteExpiration)
             where T : class
         {
+            if (string.IsNullOrEmpty(key))
+                throw new ArgumentNullException(nameof(key));
+
+            if (getValue == null)
+                throw new ArgumentNullException(nameof(getValue));
+
             T result = (T)cache.Get(key);
 
             if (result == null)
@@ -121,6 +72,9 @@ namespace Cflashsoft.Framework.Optimization
                     {
                         result = getValue();
 
+                        if (result == null)
+                            throw new InvalidOperationException("The value returned from the getValue function cannot be null.");
+
                         Set(cache, key, result, absoluteExpiration);
                     }
                 }
@@ -138,15 +92,13 @@ namespace Cflashsoft.Framework.Optimization
         /// </summary>
         /// <param name="cache">The MemoryCache instance.</param>
         /// <param name="key">A unique identifier for the cache entry to get.</param>
-        /// <param name="getValueAsync">Function to retrieve the value on failure such as from a database.</param>
+        /// <param name="getValue">Function to retrieve the value on failure such as from a database. Note: the value returned cannot be null.</param>
         /// <param name="expirationSeconds">Seconds in the future that the cache item will expire.</param>
         /// <returns>An object retrieved or set in the cache.</returns>
-        public static Task<object> SyncedGetOrSetAsync(this IMemoryCache cache, string key, Func<Task<object>> getValueAsync, int expirationSeconds = 0)
+        public static T? SyncedGetOrSet<T>(this IMemoryCache cache, string key, Func<T?> getValue, int expirationSeconds = 0)
+            where T : struct
         {
-            if (expirationSeconds >= 0)
-                return SyncedGetOrSetAsync(cache, key, getValueAsync, expirationSeconds > 0 ? DateTime.Now.AddSeconds(expirationSeconds) : DateTimeOffset.MinValue);
-            else
-                return getValueAsync();
+            return SyncedGetOrSet(cache, key, () => GetNullableValue(getValue), expirationSeconds) as T?;
         }
 
         /// <summary>
@@ -154,37 +106,20 @@ namespace Cflashsoft.Framework.Optimization
         /// </summary>
         /// <param name="cache">The MemoryCache instance.</param>
         /// <param name="key">A unique identifier for the cache entry to get.</param>
-        /// <param name="getValueAsync">Function to retrieve the value on failure such as from a database.</param>
+        /// <param name="getValue">Function to retrieve the value on failure such as from a database. Note: the value returned cannot be null.</param>
         /// <param name="absoluteExpiration">DateTimeOffset in the future that the cache item will expire.</param>
         /// <returns>An object retrieved or set in the cache.</returns>
-        public static async Task<object> SyncedGetOrSetAsync(this IMemoryCache cache, string key, Func<Task<object>> getValueAsync, DateTimeOffset absoluteExpiration)
+        public static T? SyncedGetOrSet<T>(this IMemoryCache cache, string key, Func<T?> getValue, DateTimeOffset absoluteExpiration)
+            where T : struct
         {
-            object result = cache.Get(key);
+            return SyncedGetOrSet(cache, key, () => GetNullableValue(getValue), absoluteExpiration) as T?;
+        }
 
-            if (result == null)
-            {
-                var keyLock = _namedLocks.Get(key);
-
-                try
-                {
-                    await keyLock.WaitAsync();
-
-                    result = cache.Get(key);
-
-                    if (result == null)
-                    {
-                        result = await getValueAsync();
-
-                        Set(cache, key, result, absoluteExpiration);
-                    }
-                }
-                finally
-                {
-                    keyLock.Release();
-                }
-            }
-
-            return result;
+        private static object GetNullableValue<T>(Func<T?> getValue)
+            where T : struct
+        {
+            T? result = getValue();
+            return result.HasValue ? (object)result.Value : (object)null;
         }
 
         /// <summary>
@@ -192,7 +127,7 @@ namespace Cflashsoft.Framework.Optimization
         /// </summary>
         /// <param name="cache">The MemoryCache instance.</param>
         /// <param name="key">A unique identifier for the cache entry to get.</param>
-        /// <param name="getValueAsync">Function to retrieve the value on failure such as from a database.</param>
+        /// <param name="getValueAsync">Function to retrieve the value on failure such as from a database. Note: the value returned cannot be null.</param>
         /// <param name="expirationSeconds">Seconds in the future that the cache item will expire.</param>
         /// <returns>An object retrieved or set in the cache.</returns>
         public static Task<T> SyncedGetOrSetAsync<T>(this IMemoryCache cache, string key, Func<Task<T>> getValueAsync, int expirationSeconds = 0)
@@ -209,13 +144,18 @@ namespace Cflashsoft.Framework.Optimization
         /// </summary>
         /// <param name="cache">The MemoryCache instance.</param>
         /// <param name="key">A unique identifier for the cache entry to get.</param>
-        /// <param name="getValueAsync">Function to retrieve the value on failure such as from a database.</param>
+        /// <param name="getValueAsync">Function to retrieve the value on failure such as from a database. Note: the value returned cannot be null.</param>
         /// <param name="absoluteExpiration">DateTimeOffset in the future that the cache item will expire.</param>
-        /// <param name="regionName">The name of a region in a cache. The default is null.</param>
         /// <returns>An object retrieved or set in the cache.</returns>
         public static async Task<T> SyncedGetOrSetAsync<T>(this IMemoryCache cache, string key, Func<Task<T>> getValueAsync, DateTimeOffset absoluteExpiration)
             where T : class
         {
+            if (string.IsNullOrEmpty(key))
+                throw new ArgumentNullException(nameof(key));
+
+            if (getValueAsync == null)
+                throw new ArgumentNullException(nameof(getValueAsync));
+
             T result = (T)cache.Get(key);
 
             if (result == null)
@@ -232,6 +172,9 @@ namespace Cflashsoft.Framework.Optimization
                     {
                         result = await getValueAsync();
 
+                        if (result == null)
+                            throw new InvalidOperationException("The value returned from the getValue function cannot be null.");
+
                         Set(cache, key, result, absoluteExpiration);
                     }
                 }
@@ -244,6 +187,41 @@ namespace Cflashsoft.Framework.Optimization
             return result;
         }
 
+        /// <summary>
+        /// Return an item from the memory cache or insert it using the provided function in a thread-safe manner.
+        /// </summary>
+        /// <param name="cache">The MemoryCache instance.</param>
+        /// <param name="key">A unique identifier for the cache entry to get.</param>
+        /// <param name="getValue">Function to retrieve the value on failure such as from a database. Note: the value returned cannot be null.</param>
+        /// <param name="expirationSeconds">Seconds in the future that the cache item will expire.</param>
+        /// <returns>An object retrieved or set in the cache.</returns>
+        public static async Task<T?> SyncedGetOrSetAsync<T>(this IMemoryCache cache, string key, Func<Task<T?>> getValue, int expirationSeconds = 0)
+            where T : struct
+        {
+            return (await SyncedGetOrSetAsync(cache, key, () => GetNullableValueAsync(getValue), expirationSeconds)) as T?;
+        }
+
+        /// <summary>
+        /// Return an item from the memory cache or insert it using the provided function in a thread-safe manner.
+        /// </summary>
+        /// <param name="cache">The MemoryCache instance.</param>
+        /// <param name="key">A unique identifier for the cache entry to get.</param>
+        /// <param name="getValue">Function to retrieve the value on failure such as from a database. Note: the value returned cannot be null.</param>
+        /// <param name="absoluteExpiration">DateTimeOffset in the future that the cache item will expire.</param>
+        /// <returns>An object retrieved or set in the cache.</returns>
+        public static async Task<T?> SyncedGetOrSetAsync<T>(this IMemoryCache cache, string key, Func<Task<T?>> getValue, DateTimeOffset absoluteExpiration)
+            where T : struct
+        {
+            return (await SyncedGetOrSetAsync(cache, key, () => GetNullableValueAsync(getValue), absoluteExpiration)) as T?;
+        }
+
+        private static async Task<object> GetNullableValueAsync<T>(Func<Task<T?>> getValue)
+            where T : struct
+        {
+            T? result = await getValue();
+            return result.HasValue ? (object)result.Value : (object)null;
+        }
+
         private static void Set(IMemoryCache cache, string key, object value, DateTimeOffset absoluteExpiration)
         {
             MemoryCacheEntryOptions options = new MemoryCacheEntryOptions();
@@ -251,12 +229,12 @@ namespace Cflashsoft.Framework.Optimization
             if (absoluteExpiration > DateTimeOffset.MinValue)
                 options.SetAbsoluteExpiration(absoluteExpiration);
 
-            options.RegisterPostEvictionCallback(_removedCallback);
+            options.RegisterPostEvictionCallback(_evictionCallback);
 
             cache.Set(key, value, options);
         }
 
-        private static void OnRemove(object key, object value, EvictionReason reason, object state)
+        private static void OnCacheItemEviction(object key, object value, EvictionReason reason, object state)
         {
             string keyString = key as string;
 

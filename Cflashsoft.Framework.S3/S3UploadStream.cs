@@ -215,22 +215,6 @@ namespace Cflashsoft.Framework.S3
             } while (currentCount > 0);
         }
 
-        /// <summary>
-        /// When overridden in a derived class, clears all buffers for this stream and causes any buffered data to be written to the underlying device.
-        /// </summary>
-        public override void Flush()
-        {
-            //do nothing
-        }
-
-        /// <summary>
-        /// When overridden in a derived class, clears all buffers for this stream and causes any buffered data to be written to the underlying device.
-        /// </summary>
-        public override Task FlushAsync(CancellationToken cancellationToken)
-        {
-            return Task.CompletedTask;
-        }
-
         private async Task StartNewPartAsync(CancellationToken cancellationToken)
         {
             if (_currentStream != null)
@@ -313,9 +297,9 @@ namespace Cflashsoft.Framework.S3
         }
 
         /// <summary>
-        /// Completes the multipart s3 upload.
+        /// Causes any buffered data to be written and completes the multipart s3 upload.
         /// </summary>
-        public void Finish()
+        public override void Flush()
         {
             if (!_completed)
             {
@@ -327,14 +311,14 @@ namespace Cflashsoft.Framework.S3
         }
 
         /// <summary>
-        /// Completes the multipart s3 upload.
+        /// Causes any buffered data to be written and completes the multipart s3 upload.
         /// </summary>
-        public async Task FinishAsync()
+        public override async Task FlushAsync(CancellationToken cancellationToken)
         {
             if (!_completed)
             {
-                await CommitUploadAsync(true, CancellationToken.None);
-                await CompleteUploadAsync(CancellationToken.None);
+                await CommitUploadAsync(true, cancellationToken);
+                await CompleteUploadAsync(cancellationToken);
 
                 _completed = true;
             }
@@ -350,7 +334,7 @@ namespace Cflashsoft.Framework.S3
             {
                 if (disposing)
                 {
-                    Finish();
+                    Flush();
                 }
 
                 base.Dispose(disposing);
