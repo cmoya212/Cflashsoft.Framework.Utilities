@@ -33,6 +33,10 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Cflashsoft.Framework.S3", "Cflashsoft.Framework.S3\Cflashsoft.Framework.S3.csproj", "{F2A25908-1F15-4F51-9075-E004DBABEDFC}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{5AE71706-511B-4070-BD01-D2267D8F579B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Cflashsoft.Framework.Optimization.Tests", "Cflashsoft.Framework.Optimization.Tests\Cflashsoft.Framework.Optimization.Tests.csproj", "{CBD4ADAB-E1C9-4734-B5BA-E24938EB07F2}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -79,9 +83,16 @@ Global
 		{F2A25908-1F15-4F51-9075-E004DBABEDFC}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F2A25908-1F15-4F51-9075-E004DBABEDFC}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F2A25908-1F15-4F51-9075-E004DBABEDFC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CBD4ADAB-E1C9-4734-B5BA-E24938EB07F2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CBD4ADAB-E1C9-4734-B5BA-E24938EB07F2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CBD4ADAB-E1C9-4734-B5BA-E24938EB07F2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CBD4ADAB-E1C9-4734-B5BA-E24938EB07F2}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{CBD4ADAB-E1C9-4734-B5BA-E24938EB07F2} = {5AE71706-511B-4070-BD01-D2267D8F579B}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {BA9E9195-E6EB-4E53-B06B-8C9605DC94C7}
