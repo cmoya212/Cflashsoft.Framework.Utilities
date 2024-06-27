@@ -25,7 +25,7 @@ namespace Cflashsoft.Framework.Optimization.Tests
 
             // Act
             int runCounter = 0;
-            var result = cache.SyncedGetOrSet("test", () =>
+            var result = cache.InterlockedGetOrSet("test", () =>
             {
                 runCounter++;
                 return new object();
@@ -44,7 +44,7 @@ namespace Cflashsoft.Framework.Optimization.Tests
 
             // Act
             int runCounter = 0;
-            var result = cache.SyncedGetOrSet("test", () =>
+            var result = cache.InterlockedGetOrSet("test", () =>
             {
                 runCounter++;
                 return new (int Field1, string Field2)?((100, "SomeValue"));
@@ -66,7 +66,7 @@ namespace Cflashsoft.Framework.Optimization.Tests
 
             // Act
             int runCounter = 0;
-            var result = cache.SyncedGetOrSet("test", () =>
+            var result = cache.InterlockedGetOrSet("test", () =>
             {
                 runCounter++;
                 return new object();
@@ -86,7 +86,7 @@ namespace Cflashsoft.Framework.Optimization.Tests
 
             // Act
             int runCounter = 0;
-            var result = cache.SyncedGetOrSet("test", () =>
+            var result = cache.InterlockedGetOrSet("test", () =>
             {
                 runCounter++;
                 return new (int Field1, string Field2)?((100, "SomeValue"));
@@ -106,7 +106,7 @@ namespace Cflashsoft.Framework.Optimization.Tests
             using var cache = new MemoryCache(new MemoryCacheOptions());
 
             // Act
-            var act = () => cache.SyncedGetOrSet("test", () => { return (object)null; });
+            var act = () => cache.InterlockedGetOrSet("test", () => { return (object)null; });
 
             // Assert
             act.Should().Throw<InvalidOperationException>();
@@ -128,7 +128,7 @@ namespace Cflashsoft.Framework.Optimization.Tests
             {
                 tasks.Add(Task.Run(() =>
                 {
-                    var result = cache.SyncedGetOrSet("test", () =>
+                    var result = cache.InterlockedGetOrSet("test", () =>
                     {
                         Interlocked.Increment(ref testRunCounter);
                         return new object();
@@ -143,7 +143,7 @@ namespace Cflashsoft.Framework.Optimization.Tests
                 var key = $"other{count + 1}";
                 tasks.Add(Task.Run(() =>
                 {
-                    var result = cache.SyncedGetOrSet(key, () =>
+                    var result = cache.InterlockedGetOrSet(key, () =>
                     {
                         Interlocked.Increment(ref otherRunCounter);
                         return new object();
@@ -173,7 +173,7 @@ namespace Cflashsoft.Framework.Optimization.Tests
 
             // Act
             int runCounter = 0;
-            var result = await cache.SyncedGetOrSetAsync("test", async () =>
+            var result = await cache.InterlockedGetOrSetAsync("test", async () =>
             {
                 runCounter++;
                 return new object();
@@ -192,7 +192,7 @@ namespace Cflashsoft.Framework.Optimization.Tests
 
             // Act
             int runCounter = 0;
-            var result = await cache.SyncedGetOrSetAsync("test", async () =>
+            var result = await cache.InterlockedGetOrSetAsync("test", async () =>
             {
                 runCounter++;
                 return new (int Field1, string Field2)?((100, "SomeValue"));
@@ -214,7 +214,7 @@ namespace Cflashsoft.Framework.Optimization.Tests
 
             // Act
             int runCounter = 0;
-            var result = await cache.SyncedGetOrSetAsync("test", async () =>
+            var result = await cache.InterlockedGetOrSetAsync("test", async () =>
             {
                 runCounter++;
                 return new object();
@@ -234,7 +234,7 @@ namespace Cflashsoft.Framework.Optimization.Tests
 
             // Act
             int runCounter = 0;
-            var result = await cache.SyncedGetOrSetAsync("test", async () =>
+            var result = await cache.InterlockedGetOrSetAsync("test", async () =>
             {
                 runCounter++;
                 return new (int Field1, string Field2)?((100, "SomeValue"));
@@ -263,7 +263,7 @@ namespace Cflashsoft.Framework.Optimization.Tests
             {
                 tasks.Add(Task.Run(async () =>
                 {
-                    var result = await cache.SyncedGetOrSetAsync("test", async () =>
+                    var result = await cache.InterlockedGetOrSetAsync("test", async () =>
                     {
                         Interlocked.Increment(ref testRunCounter);
                         return new object();
@@ -278,7 +278,7 @@ namespace Cflashsoft.Framework.Optimization.Tests
                 var key = $"other{count + 1}";
                 tasks.Add(Task.Run(async () =>
                 {
-                    var result = await cache.SyncedGetOrSetAsync(key, async () =>
+                    var result = await cache.InterlockedGetOrSetAsync(key, async () =>
                     {
                         Interlocked.Increment(ref otherRunCounter);
                         return new object();
@@ -307,7 +307,7 @@ namespace Cflashsoft.Framework.Optimization.Tests
             using var cache = new MemoryCache(new MemoryCacheOptions());
 
             // Act
-            var act = () => cache.SyncedGetOrSetAsync("test", async () => { return (object)null; });
+            var act = () => cache.InterlockedGetOrSetAsync("test", async () => { return (object)null; });
 
             // Assert
             await act.Should().ThrowAsync<InvalidOperationException>();

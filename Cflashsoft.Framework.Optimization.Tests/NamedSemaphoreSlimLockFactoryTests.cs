@@ -10,7 +10,6 @@ using System.Threading.Tasks;
 
 namespace Cflashsoft.Framework.Optimization.Tests
 {
-    [TestFixture]
     internal class NamedSemaphoreSlimLockFactoryTests
     {
         [SetUp]

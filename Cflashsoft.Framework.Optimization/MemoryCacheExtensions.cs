@@ -11,12 +11,12 @@ namespace Cflashsoft.Framework.Optimization
     /// <summary>
     /// Extension methods for the .NET IMemoryCache.
     /// </summary>
-    public static class IMemoryCacheExtensions
+    public static class MemoryCacheExtensions
     {
         private static NamedSemaphoreSlimLockFactory _namedLocks = null;
         private static PostEvictionDelegate _evictionCallback = null;
 
-        static IMemoryCacheExtensions()
+        static MemoryCacheExtensions()
         {
             _namedLocks = new NamedSemaphoreSlimLockFactory();
             _evictionCallback = new PostEvictionDelegate(OnCacheItemEviction);
@@ -30,11 +30,11 @@ namespace Cflashsoft.Framework.Optimization
         /// <param name="getValue">Function to retrieve the value on failure such as from a database. Note: the value returned cannot be null.</param>
         /// <param name="expirationSeconds">Seconds in the future that the cache item will expire.</param>
         /// <returns>An object retrieved or set in the cache.</returns>
-        public static T SyncedGetOrSet<T>(this IMemoryCache cache, string key, Func<T> getValue, int expirationSeconds = 0)
+        public static T InterlockedGetOrSet<T>(this IMemoryCache cache, string key, Func<T> getValue, int expirationSeconds = 0)
             where T : class
         {
             if (expirationSeconds >= 0)
-                return SyncedGetOrSet<T>(cache, key, getValue, expirationSeconds > 0 ? DateTime.Now.AddSeconds(expirationSeconds) : DateTimeOffset.MinValue);
+                return InterlockedGetOrSet<T>(cache, key, getValue, expirationSeconds > 0 ? DateTime.Now.AddSeconds(expirationSeconds) : DateTimeOffset.MinValue);
             else
                 return getValue();
         }
@@ -47,7 +47,7 @@ namespace Cflashsoft.Framework.Optimization
         /// <param name="getValue">Function to retrieve the value on failure such as from a database. Note: the value returned cannot be null.</param>
         /// <param name="absoluteExpiration">DateTimeOffset in the future that the cache item will expire.</param>
         /// <returns>An object retrieved or set in the cache.</returns>
-        public static T SyncedGetOrSet<T>(this IMemoryCache cache, string key, Func<T> getValue, DateTimeOffset absoluteExpiration)
+        public static T InterlockedGetOrSet<T>(this IMemoryCache cache, string key, Func<T> getValue, DateTimeOffset absoluteExpiration)
             where T : class
         {
             if (string.IsNullOrEmpty(key))
@@ -95,10 +95,10 @@ namespace Cflashsoft.Framework.Optimization
         /// <param name="getValue">Function to retrieve the value on failure such as from a database. Note: the value returned cannot be null.</param>
         /// <param name="expirationSeconds">Seconds in the future that the cache item will expire.</param>
         /// <returns>An object retrieved or set in the cache.</returns>
-        public static T? SyncedGetOrSet<T>(this IMemoryCache cache, string key, Func<T?> getValue, int expirationSeconds = 0)
+        public static T? InterlockedGetOrSet<T>(this IMemoryCache cache, string key, Func<T?> getValue, int expirationSeconds = 0)
             where T : struct
         {
-            return SyncedGetOrSet(cache, key, () => GetNullableValue(getValue), expirationSeconds) as T?;
+            return InterlockedGetOrSet(cache, key, () => GetNullableValue(getValue), expirationSeconds) as T?;
         }
 
         /// <summary>
@@ -109,10 +109,10 @@ namespace Cflashsoft.Framework.Optimization
         /// <param name="getValue">Function to retrieve the value on failure such as from a database. Note: the value returned cannot be null.</param>
         /// <param name="absoluteExpiration">DateTimeOffset in the future that the cache item will expire.</param>
         /// <returns>An object retrieved or set in the cache.</returns>
-        public static T? SyncedGetOrSet<T>(this IMemoryCache cache, string key, Func<T?> getValue, DateTimeOffset absoluteExpiration)
+        public static T? InterlockedGetOrSet<T>(this IMemoryCache cache, string key, Func<T?> getValue, DateTimeOffset absoluteExpiration)
             where T : struct
         {
-            return SyncedGetOrSet(cache, key, () => GetNullableValue(getValue), absoluteExpiration) as T?;
+            return InterlockedGetOrSet(cache, key, () => GetNullableValue(getValue), absoluteExpiration) as T?;
         }
 
         private static object GetNullableValue<T>(Func<T?> getValue)
@@ -130,11 +130,11 @@ namespace Cflashsoft.Framework.Optimization
         /// <param name="getValueAsync">Function to retrieve the value on failure such as from a database. Note: the value returned cannot be null.</param>
         /// <param name="expirationSeconds">Seconds in the future that the cache item will expire.</param>
         /// <returns>An object retrieved or set in the cache.</returns>
-        public static Task<T> SyncedGetOrSetAsync<T>(this IMemoryCache cache, string key, Func<Task<T>> getValueAsync, int expirationSeconds = 0)
+        public static Task<T> InterlockedGetOrSetAsync<T>(this IMemoryCache cache, string key, Func<Task<T>> getValueAsync, int expirationSeconds = 0)
             where T : class
         {
             if (expirationSeconds >= 0)
-                return SyncedGetOrSetAsync<T>(cache, key, getValueAsync, expirationSeconds > 0 ? DateTime.Now.AddSeconds(expirationSeconds) : DateTimeOffset.MinValue);
+                return InterlockedGetOrSetAsync<T>(cache, key, getValueAsync, expirationSeconds > 0 ? DateTime.Now.AddSeconds(expirationSeconds) : DateTimeOffset.MinValue);
             else
                 return getValueAsync();
         }
@@ -147,7 +147,7 @@ namespace Cflashsoft.Framework.Optimization
         /// <param name="getValueAsync">Function to retrieve the value on failure such as from a database. Note: the value returned cannot be null.</param>
         /// <param name="absoluteExpiration">DateTimeOffset in the future that the cache item will expire.</param>
         /// <returns>An object retrieved or set in the cache.</returns>
-        public static async Task<T> SyncedGetOrSetAsync<T>(this IMemoryCache cache, string key, Func<Task<T>> getValueAsync, DateTimeOffset absoluteExpiration)
+        public static async Task<T> InterlockedGetOrSetAsync<T>(this IMemoryCache cache, string key, Func<Task<T>> getValueAsync, DateTimeOffset absoluteExpiration)
             where T : class
         {
             if (string.IsNullOrEmpty(key))
@@ -195,10 +195,10 @@ namespace Cflashsoft.Framework.Optimization
         /// <param name="getValue">Function to retrieve the value on failure such as from a database. Note: the value returned cannot be null.</param>
         /// <param name="expirationSeconds">Seconds in the future that the cache item will expire.</param>
         /// <returns>An object retrieved or set in the cache.</returns>
-        public static async Task<T?> SyncedGetOrSetAsync<T>(this IMemoryCache cache, string key, Func<Task<T?>> getValue, int expirationSeconds = 0)
+        public static async Task<T?> InterlockedGetOrSetAsync<T>(this IMemoryCache cache, string key, Func<Task<T?>> getValue, int expirationSeconds = 0)
             where T : struct
         {
-            return (await SyncedGetOrSetAsync(cache, key, () => GetNullableValueAsync(getValue), expirationSeconds)) as T?;
+            return (await InterlockedGetOrSetAsync(cache, key, () => GetNullableValueAsync(getValue), expirationSeconds)) as T?;
         }
 
         /// <summary>
@@ -209,10 +209,10 @@ namespace Cflashsoft.Framework.Optimization
         /// <param name="getValue">Function to retrieve the value on failure such as from a database. Note: the value returned cannot be null.</param>
         /// <param name="absoluteExpiration">DateTimeOffset in the future that the cache item will expire.</param>
         /// <returns>An object retrieved or set in the cache.</returns>
-        public static async Task<T?> SyncedGetOrSetAsync<T>(this IMemoryCache cache, string key, Func<Task<T?>> getValue, DateTimeOffset absoluteExpiration)
+        public static async Task<T?> InterlockedGetOrSetAsync<T>(this IMemoryCache cache, string key, Func<Task<T?>> getValue, DateTimeOffset absoluteExpiration)
             where T : struct
         {
-            return (await SyncedGetOrSetAsync(cache, key, () => GetNullableValueAsync(getValue), absoluteExpiration)) as T?;
+            return (await InterlockedGetOrSetAsync(cache, key, () => GetNullableValueAsync(getValue), absoluteExpiration)) as T?;
         }
 
         private static async Task<object> GetNullableValueAsync<T>(Func<Task<T?>> getValue)
