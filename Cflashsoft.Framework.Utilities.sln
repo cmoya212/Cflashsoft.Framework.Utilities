@@ -11,13 +11,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Cflashsoft.Framework.Securi
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Cflashsoft.Framework.SecurityCore", "Cflashsoft.Framework.SecurityCore\Cflashsoft.Framework.SecurityCore.csproj", "{28F1A96A-A233-474A-8B06-C026B2F504B4}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Cflashsoft.Framework.Web.WebUtility", "Cflashsoft.Framework.Web.WebUtility\Cflashsoft.Framework.Web.WebUtility.csproj", "{3264DA8B-469B-43FD-855C-944BE3FAE966}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Cflashsoft.Framework.SqlUtility", "Cflashsoft.Framework.SqlUtility\Cflashsoft.Framework.SqlUtility.csproj", "{CF3336AC-796A-4E04-BDAF-86F8BA86DB55}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "NugetPack", "NugetPack", "{1B8929F4-0BD2-4E12-A916-2D1E93A0AE06}"
 	ProjectSection(SolutionItems) = preProject
 		nugetpack.bat = nugetpack.bat
+		nugetpack2.bat = nugetpack2.bat
 	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Cflashsoft.Framework.Optimization", "Cflashsoft.Framework.Optimization\Cflashsoft.Framework.Optimization.csproj", "{3425C23D-8162-4D5E-B559-307C5224D3AC}"
@@ -35,7 +32,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Cflashsoft.Framework.S3", "
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{5AE71706-511B-4070-BD01-D2267D8F579B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Cflashsoft.Framework.Optimization.Tests", "Cflashsoft.Framework.Optimization.Tests\Cflashsoft.Framework.Optimization.Tests.csproj", "{CBD4ADAB-E1C9-4734-B5BA-E24938EB07F2}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Cflashsoft.Framework.Optimization.Tests", "Cflashsoft.Framework.Optimization.Tests\Cflashsoft.Framework.Optimization.Tests.csproj", "{CBD4ADAB-E1C9-4734-B5BA-E24938EB07F2}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -59,14 +56,6 @@ Global
 		{28F1A96A-A233-474A-8B06-C026B2F504B4}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{28F1A96A-A233-474A-8B06-C026B2F504B4}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{28F1A96A-A233-474A-8B06-C026B2F504B4}.Release|Any CPU.Build.0 = Release|Any CPU
-		{3264DA8B-469B-43FD-855C-944BE3FAE966}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{3264DA8B-469B-43FD-855C-944BE3FAE966}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{3264DA8B-469B-43FD-855C-944BE3FAE966}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{3264DA8B-469B-43FD-855C-944BE3FAE966}.Release|Any CPU.Build.0 = Release|Any CPU
-		{CF3336AC-796A-4E04-BDAF-86F8BA86DB55}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{CF3336AC-796A-4E04-BDAF-86F8BA86DB55}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{CF3336AC-796A-4E04-BDAF-86F8BA86DB55}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{CF3336AC-796A-4E04-BDAF-86F8BA86DB55}.Release|Any CPU.Build.0 = Release|Any CPU
 		{3425C23D-8162-4D5E-B559-307C5224D3AC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{3425C23D-8162-4D5E-B559-307C5224D3AC}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3425C23D-8162-4D5E-B559-307C5224D3AC}.Release|Any CPU.ActiveCfg = Release|Any CPU

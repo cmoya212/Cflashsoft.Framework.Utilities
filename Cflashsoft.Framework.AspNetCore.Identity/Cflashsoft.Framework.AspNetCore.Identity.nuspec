@@ -1,8 +1,9 @@
 <?xml version="1.0"?>
 <package >
   <metadata>
-    <id>$id$</id>
+    <id>Cflashsoft.Framework.AspNetCore.Identity</id>
     <version>1.1.2</version>
+    <readme>README.md</readme>
     <title>$title$</title>
     <authors>C. Moya</authors>
     <owners>cmoya212</owners>

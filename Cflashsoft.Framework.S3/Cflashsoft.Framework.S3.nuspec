@@ -1,8 +1,9 @@
 <?xml version="1.0"?>
 <package >
   <metadata>
-    <id>$id$</id>
-    <version>1.0.2</version>
+    <id>Cflashsoft.Framework.S3</id>
+    <version>1.4.0</version>
+    <readme>README.md</readme>
     <title>$title$</title>
     <authors>C. Moya</authors>
     <owners>cmoya212</owners>

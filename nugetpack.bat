@@ -12,10 +12,10 @@ cd ..
 cd Cflashsoft.Framework.SecurityCore
 nuget pack -prop Configuration=Release
 
-cd ..
+rem cd ..
 
-cd Cflashsoft.Framework.SqlUtility
-nuget pack -prop Configuration=Release
+rem cd Cflashsoft.Framework.SqlUtility
+rem nuget pack -prop Configuration=Release
 
 cd ..
 
@@ -27,10 +27,10 @@ cd ..
 cd Cflashsoft.Framework.Http
 nuget pack -prop Configuration=Release
 
-cd ..
+rem cd ..
 
-cd Cflashsoft.Framework.Web.WebUtility
-nuget pack -prop Configuration=Release
+rem cd Cflashsoft.Framework.Web.WebUtility
+rem nuget pack -prop Configuration=Release
 
 cd ..
 
