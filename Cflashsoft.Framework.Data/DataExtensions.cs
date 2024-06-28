@@ -4,9 +4,7 @@ using System.Data;
 using System.Data.Common;
 using System.IO;
 using System.Linq;
-using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
-using System.Xml.XPath;
 
 namespace Cflashsoft.Framework.Data
 {

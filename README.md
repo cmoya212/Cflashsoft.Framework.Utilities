@@ -15,18 +15,22 @@ using (var cn = new SqlConnection(ConnectionString))
     //no need to open the connection first.
 
     //Returns List<Dictionary<string, object>>
-    var data1 = await (await cn.ExecuteQueryAsync("select Field1, Field2 from MyTable where Field1 = @Field1",
+    var rows1 = await (await cn.ExecuteQueryAsync("select Field1, Field2 from MyTable where Field1 = @Field1",
         ("Field1", "SomeValue")))
         .ToListAsync();
 
+    var field1 = (string)rows1.FirstOrDefault()?["Field2"];
+
     //Returns List of anonymous objects or concrete class
-    var data2 = await (await cn.ExecuteQueryAsync("select Field1, Field2 from MyTable where Field1 = @Field1",
+    var rows2 = await (await cn.ExecuteQueryAsync("select Field1, Field2 from MyTable where Field1 = @Field1",
         ("Field1", "SomeValue")))
         .ToListAsync((reader) => new
         {
             Field1 = reader.GetNullableString(0), //by key works too
             Field2 = reader.GetNullableInt32(1), //by key works too
         });
+
+     var field2 = rows2.FirstOrDefault()?.Field2;
 }
 ```
 And using a DbContext partial:
