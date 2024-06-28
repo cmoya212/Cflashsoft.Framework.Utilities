@@ -33,7 +33,7 @@ using (var cn = new SqlConnection(ConnectionString))
      var field2 = rows2.FirstOrDefault()?.Field2;
 }
 ```
-And using a DbContext partial:
+And using a DbContext partial to delete a record without pulling it in first:
 ```C#
 public partial class MyModel : DbContext
 {
@@ -53,9 +53,13 @@ Here's an example of a simple, concise HttpClient GET request.
 //Returns HttpApiResult<MyClass>
 var apiResult = await httpClient.ApiAsAsync<MyClass>(HttpVerb.Get, "http://www.somendpoint.com/etc", authHeader);
 
+var someValue = apiResult.Value.SomeValue
+
 //Returns a Newtonsoft JToken root object where the properties can be accessed in a dictionary hierarchy.
 //Helpful when creating a concrete class for JSON is just overkill.
 var apiResult2 = await httpClient.ApiAsJTokenAsync(HttpVerb.Get, "http://www.somendpoint.com/etc", authHeader);
+
+var someValue2 = (string)apiResult.Value["SomeValue"];
 ```
 
 ## API Documentation
