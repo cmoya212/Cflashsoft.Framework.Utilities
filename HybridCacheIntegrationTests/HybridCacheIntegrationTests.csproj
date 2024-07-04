@@ -1,0 +1,20 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>disable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="DistributedLock" Version="2.5.0" />
+    <PackageReference Include="StackExchange.Redis" Version="2.8.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Cflashsoft.Framework.Optimization\Cflashsoft.Framework.Optimization.csproj" />
+    <ProjectReference Include="..\Cflashsoft.Framework.Redis\Cflashsoft.Framework.Redis.csproj" />
+  </ItemGroup>
+
+</Project>

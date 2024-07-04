@@ -36,6 +36,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Cflashsoft.Framework.Optimi
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Cflashsoft.Framework.Redis", "Cflashsoft.Framework.Redis\Cflashsoft.Framework.Redis.csproj", "{BD46E0DA-9C86-47ED-A234-84C64FD470C2}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HybridCacheIntegrationTests", "HybridCacheIntegrationTests\HybridCacheIntegrationTests.csproj", "{EC6C90F0-6042-4CB5-8975-FCB0E93D02A5}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -82,12 +84,17 @@ Global
 		{BD46E0DA-9C86-47ED-A234-84C64FD470C2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{BD46E0DA-9C86-47ED-A234-84C64FD470C2}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{BD46E0DA-9C86-47ED-A234-84C64FD470C2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EC6C90F0-6042-4CB5-8975-FCB0E93D02A5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EC6C90F0-6042-4CB5-8975-FCB0E93D02A5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EC6C90F0-6042-4CB5-8975-FCB0E93D02A5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EC6C90F0-6042-4CB5-8975-FCB0E93D02A5}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{CBD4ADAB-E1C9-4734-B5BA-E24938EB07F2} = {5AE71706-511B-4070-BD01-D2267D8F579B}
+		{EC6C90F0-6042-4CB5-8975-FCB0E93D02A5} = {5AE71706-511B-4070-BD01-D2267D8F579B}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {BA9E9195-E6EB-4E53-B06B-8C9605DC94C7}

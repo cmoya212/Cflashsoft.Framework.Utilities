@@ -21,7 +21,6 @@ namespace Cflashsoft.Framework.Redis
         /// <summary>
         /// Initializes a new instance of the RedisHybridCacheProvider class.
         /// </summary>
-        /// <param name="redis"></param>
         public RedisHybridCacheProvider(IConnectionMultiplexer redis)
         {
             _redis = redis;

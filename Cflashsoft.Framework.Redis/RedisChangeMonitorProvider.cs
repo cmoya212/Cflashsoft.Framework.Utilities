@@ -25,9 +25,6 @@ namespace Cflashsoft.Framework.Redis
         /// <summary>
         /// Returns a new HybridCache ChangeMonitor for Redis.
         /// </summary>
-        public ChangeMonitor NewChangeMonitor(string key)
-        {
-            return new RedisChangeMonitor(_redis, key);
-        }
+        public ChangeMonitor NewChangeMonitor(string key) => new RedisChangeMonitor(_redis, key);
     }
 }
