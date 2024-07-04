@@ -12,7 +12,7 @@ namespace Cflashsoft.Framework.Optimization
     /// Represents an abstract hybrid cache that uses the in-process .NET MemoryCache and a remote cache in an L1 and L2 cache fashion.
     /// </summary>
     /// <remarks>A Redis implementation of this hybrid cache exists. Contact RiverFront Solutions for info.</remarks>
-    public abstract class HybridCacheBase
+    public abstract class HybridCacheBase : IHybridCache
     {
         private NamedSemaphoreSlimLockFactory _namedLocks = new NamedSemaphoreSlimLockFactory();
         private bool _defaultUseMemoryCache = true;
@@ -42,7 +42,7 @@ namespace Cflashsoft.Framework.Optimization
         /// Returns the number of seconds before an item is evicted from the MemoryCache.
         /// </summary>
         public int DefaultMemoryItemExpirationSeconds => _defaultMemoryItemExpirationSeconds;
-        
+
         /// <summary>
         /// Returns the number of seconds before an item is evicted from the remote cache.
         /// </summary>
@@ -62,7 +62,7 @@ namespace Cflashsoft.Framework.Optimization
         /// Initializes a new instance of the HybridCache class.
         /// </summary>
         protected HybridCacheBase(bool defaultUseMemoryCache = true, bool defaultUseRemoteCache = false, int defaultMemoryItemExpirationSeconds = 0, int defaultRemoteItemExpirationSeconds = 0, bool defaultMonitorRemoteItems = false)
-            :this("DefaultHybridCache", defaultUseMemoryCache, defaultUseRemoteCache, defaultMemoryItemExpirationSeconds, defaultRemoteItemExpirationSeconds, defaultMonitorRemoteItems)
+            : this("DefaultHybridCache", defaultUseMemoryCache, defaultUseRemoteCache, defaultMemoryItemExpirationSeconds, defaultRemoteItemExpirationSeconds, defaultMonitorRemoteItems)
         { }
 
         /// <summary>
@@ -186,7 +186,7 @@ namespace Cflashsoft.Framework.Optimization
         /// <param name="remoteItemExpirationSeconds">Amount of time before the item is evicted from the remote cache. Leave null to use default value set by the cache instance.</param>
         /// <param name="monitorRemoteItem">True if the remote cache will be monitored and items evicted from the MemoryCache on changes. Leave null to use default value set by the cache instance.</param>
         /// <param name="getValue">The function that will return an item from the remote store such as a database if the item is not found.</param>
-        public virtual T GetOrSet<T>(string key, Func<T> getValue, bool? useMemoryCache = null, bool? useRemoteCache = null, int? memoryItemExpirationSeconds = null, int? remoteItemExpirationSeconds = null, bool? monitorRemoteItem = null) where T : class
+        public virtual T InterlockedGetOrSet<T>(string key, Func<T> getValue, bool? useMemoryCache = null, bool? useRemoteCache = null, int? memoryItemExpirationSeconds = null, int? remoteItemExpirationSeconds = null, bool? monitorRemoteItem = null) where T : class
         {
             AssertHybridCacheParameters(key, useMemoryCache, useRemoteCache);
 
@@ -210,7 +210,7 @@ namespace Cflashsoft.Framework.Optimization
         /// <param name="remoteItemExpirationSeconds">Amount of time before the item is evicted from the remote cache. Leave null to use default value set by the cache instance.</param>
         /// <param name="monitorRemoteItem">True if the remote cache will be monitored and items evicted from the MemoryCache on changes. Leave null to use default value set by the cache instance.</param>
         /// <param name="getValue">The function that will return an item from the remote store such as a database if the item is not found.</param>
-        public virtual Task<T> GetOrSetAsync<T>(string key, Func<Task<T>> getValue, bool? useMemoryCache = null, bool? useRemoteCache = null, int? memoryItemExpirationSeconds = null, int? remoteItemExpirationSeconds = null, bool? monitorRemoteItem = null) where T : class
+        public virtual Task<T> InterlockedGetOrSetAsync<T>(string key, Func<Task<T>> getValue, bool? useMemoryCache = null, bool? useRemoteCache = null, int? memoryItemExpirationSeconds = null, int? remoteItemExpirationSeconds = null, bool? monitorRemoteItem = null) where T : class
         {
             AssertHybridCacheParameters(key, useMemoryCache, useRemoteCache);
 
