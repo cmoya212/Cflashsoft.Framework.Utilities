@@ -48,3 +48,8 @@ cd Cflashsoft.Framework.S3
 dotnet pack  -p:NuspecFile=Cflashsoft.Framework.S3.nuspec --configuration Release
 
 cd ..
+
+cd Cflashsoft.Framework.Redis
+dotnet pack  -p:NuspecFile=Cflashsoft.Framework.Redis.nuspec --configuration Release
+
+cd ..

@@ -1,5 +1,6 @@
 ﻿using Cflashsoft.Framework.Optimization;
 using Cflashsoft.Framework.Redis;
+using Medallion.Threading;
 using Medallion.Threading.Redis;
 using Medallion.Threading.SqlServer;
 using StackExchange.Redis;
@@ -33,6 +34,7 @@ namespace HybridCacheIntegrationTests
             var distributedLockProvider = new RedisDistributedSynchronizationProvider(redis.GetDatabase());
             //var distributedLockProvider = new SqlDistributedSynchronizationProvider("Data Source=.\\SQLEXPRESS;initial catalog=RiverFront;trusted_connection=true;TrustServerCertificate=True;");
             var hybridCacheDistributedLockProvider = new RedisHybridCacheDistributedLockProvider(distributedLockProvider);
+            //IHybridCacheDistributedLockProvider hybridCacheDistributedLockProvider = null;
             var hybridCacheProvider = new RedisHybridCacheProvider(redis);
             var changeMonitorProvider = new RedisChangeMonitorProvider(redis);
             var hybridCache = new HybridCache(hybridCacheProvider, hybridCacheDistributedLockProvider, changeMonitorProvider, "DefaultHybridCache", true, true, 3, 20, true);

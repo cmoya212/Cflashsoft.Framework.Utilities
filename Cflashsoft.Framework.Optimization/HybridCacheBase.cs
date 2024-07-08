@@ -26,37 +26,37 @@ namespace Cflashsoft.Framework.Optimization
         /// <summary>
         /// Gets the name of the cache.
         /// </summary>
-        public string Name => _memoryCache.Name;
+        public virtual string Name => _memoryCache.Name;
 
         /// <summary>
         /// Returns true if the the hybrid cache will store an item in the MemoryCache by default.
         /// </summary>
-        public bool DefaultUseMemoryCache => _defaultUseMemoryCache;
+        public virtual bool DefaultUseMemoryCache => _defaultUseMemoryCache;
 
         /// <summary>
         /// Returns true if the the hybrid cache will store an item in the remote cache by default.
         /// </summary>
-        public bool DefaultUseRemoteCache => _defaultUseRemoteCache;
+        public virtual bool DefaultUseRemoteCache => _defaultUseRemoteCache;
 
         /// <summary>
         /// Returns the number of seconds before an item is evicted from the MemoryCache.
         /// </summary>
-        public int DefaultMemoryItemExpirationSeconds => _defaultMemoryItemExpirationSeconds;
+        public virtual int DefaultMemoryItemExpirationSeconds => _defaultMemoryItemExpirationSeconds;
 
         /// <summary>
         /// Returns the number of seconds before an item is evicted from the remote cache.
         /// </summary>
-        public int DefaultRemoteExpirationSeconds => _defaultRemoteItemExpirationSeconds;
+        public virtual int DefaultRemoteExpirationSeconds => _defaultRemoteItemExpirationSeconds;
 
         /// <summary>
         /// Returns true if the MemoryCache monitors for changes in the remote cache.
         /// </summary>
-        public bool DefaultMonitorRemoteItems => _defaultMonitorRemoteItems;
+        public virtual bool DefaultMonitorRemoteItems => _defaultMonitorRemoteItems;
 
         /// <summary>
         /// Returns the underlying MemoryCache instance.
         /// </summary>
-        protected MemoryCache MemoryCache => _memoryCache;
+        protected virtual MemoryCache MemoryCache => _memoryCache;
 
         /// <summary>
         /// Initializes a new instance of the HybridCache class.
