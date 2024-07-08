@@ -2,7 +2,7 @@
 <package >
   <metadata>
     <id>Cflashsoft.Framework.Redis</id>
-    <version>1.4.2</version>
+    <version>1.4.3</version>
     <readme>README.md</readme>
     <title>$title$</title>
     <authors>C. Moya</authors>
