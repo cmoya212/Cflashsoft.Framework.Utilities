@@ -230,9 +230,7 @@ namespace Cflashsoft.Framework.Http
             }
 
             if (result == null)
-            {
                 result = new HttpApiResult<TResult>();
-            }
 
             result.StatusCode = statusCode;
             result.IsSuccessStatusCode = isSuccessStatusCode;

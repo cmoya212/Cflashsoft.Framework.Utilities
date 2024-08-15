@@ -64,7 +64,23 @@ namespace Cflashsoft.Framework.Data
         /// <returns>An IDataReader object.</returns>
         public static IDataReader ExecuteQuery(this IDbConnection cn, string commandText, CommandType commandType, CommandBehavior behavior, IDbTransaction trx, params (string ParameterName, object Value)[] parameters)
         {
-            using (var cmd = CreateCommand(cn, commandText, commandType, trx, parameters))
+            return ExecuteQuery(cn, commandText, commandType, behavior, null, trx, parameters);
+        }
+
+        /// <summary>
+        /// Executes the CommandText against the Connection and builds an IDataReader.
+        /// </summary>
+        /// <param name="cn">The database connection to execute the query on. The connection will be opened if it is closed.</param>
+        /// <param name="commandText">The text command to run against the data source.</param>
+        /// <param name="commandType">Indicates or specifies how the CommandText property is interpreted.</param>
+        /// <param name="behavior">One of the CommandBehavior values.</param>
+        /// <param name="parameters">The parameters of the SQL statement or stored procedure.</param>
+        /// <param name="commandTimeout">The time (in seconds) to wait for the command to execute. The default value is 30 seconds.</param>
+        /// <param name="trx">The transaction to use for the command.</param>
+        /// <returns>An IDataReader object.</returns>
+        public static IDataReader ExecuteQuery(this IDbConnection cn, string commandText, CommandType commandType, CommandBehavior behavior, int? commandTimeout, IDbTransaction trx, params (string ParameterName, object Value)[] parameters)
+        {
+            using (var cmd = CreateCommand(cn, commandText, commandType, commandTimeout, trx, parameters))
             {
                 OpenIfClosed(cn);
                 return cmd.ExecuteReader(behavior);
@@ -79,11 +95,12 @@ namespace Cflashsoft.Framework.Data
         /// <param name="commandType">Indicates or specifies how the CommandText property is interpreted.</param>
         /// <param name="behavior">One of the CommandBehavior values.</param>
         /// <param name="parameters">The parameters of the SQL statement or stored procedure.</param>
+        /// <param name="commandTimeout">The time (in seconds) to wait for the command to execute. The default value is 30 seconds.</param>
         /// <param name="trx">The transaction to use for the command.</param>
         /// <returns>An IDataReader object.</returns>
-        public static IDataReader ExecuteQuery(this IDbConnection cn, string commandText, CommandType commandType, CommandBehavior behavior, IDbTransaction trx, IEnumerable<IDbDataParameter> parameters)
+        public static IDataReader ExecuteQuery(this IDbConnection cn, string commandText, CommandType commandType, CommandBehavior behavior, int? commandTimeout, IDbTransaction trx, IEnumerable<IDbDataParameter> parameters)
         {
-            using (var cmd = CreateCommand(cn, commandText, commandType, trx, parameters))
+            using (var cmd = CreateCommand(cn, commandText, commandType, commandTimeout, trx, parameters))
             {
                 OpenIfClosed(cn);
                 return cmd.ExecuteReader(behavior);
@@ -126,7 +143,7 @@ namespace Cflashsoft.Framework.Data
         /// <returns>An IDataReader object.</returns>
         public static Task<DbDataReader> ExecuteQueryAsync(this DbConnection cn, string commandText, CommandType commandType, CommandBehavior behavior, params (string ParameterName, object Value)[] parameters)
         {
-            return ExecuteQueryAsync(cn, commandText, commandType, behavior, (DbTransaction)null, parameters);
+            return ExecuteQueryAsync(cn, commandText, commandType, behavior, null, (DbTransaction)null, parameters);
         }
 
         /// <summary>
@@ -137,11 +154,12 @@ namespace Cflashsoft.Framework.Data
         /// <param name="commandType">Indicates or specifies how the CommandText property is interpreted.</param>
         /// <param name="behavior">One of the CommandBehavior values.</param>
         /// <param name="parameters">The parameters of the SQL statement or stored procedure.</param>
+        /// <param name="commandTimeout">The time (in seconds) to wait for the command to execute. The default value is 30 seconds.</param>
         /// <param name="trx">The transaction to use for the command.</param>
         /// <returns>An IDataReader object.</returns>
-        public static async Task<DbDataReader> ExecuteQueryAsync(this DbConnection cn, string commandText, CommandType commandType, CommandBehavior behavior, DbTransaction trx, params (string ParameterName, object Value)[] parameters)
+        public static async Task<DbDataReader> ExecuteQueryAsync(this DbConnection cn, string commandText, CommandType commandType, CommandBehavior behavior, int? commandTimeout, DbTransaction trx, params (string ParameterName, object Value)[] parameters)
         {
-            using (var cmd = CreateCommand(cn, commandText, commandType, trx, parameters))
+            using (var cmd = CreateCommand(cn, commandText, commandType, commandTimeout, trx, parameters))
             {
                 await OpenIfClosedAsync(cn);
                 return await cmd.ExecuteReaderAsync(behavior);
@@ -156,11 +174,12 @@ namespace Cflashsoft.Framework.Data
         /// <param name="commandType">Indicates or specifies how the CommandText property is interpreted.</param>
         /// <param name="behavior">One of the CommandBehavior values.</param>
         /// <param name="parameters">The parameters of the SQL statement or stored procedure.</param>
+        /// <param name="commandTimeout">The time (in seconds) to wait for the command to execute. The default value is 30 seconds.</param>
         /// <param name="trx">The transaction to use for the command.</param>
         /// <returns>An IDataReader object.</returns>
-        public static async Task<DbDataReader> ExecuteQueryAsync(this DbConnection cn, string commandText, CommandType commandType, CommandBehavior behavior, DbTransaction trx, IEnumerable<IDbDataParameter> parameters)
+        public static async Task<DbDataReader> ExecuteQueryAsync(this DbConnection cn, string commandText, CommandType commandType, CommandBehavior behavior, int? commandTimeout, DbTransaction trx, IEnumerable<IDbDataParameter> parameters)
         {
-            using (var cmd = CreateCommand(cn, commandText, commandType, trx, parameters))
+            using (var cmd = CreateCommand(cn, commandText, commandType, commandTimeout, trx, parameters))
             {
                 await OpenIfClosedAsync(cn);
                 return await cmd.ExecuteReaderAsync(behavior);
@@ -211,7 +230,7 @@ namespace Cflashsoft.Framework.Data
         /// </remarks>
         public static IDataReader ExecuteSequentialSingle(this IDbConnection cn, string commandText, CommandType commandType = CommandType.Text, IEnumerable<IDbDataParameter> parameters = null)
         {
-            return ExecuteQuery(cn, commandText, commandType, CommandBehavior.SingleResult | CommandBehavior.SingleRow | CommandBehavior.SequentialAccess | CommandBehavior.CloseConnection, (IDbTransaction)null, parameters);
+            return ExecuteQuery(cn, commandText, commandType, CommandBehavior.SingleResult | CommandBehavior.SingleRow | CommandBehavior.SequentialAccess | CommandBehavior.CloseConnection, null, (IDbTransaction)null, parameters);
         }
 
         /// <summary>
@@ -226,7 +245,7 @@ namespace Cflashsoft.Framework.Data
         /// </remarks>
         public static Task<DbDataReader> ExecuteSequentialSingleAsync(this DbConnection cn, string commandText, params (string ParameterName, object Value)[] parameters)
         {
-            return ExecuteQueryAsync(cn, commandText, CommandType.Text, CommandBehavior.SingleResult | CommandBehavior.SingleRow | CommandBehavior.SequentialAccess | CommandBehavior.CloseConnection, (DbTransaction)null, parameters);
+            return ExecuteQueryAsync(cn, commandText, CommandType.Text, CommandBehavior.SingleResult | CommandBehavior.SingleRow | CommandBehavior.SequentialAccess | CommandBehavior.CloseConnection, null, (DbTransaction)null, parameters);
         }
 
         /// <summary>
@@ -242,7 +261,7 @@ namespace Cflashsoft.Framework.Data
         /// </remarks>
         public static Task<DbDataReader> ExecuteSequentialSingleAsync(this DbConnection cn, string commandText, CommandType commandType = CommandType.Text, params (string ParameterName, object Value)[] parameters)
         {
-            return ExecuteQueryAsync(cn, commandText, commandType, CommandBehavior.SingleResult | CommandBehavior.SingleRow | CommandBehavior.SequentialAccess | CommandBehavior.CloseConnection, (DbTransaction)null, parameters);
+            return ExecuteQueryAsync(cn, commandText, commandType, CommandBehavior.SingleResult | CommandBehavior.SingleRow | CommandBehavior.SequentialAccess | CommandBehavior.CloseConnection, null, (DbTransaction)null, parameters);
         }
 
         /// <summary>
@@ -258,7 +277,7 @@ namespace Cflashsoft.Framework.Data
         /// </remarks>
         public static Task<DbDataReader> ExecuteSequentialSingleAsync(this DbConnection cn, string commandText, CommandType commandType = CommandType.Text, IEnumerable<IDbDataParameter> parameters = null)
         {
-            return ExecuteQueryAsync(cn, commandText, commandType, CommandBehavior.SingleResult | CommandBehavior.SingleRow | CommandBehavior.SequentialAccess | CommandBehavior.CloseConnection, (DbTransaction)null, parameters);
+            return ExecuteQueryAsync(cn, commandText, commandType, CommandBehavior.SingleResult | CommandBehavior.SingleRow | CommandBehavior.SequentialAccess | CommandBehavior.CloseConnection, null, (DbTransaction)null, parameters);
         }
 
         /// <summary>
@@ -283,7 +302,7 @@ namespace Cflashsoft.Framework.Data
         /// <returns>The number of rows affected.</returns>
         public static int ExecuteNonQuery(this IDbConnection cn, string commandText, CommandType commandType, params (string ParameterName, object Value)[] parameters)
         {
-            return ExecuteNonQuery(cn, commandText, commandType, (IDbTransaction)null, parameters);
+            return ExecuteNonQuery(cn, commandText, commandType, null, (IDbTransaction)null, parameters);
         }
 
         /// <summary>
@@ -293,11 +312,12 @@ namespace Cflashsoft.Framework.Data
         /// <param name="commandText">The text command to run against the data source.</param>
         /// <param name="commandType">Indicates or specifies how the CommandText property is interpreted.</param>
         /// <param name="parameters">The parameters of the SQL statement or stored procedure.</param>
+        /// <param name="commandTimeout">The time (in seconds) to wait for the command to execute. The default value is 30 seconds.</param>
         /// <param name="trx">The transaction to use for the command.</param>
         /// <returns>The number of rows affected.</returns>
-        public static int ExecuteNonQuery(this IDbConnection cn, string commandText, CommandType commandType, IDbTransaction trx, params (string ParameterName, object Value)[] parameters)
+        public static int ExecuteNonQuery(this IDbConnection cn, string commandText, CommandType commandType, int? commandTimeout, IDbTransaction trx, params (string ParameterName, object Value)[] parameters)
         {
-            using (var cmd = CreateCommand(cn, commandText, commandType, trx, parameters))
+            using (var cmd = CreateCommand(cn, commandText, commandType, commandTimeout, trx, parameters))
             {
                 OpenIfClosed(cn);
                 return cmd.ExecuteNonQuery();
@@ -311,11 +331,12 @@ namespace Cflashsoft.Framework.Data
         /// <param name="commandText">The text command to run against the data source.</param>
         /// <param name="commandType">Indicates or specifies how the CommandText property is interpreted.</param>
         /// <param name="parameters">The parameters of the SQL statement or stored procedure.</param>
+        /// <param name="commandTimeout">The time (in seconds) to wait for the command to execute. The default value is 30 seconds.</param>
         /// <param name="trx">The transaction to use for the command.</param>
         /// <returns>The number of rows affected.</returns>
-        public static int ExecuteNonQuery(this IDbConnection cn, string commandText, CommandType commandType, DbTransaction trx, IEnumerable<IDbDataParameter> parameters)
+        public static int ExecuteNonQuery(this IDbConnection cn, string commandText, CommandType commandType, int? commandTimeout, DbTransaction trx, IEnumerable<IDbDataParameter> parameters)
         {
-            using (var cmd = CreateCommand(cn, commandText, commandType, trx, parameters))
+            using (var cmd = CreateCommand(cn, commandText, commandType, commandTimeout, trx, parameters))
             {
                 OpenIfClosed(cn);
                 return cmd.ExecuteNonQuery();
@@ -331,7 +352,7 @@ namespace Cflashsoft.Framework.Data
         /// <returns>The number of rows affected.</returns>
         public static Task<int> ExecuteNonQueryAsync(this DbConnection cn, string commandText, params (string ParameterName, object Value)[] parameters)
         {
-            return ExecuteNonQueryAsync(cn, commandText, CommandType.Text, (DbTransaction)null, parameters);
+            return ExecuteNonQueryAsync(cn, commandText, CommandType.Text, parameters);
         }
 
         /// <summary>
@@ -344,7 +365,7 @@ namespace Cflashsoft.Framework.Data
         /// <returns>The number of rows affected.</returns>
         public static Task<int> ExecuteNonQueryAsync(this DbConnection cn, string commandText, CommandType commandType, params (string ParameterName, object Value)[] parameters)
         {
-            return ExecuteNonQueryAsync(cn, commandText, commandType, (DbTransaction)null, parameters);
+            return ExecuteNonQueryAsync(cn, commandText, commandType, null, (DbTransaction)null, parameters);
         }
 
         /// <summary>
@@ -354,11 +375,12 @@ namespace Cflashsoft.Framework.Data
         /// <param name="commandText">The text command to run against the data source.</param>
         /// <param name="commandType">Indicates or specifies how the CommandText property is interpreted.</param>
         /// <param name="parameters">The parameters of the SQL statement or stored procedure.</param>
+        /// <param name="commandTimeout">The time (in seconds) to wait for the command to execute. The default value is 30 seconds.</param>
         /// <param name="trx">The transaction to use for the command.</param>
         /// <returns>The number of rows affected.</returns>
-        public static async Task<int> ExecuteNonQueryAsync(this DbConnection cn, string commandText, CommandType commandType, DbTransaction trx, params (string ParameterName, object Value)[] parameters)
+        public static async Task<int> ExecuteNonQueryAsync(this DbConnection cn, string commandText, CommandType commandType, int? commandTimeout, DbTransaction trx, params (string ParameterName, object Value)[] parameters)
         {
-            using (var cmd = CreateCommand(cn, commandText, commandType, trx, parameters))
+            using (var cmd = CreateCommand(cn, commandText, commandType, commandTimeout, trx, parameters))
             {
                 await OpenIfClosedAsync(cn);
                 return await cmd.ExecuteNonQueryAsync();
@@ -374,9 +396,9 @@ namespace Cflashsoft.Framework.Data
         /// <param name="parameters">The parameters of the SQL statement or stored procedure.</param>
         /// <param name="trx">The transaction to use for the command.</param>
         /// <returns>The number of rows affected.</returns>
-        public static async Task<int> ExecuteNonQueryAsync(this DbConnection cn, string commandText, CommandType commandType, DbTransaction trx, IEnumerable<IDbDataParameter> parameters)
+        public static async Task<int> ExecuteNonQueryAsync(this DbConnection cn, string commandText, CommandType commandType, int? commandTimeout, DbTransaction trx, IEnumerable<IDbDataParameter> parameters)
         {
-            using (var cmd = CreateCommand(cn, commandText, commandType, trx, parameters))
+            using (var cmd = CreateCommand(cn, commandText, commandType, commandTimeout, trx, parameters))
             {
                 await OpenIfClosedAsync(cn);
                 return await cmd.ExecuteNonQueryAsync();
@@ -392,7 +414,7 @@ namespace Cflashsoft.Framework.Data
         /// <returns>The first column of the first row in the resultset.</returns>
         public static object ExecuteScalar(this IDbConnection cn, string commandText, params (string ParameterName, object Value)[] parameters)
         {
-            return ExecuteScalar(cn, commandText, CommandType.Text, (IDbTransaction)null, parameters);
+            return ExecuteScalar(cn, commandText, CommandType.Text, parameters);
         }
 
         /// <summary>
@@ -405,7 +427,7 @@ namespace Cflashsoft.Framework.Data
         /// <returns>The first column of the first row in the resultset.</returns>
         public static object ExecuteScalar(this IDbConnection cn, string commandText, CommandType commandType, params (string ParameterName, object Value)[] parameters)
         {
-            return ExecuteScalar(cn, commandText, commandType, (IDbTransaction)null, parameters);
+            return ExecuteScalar(cn, commandText, commandType, null, (IDbTransaction)null, parameters);
         }
 
         /// <summary>
@@ -415,11 +437,12 @@ namespace Cflashsoft.Framework.Data
         /// <param name="commandText">The text command to run against the data source.</param>
         /// <param name="commandType">Indicates or specifies how the CommandText property is interpreted.</param>
         /// <param name="parameters">The parameters of the SQL statement or stored procedure.</param>
+        /// <param name="commandTimeout">The time (in seconds) to wait for the command to execute. The default value is 30 seconds.</param>
         /// <param name="trx">The transaction to use for the command.</param>
         /// <returns>The first column of the first row in the resultset.</returns>
-        public static object ExecuteScalar(this IDbConnection cn, string commandText, CommandType commandType, IDbTransaction trx, params (string ParameterName, object Value)[] parameters)
+        public static object ExecuteScalar(this IDbConnection cn, string commandText, CommandType commandType, int? commandTimeout, IDbTransaction trx, params (string ParameterName, object Value)[] parameters)
         {
-            using (var cmd = CreateCommand(cn, commandText, commandType, trx, parameters))
+            using (var cmd = CreateCommand(cn, commandText, commandType, commandTimeout, trx, parameters))
             {
                 OpenIfClosed(cn);
 
@@ -439,11 +462,12 @@ namespace Cflashsoft.Framework.Data
         /// <param name="commandText">The text command to run against the data source.</param>
         /// <param name="commandType">Indicates or specifies how the CommandText property is interpreted.</param>
         /// <param name="parameters">The parameters of the SQL statement or stored procedure.</param>
+        /// <param name="commandTimeout">The time (in seconds) to wait for the command to execute. The default value is 30 seconds.</param>
         /// <param name="trx">The transaction to use for the command.</param>
         /// <returns>The first column of the first row in the resultset.</returns>
-        public static object ExecuteScalar(this IDbConnection cn, string commandText, CommandType commandType, IDbTransaction trx, IEnumerable<IDbDataParameter> parameters)
+        public static object ExecuteScalar(this IDbConnection cn, string commandText, CommandType commandType, int? commandTimeout, IDbTransaction trx, IEnumerable<IDbDataParameter> parameters)
         {
-            using (var cmd = CreateCommand(cn, commandText, commandType, trx, parameters))
+            using (var cmd = CreateCommand(cn, commandText, commandType, commandTimeout, trx, parameters))
             {
                 OpenIfClosed(cn);
 
@@ -465,7 +489,7 @@ namespace Cflashsoft.Framework.Data
         /// <returns>The first column of the first row in the resultset.</returns>
         public static Task<object> ExecuteScalarAsync(this DbConnection cn, string commandText, params (string ParameterName, object Value)[] parameters)
         {
-            return ExecuteScalarAsync(cn, commandText, CommandType.Text, (DbTransaction)null, parameters);
+            return ExecuteScalarAsync(cn, commandText, CommandType.Text, parameters);
         }
 
         /// <summary>
@@ -478,7 +502,7 @@ namespace Cflashsoft.Framework.Data
         /// <returns>The first column of the first row in the resultset.</returns>
         public static Task<object> ExecuteScalarAsync(this DbConnection cn, string commandText, CommandType commandType, params (string ParameterName, object Value)[] parameters)
         {
-            return ExecuteScalarAsync(cn, commandText, commandType, (DbTransaction)null, parameters);
+            return ExecuteScalarAsync(cn, commandText, commandType, null, (DbTransaction)null, parameters);
         }
 
         /// <summary>
@@ -488,11 +512,12 @@ namespace Cflashsoft.Framework.Data
         /// <param name="commandText">The text command to run against the data source.</param>
         /// <param name="commandType">Indicates or specifies how the CommandText property is interpreted.</param>
         /// <param name="parameters">The parameters of the SQL statement or stored procedure.</param>
+        /// <param name="commandTimeout">The time (in seconds) to wait for the command to execute. The default value is 30 seconds.</param>
         /// <param name="trx">The transaction to use for the command.</param>
         /// <returns>The first column of the first row in the resultset.</returns>
-        public static async Task<object> ExecuteScalarAsync(this DbConnection cn, string commandText, CommandType commandType, DbTransaction trx, params (string ParameterName, object Value)[] parameters)
+        public static async Task<object> ExecuteScalarAsync(this DbConnection cn, string commandText, CommandType commandType, int? commandTimeout, DbTransaction trx, params (string ParameterName, object Value)[] parameters)
         {
-            using (var cmd = CreateCommand(cn, commandText, commandType, trx, parameters))
+            using (var cmd = CreateCommand(cn, commandText, commandType, commandTimeout, trx, parameters))
             {
                 await OpenIfClosedAsync(cn);
 
@@ -512,11 +537,12 @@ namespace Cflashsoft.Framework.Data
         /// <param name="commandText">The text command to run against the data source.</param>
         /// <param name="commandType">Indicates or specifies how the CommandText property is interpreted.</param>
         /// <param name="parameters">The parameters of the SQL statement or stored procedure.</param>
+        /// <param name="commandTimeout">The time (in seconds) to wait for the command to execute. The default value is 30 seconds.</param>
         /// <param name="trx">The transaction to use for the command.</param>
         /// <returns>The first column of the first row in the resultset.</returns>
-        public static async Task<object> ExecuteScalarAsync(this DbConnection cn, string commandText, CommandType commandType, DbTransaction trx, IEnumerable<IDbDataParameter> parameters)
+        public static async Task<object> ExecuteScalarAsync(this DbConnection cn, string commandText, CommandType commandType, int? commandTimeout, DbTransaction trx, IEnumerable<IDbDataParameter> parameters)
         {
-            using (var cmd = CreateCommand(cn, commandText, commandType, trx, parameters))
+            using (var cmd = CreateCommand(cn, commandText, commandType, commandTimeout, trx, parameters))
             {
                 await OpenIfClosedAsync(cn);
 
@@ -595,7 +621,7 @@ namespace Cflashsoft.Framework.Data
         /// <returns>A IDbCommand object.</returns>
         public static IDbCommand CreateCommand(this IDbConnection cn, string commandText, CommandType commandType, params (string ParameterName, object Value)[] parameters)
         {
-            return CreateCommand(cn, commandText, commandType, (IDbTransaction)null, parameters);
+            return CreateCommand(cn, commandText, commandType, null, (IDbTransaction)null, parameters);
         }
 
         /// <summary>
@@ -605,11 +631,15 @@ namespace Cflashsoft.Framework.Data
         /// <param name="commandText">The text command to run against the data source.</param>
         /// <param name="commandType">Indicates or specifies how the CommandText property is interpreted.</param>
         /// <param name="parameters">The parameters of the SQL statement or stored procedure.</param>
+        /// <param name="commandTimeout">The time (in seconds) to wait for the command to execute. The default value is 30 seconds.</param>
         /// <param name="trx">The transaction to use for the command.</param>
         /// <returns>A IDbCommand object.</returns>
-        public static IDbCommand CreateCommand(this IDbConnection cn, string commandText, CommandType commandType, IDbTransaction trx, params (string ParameterName, object Value)[] parameters)
+        public static IDbCommand CreateCommand(this IDbConnection cn, string commandText, CommandType commandType, int? commandTimeout, IDbTransaction trx, params (string ParameterName, object Value)[] parameters)
         {
             IDbCommand cmd = cn.CreateCommand();
+
+            if (commandTimeout.HasValue)
+                cmd.CommandTimeout = commandTimeout.Value;
 
             if (trx != null)
                 cmd.Transaction = trx;
@@ -629,7 +659,7 @@ namespace Cflashsoft.Framework.Data
         /// <returns>A IDbCommand object.</returns>
         public static DbCommand CreateCommand(this DbConnection cn, string commandText, CommandType commandType, params (string ParameterName, object Value)[] parameters)
         {
-            return CreateCommand(cn, commandText, commandType, (DbTransaction)null, parameters);
+            return CreateCommand(cn, commandText, commandType, null, (DbTransaction)null, parameters);
         }
 
         /// <summary>
@@ -639,11 +669,15 @@ namespace Cflashsoft.Framework.Data
         /// <param name="commandText">The text command to run against the data source.</param>
         /// <param name="commandType">Indicates or specifies how the CommandText property is interpreted.</param>
         /// <param name="parameters">The parameters of the SQL statement or stored procedure.</param>
+        /// <param name="commandTimeout">The time (in seconds) to wait for the command to execute. The default value is 30 seconds.</param>
         /// <param name="trx">The transaction to use for the command.</param>
         /// <returns>A IDbCommand object.</returns>
-        public static DbCommand CreateCommand(this DbConnection cn, string commandText, CommandType commandType, DbTransaction trx, params (string ParameterName, object Value)[] parameters)
+        public static DbCommand CreateCommand(this DbConnection cn, string commandText, CommandType commandType, int? commandTimeout, DbTransaction trx, params (string ParameterName, object Value)[] parameters)
         {
             DbCommand cmd = cn.CreateCommand();
+
+            if (commandTimeout.HasValue)
+                cmd.CommandTimeout = commandTimeout.Value;
 
             if (trx != null)
                 cmd.Transaction = trx;
@@ -663,7 +697,7 @@ namespace Cflashsoft.Framework.Data
         /// <returns>A IDbCommand object.</returns>
         public static IDbCommand CreateCommand(this IDbConnection cn, string commandText, CommandType commandType, IEnumerable<IDbDataParameter> parameters)
         {
-            return CreateCommand(cn, commandText, commandType, (IDbTransaction)null, parameters);
+            return CreateCommand(cn, commandText, commandType, null, (IDbTransaction)null, parameters);
         }
 
         /// <summary>
@@ -673,11 +707,15 @@ namespace Cflashsoft.Framework.Data
         /// <param name="commandText">The text command to run against the data source.</param>
         /// <param name="commandType">Indicates or specifies how the CommandText property is interpreted.</param>
         /// <param name="parameters">The parameters of the SQL statement or stored procedure.</param>
+        /// <param name="commandTimeout">The time (in seconds) to wait for the command to execute. The default value is 30 seconds.</param>
         /// <param name="trx">The transaction to use for the command.</param>
         /// <returns>A IDbCommand object.</returns>
-        public static IDbCommand CreateCommand(this IDbConnection cn, string commandText, CommandType commandType, IDbTransaction trx, IEnumerable<IDbDataParameter> parameters)
+        public static IDbCommand CreateCommand(this IDbConnection cn, string commandText, CommandType commandType, int? commandTimeout, IDbTransaction trx, IEnumerable<IDbDataParameter> parameters)
         {
             IDbCommand cmd = cn.CreateCommand();
+
+            if (commandTimeout.HasValue)
+                cmd.CommandTimeout = commandTimeout.Value;
 
             if (trx != null )
                 cmd.Transaction = trx;
@@ -697,7 +735,7 @@ namespace Cflashsoft.Framework.Data
         /// <returns>A IDbCommand object.</returns>
         public static DbCommand CreateCommand(this DbConnection cn, string commandText, CommandType commandType, IEnumerable<IDbDataParameter> parameters)
         {
-            return CreateCommand(cn, commandText, commandType, (DbTransaction)null, parameters);
+            return CreateCommand(cn, commandText, commandType, null, (DbTransaction)null, parameters);
         }
 
         /// <summary>
@@ -707,11 +745,15 @@ namespace Cflashsoft.Framework.Data
         /// <param name="commandText">The text command to run against the data source.</param>
         /// <param name="commandType">Indicates or specifies how the CommandText property is interpreted.</param>
         /// <param name="parameters">The parameters of the SQL statement or stored procedure.</param>
+        /// <param name="commandTimeout">The time (in seconds) to wait for the command to execute. The default value is 30 seconds.</param>
         /// <param name="trx">The transaction to use for the command.</param>
         /// <returns>A IDbCommand object.</returns>
-        public static DbCommand CreateCommand(this DbConnection cn, string commandText, CommandType commandType, DbTransaction trx, IEnumerable<IDbDataParameter> parameters)
+        public static DbCommand CreateCommand(this DbConnection cn, string commandText, CommandType commandType, int? commandTimeout, DbTransaction trx, IEnumerable<IDbDataParameter> parameters)
         {
             DbCommand cmd = cn.CreateCommand();
+
+            if (commandTimeout.HasValue)
+                cmd.CommandTimeout = commandTimeout.Value;
 
             if (trx != null )
                 cmd.Transaction = trx;
