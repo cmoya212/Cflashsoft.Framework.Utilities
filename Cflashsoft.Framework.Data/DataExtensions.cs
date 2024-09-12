@@ -1435,15 +1435,19 @@ namespace Cflashsoft.Framework.Data
         /// Enumerates an IDataReader and returns a DataTable.
         /// </summary>
         /// <param name="reader">The IDataReader.</param>
+        /// <param name="name">The name of the DataTable.</param>
         /// <param name="closeReader">Indicates whether to close the connection when the enumeration completes.</param>
         /// <param name="useClassicDataTableLoad">If true, uses the classic, built-in ADO.NET DataTable.Load() function.</param>
         /// <returns>A DataTable.</returns>
-        public static DataTable ToDataTable(this IDataReader reader, bool closeReader = true, bool useClassicDataTableLoad = true)
+        public static DataTable ToDataTable(this IDataReader reader, string name = null, bool closeReader = true, bool useClassicDataTableLoad = true)
         {
             DataTable result = new DataTable();
 
             try
             {
+                if (name != null)
+                    result.TableName = name;
+
                 if (useClassicDataTableLoad)
                 {
                     result.Load(reader);
@@ -1477,14 +1481,18 @@ namespace Cflashsoft.Framework.Data
         /// Enumerates an IDataReader and returns a DataTable.
         /// </summary>
         /// <param name="reader">The IDataReader.</param>
+        /// <param name="name">The name of the DataTable.</param>
         /// <param name="closeReader">Indicates whether to close the connection when the enumeration completes.</param>
         /// <returns>A DataTable.</returns>
-        public static async Task<DataTable> ToDataTableAsync(this DbDataReader reader, bool closeReader = true)
+        public static async Task<DataTable> ToDataTableAsync(this DbDataReader reader, string name = null, bool closeReader = true)
         {
             DataTable result = new DataTable();
 
             try
             {
+                if (name != null)
+                    result.TableName = name;
+
                 for (int i = 0; i < reader.FieldCount; i++)
                     result.Columns.Add(reader.GetName(i), reader.GetFieldType(i));
 
@@ -1496,6 +1504,80 @@ namespace Cflashsoft.Framework.Data
                         row[i] = reader.GetValue(i);
 
                     result.Rows.Add(row);
+                }
+            }
+            finally
+            {
+                if (closeReader)
+                    reader.Dispose();
+            }
+
+            return result;
+        }
+
+        /// <summary>
+        /// Enumerates all the resultsets in an IDataReader and returns a DataSet with multiple DataTables.
+        /// </summary>
+        /// <param name="reader">The IDataReader.</param>
+        /// <param name="tables">An array of strings from which to retrieve table name information.</param>
+        /// <param name="closeReader">Indicates whether to close the connection when the enumeration completes.</param>
+        /// <param name="useClassicDataSetLoad">If true, uses the classic, built-in ADO.NET DataSet.Load() function.</param>
+        /// <returns>A DataSet.</returns>
+        public static DataSet ToDataSet(this IDataReader reader, string[] tables, bool closeReader = true, bool useClassicDataSetLoad = true)
+        {
+            DataSet result = new DataSet();
+
+            try
+            {
+                if (useClassicDataSetLoad)
+                {
+                    result.Load(reader, LoadOption.PreserveChanges, tables);
+                }
+                else
+                {
+                    int tableIndex = 0;
+                    bool continueLoad = true;
+
+                    while (continueLoad)
+                    {
+                        result.Tables.Add(ToDataTable(reader, tables[tableIndex], closeReader: false, useClassicDataTableLoad: false));
+
+                        tableIndex++;
+                        continueLoad = reader.NextResult();
+                    }
+                }
+            }
+            finally
+            {
+                if (closeReader)
+                    reader.Dispose();
+            }
+
+            return result;
+        }
+
+        /// <summary>
+        /// Enumerates all the resultsets in an IDataReader and returns a DataSet with multiple DataTables.
+        /// </summary>
+        /// <param name="reader">The IDataReader.</param>
+        /// <param name="tables">An array of strings from which to retrieve table name information.</param>
+        /// <param name="closeReader">Indicates whether to close the connection when the enumeration completes.</param>
+        /// <returns>A DataSet.</returns>
+        public static async Task<DataSet> ToDataSetAsync(this DbDataReader reader, string[] tables, bool closeReader = true)
+        {
+            DataSet result = new DataSet();
+
+            try
+            {
+                int tableIndex = 0;
+                bool continueLoad = true;
+
+                while (continueLoad)
+                {
+                    result.Tables.Add(await ToDataTableAsync(reader, tables[tableIndex], closeReader: false));
+
+                    tableIndex++;
+                    continueLoad = await reader.NextResultAsync();
                 }
             }
             finally
