@@ -74,17 +74,20 @@ namespace Cflashsoft.Framework.ApiKeyAuthentication
 
         private void InitializeDatabase()
         {
-            var files = new[] {
+            using var cn = new SqlConnection(_options.ConnectionString);
+
+            if (!((int)cn.ExecuteScalar("IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = 'CfAuth_AppApiKeys') BEGIN SELECT 1 AS Result END ELSE BEGIN SELECT 0 AS Result END") == 1))
+            {
+                var scripts = new[] {
                 "Cflashsoft.Framework.ApiKeyAuthentication.SqlApiKeysProvider.SQL_Schema_Scripts.Create_Schema.txt",
                 "Cflashsoft.Framework.ApiKeyAuthentication.SqlApiKeysProvider.SQL_Schema_Scripts.Seed_Roles_And_Keys.txt" };
 
-            using var cn = new SqlConnection(_options.ConnectionString);
-
-            foreach (var file in files)
-                using (var stream = System.Reflection.Assembly.GetExecutingAssembly().GetManifestResourceStream(file))
-                using (var reader = new StreamReader(stream))
-                    foreach (var segment in reader.ReadToEnd().Split("\r\nGO", StringSplitOptions.RemoveEmptyEntries))
-                        cn.ExecuteNonQuery(segment);
+                foreach (var script in scripts)
+                    using (var stream = System.Reflection.Assembly.GetExecutingAssembly().GetManifestResourceStream(script))
+                    using (var reader = new StreamReader(stream))
+                        foreach (var segment in reader.ReadToEnd().Split("\r\nGO", StringSplitOptions.RemoveEmptyEntries))
+                            cn.ExecuteNonQuery(segment);
+            }
         }
     }
 
