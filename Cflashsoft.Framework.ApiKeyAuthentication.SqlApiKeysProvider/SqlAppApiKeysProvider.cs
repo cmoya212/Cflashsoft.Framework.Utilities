@@ -57,7 +57,7 @@ namespace Cflashsoft.Framework.ApiKeyAuthentication
 
                 if (appApiKeyInfo != null)
                 {
-                    var roles = await (await cn.ExecuteQueryAsync("SELECT r.Name FROM CfAuth_AppApiKeyRoles kr INNER JOIN CfAuth_AppRoles r on kr.AppRoleId = r.Id WHERE kr.AppApiKeyId = @AppApiKeyId", ("AppApiKeyId", appApiKeyInfo.Id)))
+                    var roles = await (await cn.ExecuteQueryAsync("SELECT r.Name FROM CfAuth_AppApiKeyRoles kr INNER JOIN CfAuth_AppRoles r ON kr.AppRoleId = r.Id WHERE kr.AppApiKeyId = @AppApiKeyId AND r.Enabled = 1", ("AppApiKeyId", appApiKeyInfo.Id)))
                         .ToListAsync(reader => reader.GetString(0));
 
                     return new AppApiKeyModel
