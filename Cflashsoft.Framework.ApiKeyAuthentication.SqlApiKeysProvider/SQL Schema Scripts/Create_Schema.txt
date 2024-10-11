@@ -21,6 +21,8 @@ CREATE TABLE [CfAuth_AppApiKeys](
 	[Name] [nvarchar](50) COLLATE SQL_Latin1_General_CP1_CI_AS NOT NULL,
 	[ApiKey] [varchar](255) COLLATE SQL_Latin1_General_CP1_CS_AS NOT NULL,
 	[Enabled] [bit] NOT NULL,
+	[ExpiryDate] [datetime] NULL,
+	[CreatedDate] [datetime] NOT NULL,
  CONSTRAINT [PK_CfAuth_AppApiKeys] PRIMARY KEY CLUSTERED 
 (
 	[Id] ASC
@@ -61,6 +63,8 @@ CREATE UNIQUE NONCLUSTERED INDEX [IX_CfAuth_AppRoles_Name] ON [CfAuth_AppRoles]
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, IGNORE_DUP_KEY = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
 ALTER TABLE [CfAuth_AppApiKeys] ADD  CONSTRAINT [DF_CfAuth_AppApiKeys_Enabled]  DEFAULT ((0)) FOR [Enabled]
+GO
+ALTER TABLE [CfAuth_AppApiKeys] ADD  CONSTRAINT [DF_CfAuth_AppApiKeys_CreatedDate]  DEFAULT (getutcdate()) FOR [CreatedDate]
 GO
 ALTER TABLE [CfAuth_AppRoles] ADD  CONSTRAINT [DF_CfAuth_AppRoles_Enabled]  DEFAULT ((0)) FOR [Enabled]
 GO
