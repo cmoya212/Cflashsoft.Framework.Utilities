@@ -240,7 +240,7 @@ namespace Cflashsoft.Framework.ApiKeyAuthentication
                     {
                         Name = apiKeyInfoConfig["Name"],
                         Key = apiKeyInfoConfig["Key"],
-                        //Roles = apiKeyInfoConfig.GetSection("Roles").Get<string[]>()
+                        Roles = apiKeyInfoConfig.GetSection("Roles").Get<string[]>()
                     });
 
                 if (appApiKeys.Count > 0)
