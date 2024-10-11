@@ -72,10 +72,8 @@ namespace Cflashsoft.Framework.Optimization
                     {
                         result = getValue();
 
-                        if (result == null)
-                            throw new InvalidOperationException("The value returned from the getValue function cannot be null.");
-
-                        Set(cache, key, result, absoluteExpiration);
+                        if (result != null)
+                            Set(cache, key, result, absoluteExpiration);
                     }
                 }
                 finally
@@ -172,10 +170,8 @@ namespace Cflashsoft.Framework.Optimization
                     {
                         result = await getValueAsync();
 
-                        if (result == null)
-                            throw new InvalidOperationException("The value returned from the getValue function cannot be null.");
-
-                        Set(cache, key, result, absoluteExpiration);
+                        if (result != null)
+                            Set(cache, key, result, absoluteExpiration);
                     }
                 }
                 finally
