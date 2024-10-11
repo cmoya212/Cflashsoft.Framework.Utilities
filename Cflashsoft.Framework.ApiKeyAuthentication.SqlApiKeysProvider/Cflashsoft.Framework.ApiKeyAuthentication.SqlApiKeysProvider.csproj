@@ -1,0 +1,44 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>disable</Nullable>
+    <GenerateDocumentationFile>True</GenerateDocumentationFile>
+    <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+    <Title>Cflashsoft.Framework.ApiKeyAuthentication.SqlApiKeysAprovider</Title>
+    <Version>1.4.4</Version>
+    <Authors>C. Moya</Authors>
+    <Description>API key authentication.</Description>
+    <Copyright>Copyright 2024</Copyright>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="SQL Schema Scripts\Create_Schema.txt" />
+    <None Remove="SQL Schema Scripts\Seed_Roles_And_Keys.txt" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="SQL Schema Scripts\Create_Schema.txt" />
+    <EmbeddedResource Include="SQL Schema Scripts\Seed_Roles_And_Keys.txt" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="README.md">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Data.SqlClient" Version="5.1.3" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Cflashsoft.Framework.ApiKeyAuthentication\Cflashsoft.Framework.ApiKeyAuthentication.csproj" />
+    <ProjectReference Include="..\Cflashsoft.Framework.Data\Cflashsoft.Framework.Data.csproj" />
+    <ProjectReference Include="..\Cflashsoft.Framework.Optimization\Cflashsoft.Framework.Optimization.csproj" />
+  </ItemGroup>
+
+</Project>

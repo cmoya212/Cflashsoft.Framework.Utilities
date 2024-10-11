@@ -1,0 +1,9 @@
+﻿--Seed roles
+INSERT INTO CfAuth_AppRoles ([Id], [Name], [Enabled]) VALUES(1, 'ApiUser', 1)
+--Seed initial user
+DECLARE @ApiKey varchar(max) = (select r from OpenJson((select Crypt_Gen_Random(36) r for json path)) with (r varchar(max)))
+INSERT INTO CfAuth_AppApiKeys ([Name], [ApiKey], [Enabled]) VALUES('Default', @ApiKey, 1)
+DECLARE @ApiKeyId int = SCOPE_IDENTITY()
+--Seed initial user's roles
+INSERT INTO CfAuth_AppApiKeyRoles ([AppApiKeyId], [AppRoleId]) VALUES(@ApiKeyId, 1)
+GO
