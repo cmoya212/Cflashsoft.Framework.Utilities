@@ -38,9 +38,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Cflashsoft.Framework.Redis"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HybridCacheIntegrationTests", "HybridCacheIntegrationTests\HybridCacheIntegrationTests.csproj", "{EC6C90F0-6042-4CB5-8975-FCB0E93D02A5}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Cflashsoft.Framework.ApiKeyAuthentication", "Cflashsoft.Framework.ApiKeyAuthentication\Cflashsoft.Framework.ApiKeyAuthentication.csproj", "{06401906-301C-4268-A034-97DC79DB2690}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Cflashsoft.Framework.ApiKeyAuthentication", "Cflashsoft.Framework.ApiKeyAuthentication\Cflashsoft.Framework.ApiKeyAuthentication.csproj", "{06401906-301C-4268-A034-97DC79DB2690}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Cflashsoft.Framework.ApiKeyAuthentication.SqlApiKeysProvider", "Cflashsoft.Framework.ApiKeyAuthentication.SqlApiKeysProvider\Cflashsoft.Framework.ApiKeyAuthentication.SqlApiKeysProvider.csproj", "{7DD98ACE-E837-40D3-9045-DC8A33E6C574}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Cflashsoft.Framework.ApiKeyAuthentication.SqlApiKeysProvider", "Cflashsoft.Framework.ApiKeyAuthentication.SqlApiKeysProvider\Cflashsoft.Framework.ApiKeyAuthentication.SqlApiKeysProvider.csproj", "{7DD98ACE-E837-40D3-9045-DC8A33E6C574}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

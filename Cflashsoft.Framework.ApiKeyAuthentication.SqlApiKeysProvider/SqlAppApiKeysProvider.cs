@@ -52,7 +52,7 @@ namespace Cflashsoft.Framework.ApiKeyAuthentication
             {
                 await using var cn = new SqlConnection(_options.ConnectionString);
 
-                var appApiKeyInfo = await (await cn.ExecuteQueryAsync("SELECT Id, Name FROM CfAuth_AppApiKeys WHERE ApiKey = @ApiKey AND Enabled = 1 AND (ExpiryDate IS NULL OR ExpiryDate < GETUTCDATE())", ("ApiKey", apiKey)))
+                var appApiKeyInfo = await (await cn.ExecuteQueryAsync("SELECT Id, Name FROM CfAuth_AppApiKeys WHERE ApiKey = @ApiKey AND Enabled = 1 AND (ExpiryDate IS NULL OR ExpiryDate > GETUTCDATE())", ("ApiKey", apiKey)))
                     .FirstOrDefaultAsync(reader => new { Id = reader.GetInt32(0), Name = reader.GetString(1) });
 
                 if (appApiKeyInfo != null)
