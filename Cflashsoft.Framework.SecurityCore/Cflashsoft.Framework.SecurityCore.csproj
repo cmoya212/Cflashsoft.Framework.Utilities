@@ -6,6 +6,11 @@
     <Company>C-Flash Software</Company>
     <Product>Cflashsoft Framework</Product>
     <Description>.NET Core utility for salted hash and self-expiring tokens.</Description>
+    <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+    <Version>1.4.4</Version>
+    <Title>Cflashsoft.Framework.SecurityCore</Title>
+    <Copyright>Copyright 2024</Copyright>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
@@ -15,5 +20,12 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
     <DocumentationFile>bin\Release\netcoreapp2.1\Cflashsoft.Framework.EntityCoreAppServices.xml\Cflashsoft.Framework.SecurityCore.xml</DocumentationFile>
   </PropertyGroup>
+
+  <ItemGroup>
+    <None Update="README.md">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
+  </ItemGroup>
 
 </Project>

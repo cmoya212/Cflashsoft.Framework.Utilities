@@ -4,6 +4,13 @@
     <TargetFramework>netstandard2.1</TargetFramework>
     <GenerateDocumentationFile>True</GenerateDocumentationFile>
     <Nullable>disable</Nullable>
+    <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+    <Title>Cflashsoft.Framework.Redis</Title>
+    <Version>1.4.4</Version>
+    <Authors>C. Moya</Authors>
+    <Description>This package has utility classes which can be used across multiple solutions.</Description>
+    <Copyright>Copyright 2024</Copyright>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
   </PropertyGroup>
 
   <ItemGroup>
@@ -14,6 +21,13 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Cflashsoft.Framework.Optimization\Cflashsoft.Framework.Optimization.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="README.md">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
   </ItemGroup>
 
 </Project>
