@@ -17,25 +17,18 @@ namespace Cflashsoft.Framework.ApiKeyAuthentication
         public string ConnectionString { get; set; }
 
         /// <summary>
-        /// If greater than 0, caches API keys in memory for high-traffic scenarios. 
+        /// If true, creates the database tables necessary for API key authentication.
         /// </summary>
-        public int MemoryCacheSeconds { get; set; }
-
-        /// <summary>
-        /// If true, creates the database tables necessary for API key authentication during development. NOTE: should only be run once.
-        /// </summary>
-        public bool InitializeDatabase {  get; set; }
+        public bool InitializeDatabase { get; set; }
     }
 
     internal class SqlAppApiKeysProvider : IAppApiKeysProvider
     {
         private readonly SqlAppApiKeysProviderOptions _options = null;
-        private readonly IMemoryCache _memoryCache = null;
 
-        public SqlAppApiKeysProvider(SqlAppApiKeysProviderOptions options, IMemoryCache memoryCache = null)
+        public SqlAppApiKeysProvider(SqlAppApiKeysProviderOptions options)
         {
             _options = options;
-            _memoryCache = memoryCache;
 
             if (options.InitializeDatabase)
                 InitializeDatabase();
@@ -43,33 +36,25 @@ namespace Cflashsoft.Framework.ApiKeyAuthentication
 
         public async Task<AppApiKeyModel> GetAppApiKeyInfoAsync(string apiKey, ApiKeyAuthenticationSchemeOptions options)
         {
-            if (_options.MemoryCacheSeconds > 0)
-                return await _memoryCache.InterlockedGetOrSetAsync($"CfApiKey_{apiKey}", () => GetApiKeyAsync(), _options.MemoryCacheSeconds);
-            else
-                return await GetApiKeyAsync();
+            await using var cn = new SqlConnection(_options.ConnectionString);
 
-            async Task<AppApiKeyModel> GetApiKeyAsync()
+            var appApiKeyInfo = await (await cn.ExecuteQueryAsync("SELECT Id, Name FROM CfAuth_AppApiKeys WHERE ApiKey = @ApiKey AND Enabled = 1 AND (ExpiryDate IS NULL OR ExpiryDate > GETUTCDATE())", ("ApiKey", apiKey)))
+                .FirstOrDefaultAsync(reader => new { Id = reader.GetInt32(0), Name = reader.GetString(1) });
+
+            if (appApiKeyInfo != null)
             {
-                await using var cn = new SqlConnection(_options.ConnectionString);
+                var roles = await (await cn.ExecuteQueryAsync("SELECT r.Name FROM CfAuth_AppApiKeyRoles kr INNER JOIN CfAuth_AppRoles r ON kr.AppRoleId = r.Id WHERE kr.AppApiKeyId = @AppApiKeyId AND r.Enabled = 1", ("AppApiKeyId", appApiKeyInfo.Id)))
+                    .ToListAsync(reader => reader.GetString(0));
 
-                var appApiKeyInfo = await (await cn.ExecuteQueryAsync("SELECT Id, Name FROM CfAuth_AppApiKeys WHERE ApiKey = @ApiKey AND Enabled = 1 AND (ExpiryDate IS NULL OR ExpiryDate > GETUTCDATE())", ("ApiKey", apiKey)))
-                    .FirstOrDefaultAsync(reader => new { Id = reader.GetInt32(0), Name = reader.GetString(1) });
-
-                if (appApiKeyInfo != null)
+                return new AppApiKeyModel
                 {
-                    var roles = await (await cn.ExecuteQueryAsync("SELECT r.Name FROM CfAuth_AppApiKeyRoles kr INNER JOIN CfAuth_AppRoles r ON kr.AppRoleId = r.Id WHERE kr.AppApiKeyId = @AppApiKeyId AND r.Enabled = 1", ("AppApiKeyId", appApiKeyInfo.Id)))
-                        .ToListAsync(reader => reader.GetString(0));
-
-                    return new AppApiKeyModel
-                    {
-                        Name = appApiKeyInfo.Name,
-                        Key = apiKey,
-                        Roles = roles.Count > 0 ? roles : null
-                    };
-                }
-
-                return null;
+                    Name = appApiKeyInfo.Name,
+                    Key = apiKey,
+                    Roles = roles.Count > 0 ? roles : null
+                };
             }
+
+            return null;
         }
 
         private void InitializeDatabase()
