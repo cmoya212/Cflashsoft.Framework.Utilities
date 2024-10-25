@@ -21,9 +21,7 @@ namespace Cflashsoft.Framework.Data
         /// <param name="parameters">The parameters of the SQL statement or stored procedure.</param>
         /// <returns>An IDataReader object.</returns>
         public static IDataReader ExecuteQuery(this IDbConnection cn, string commandText, params (string ParameterName, object Value)[] parameters)
-        {
-            return ExecuteQuery(cn, commandText, CommandType.Text, parameters);
-        }
+            => ExecuteQuery(cn, commandText, CommandType.Text, parameters);
 
         /// <summary>
         /// Executes the CommandText against the Connection and builds an IDataReader.
@@ -34,9 +32,7 @@ namespace Cflashsoft.Framework.Data
         /// <param name="parameters">The parameters of the SQL statement or stored procedure.</param>
         /// <returns>An IDataReader object.</returns>
         public static IDataReader ExecuteQuery(this IDbConnection cn, string commandText, CommandType commandType, params (string ParameterName, object Value)[] parameters)
-        {
-            return ExecuteQuery(cn, commandText, commandType, CommandBehavior.Default, parameters);
-        }
+            => ExecuteQuery(cn, commandText, commandType, CommandBehavior.Default, parameters);
 
         /// <summary>
         /// Executes the CommandText against the Connection and builds an IDataReader.
@@ -48,9 +44,7 @@ namespace Cflashsoft.Framework.Data
         /// <param name="parameters">The parameters of the SQL statement or stored procedure.</param>
         /// <returns>An IDataReader object.</returns>
         public static IDataReader ExecuteQuery(this IDbConnection cn, string commandText, CommandType commandType, CommandBehavior behavior, params (string ParameterName, object Value)[] parameters)
-        {
-            return ExecuteQuery(cn, commandText, commandType, behavior, (IDbTransaction)null, parameters);
-        }
+            => ExecuteQuery(cn, commandText, commandType, behavior,(int?)null, (IDbTransaction)null, parameters);
 
         /// <summary>
         /// Executes the CommandText against the Connection and builds an IDataReader.
@@ -59,24 +53,9 @@ namespace Cflashsoft.Framework.Data
         /// <param name="commandText">The text command to run against the data source.</param>
         /// <param name="commandType">Indicates or specifies how the CommandText property is interpreted.</param>
         /// <param name="behavior">One of the CommandBehavior values.</param>
-        /// <param name="parameters">The parameters of the SQL statement or stored procedure.</param>
-        /// <param name="trx">The transaction to use for the command.</param>
-        /// <returns>An IDataReader object.</returns>
-        public static IDataReader ExecuteQuery(this IDbConnection cn, string commandText, CommandType commandType, CommandBehavior behavior, IDbTransaction trx, params (string ParameterName, object Value)[] parameters)
-        {
-            return ExecuteQuery(cn, commandText, commandType, behavior, null, trx, parameters);
-        }
-
-        /// <summary>
-        /// Executes the CommandText against the Connection and builds an IDataReader.
-        /// </summary>
-        /// <param name="cn">The database connection to execute the query on. The connection will be opened if it is closed.</param>
-        /// <param name="commandText">The text command to run against the data source.</param>
-        /// <param name="commandType">Indicates or specifies how the CommandText property is interpreted.</param>
-        /// <param name="behavior">One of the CommandBehavior values.</param>
-        /// <param name="parameters">The parameters of the SQL statement or stored procedure.</param>
         /// <param name="commandTimeout">The time (in seconds) to wait for the command to execute. The default value is 30 seconds.</param>
         /// <param name="trx">The transaction to use for the command.</param>
+        /// <param name="parameters">The parameters of the SQL statement or stored procedure.</param>
         /// <returns>An IDataReader object.</returns>
         public static IDataReader ExecuteQuery(this IDbConnection cn, string commandText, CommandType commandType, CommandBehavior behavior, int? commandTimeout, IDbTransaction trx, params (string ParameterName, object Value)[] parameters)
         {
@@ -115,9 +94,7 @@ namespace Cflashsoft.Framework.Data
         /// <param name="parameters">The parameters of the SQL statement or stored procedure.</param>
         /// <returns>An IDataReader object.</returns>
         public static Task<DbDataReader> ExecuteQueryAsync(this DbConnection cn, string commandText, params (string ParameterName, object Value)[] parameters)
-        {
-            return ExecuteQueryAsync(cn, commandText, CommandType.Text, parameters);
-        }
+            => ExecuteQueryAsync(cn, commandText, CommandType.Text, parameters);
 
         /// <summary>
         /// Executes the CommandText against the Connection and builds an IDataReader.
@@ -128,9 +105,7 @@ namespace Cflashsoft.Framework.Data
         /// <param name="parameters">The parameters of the SQL statement or stored procedure.</param>
         /// <returns>An IDataReader object.</returns>
         public static Task<DbDataReader> ExecuteQueryAsync(this DbConnection cn, string commandText, CommandType commandType, params (string ParameterName, object Value)[] parameters)
-        {
-            return ExecuteQueryAsync(cn, commandText, commandType, CommandBehavior.Default, parameters);
-        }
+            => ExecuteQueryAsync(cn, commandText, commandType, CommandBehavior.Default, parameters);
 
         /// <summary>
         /// Executes the CommandText against the Connection and builds an IDataReader.
@@ -142,9 +117,7 @@ namespace Cflashsoft.Framework.Data
         /// <param name="parameters">The parameters of the SQL statement or stored procedure.</param>
         /// <returns>An IDataReader object.</returns>
         public static Task<DbDataReader> ExecuteQueryAsync(this DbConnection cn, string commandText, CommandType commandType, CommandBehavior behavior, params (string ParameterName, object Value)[] parameters)
-        {
-            return ExecuteQueryAsync(cn, commandText, commandType, behavior, null, (DbTransaction)null, parameters);
-        }
+            => ExecuteQueryAsync(cn, commandText, commandType, behavior, null, (DbTransaction)null, parameters);
 
         /// <summary>
         /// Executes the CommandText against the Connection and builds an IDataReader.
@@ -197,9 +170,7 @@ namespace Cflashsoft.Framework.Data
         /// Builds the DataReader with CommandBehavior.SingleResult | CommandBehavior.SingleRow | CommandBehavior.SequentialAccess | CommandBehavior.CloseConnection.
         /// </remarks>
         public static IDataReader ExecuteSequentialSingle(this IDbConnection cn, string commandText, params (string ParameterName, object Value)[] parameters)
-        {
-            return ExecuteQuery(cn, commandText, CommandType.Text, CommandBehavior.SingleResult | CommandBehavior.SingleRow | CommandBehavior.SequentialAccess | CommandBehavior.CloseConnection, (IDbTransaction)null, parameters);
-        }
+            => ExecuteQuery(cn, commandText, CommandType.Text, CommandBehavior.SingleResult | CommandBehavior.SingleRow | CommandBehavior.SequentialAccess | CommandBehavior.CloseConnection, null, (IDbTransaction)null, parameters);
 
         /// <summary>
         /// Executes the CommandText against the Connection and builds an IDataReader to handle rows that contain a large binary column.
@@ -213,9 +184,7 @@ namespace Cflashsoft.Framework.Data
         /// Builds the DataReader with CommandBehavior.SingleResult | CommandBehavior.SingleRow | CommandBehavior.SequentialAccess | CommandBehavior.CloseConnection.
         /// </remarks>
         public static IDataReader ExecuteSequentialSingle(this IDbConnection cn, string commandText, CommandType commandType = CommandType.Text, params (string ParameterName, object Value)[] parameters)
-        {
-            return ExecuteQuery(cn, commandText, commandType, CommandBehavior.SingleResult | CommandBehavior.SingleRow | CommandBehavior.SequentialAccess | CommandBehavior.CloseConnection, (IDbTransaction)null, parameters);
-        }
+            => ExecuteQuery(cn, commandText, commandType, CommandBehavior.SingleResult | CommandBehavior.SingleRow | CommandBehavior.SequentialAccess | CommandBehavior.CloseConnection, null, (IDbTransaction)null, parameters);
 
         /// <summary>
         /// Executes the CommandText against the Connection and builds an IDataReader to handle rows that contain a large binary column.
@@ -229,9 +198,7 @@ namespace Cflashsoft.Framework.Data
         /// Builds the DataReader with CommandBehavior.SingleResult | CommandBehavior.SingleRow | CommandBehavior.SequentialAccess | CommandBehavior.CloseConnection.
         /// </remarks>
         public static IDataReader ExecuteSequentialSingle(this IDbConnection cn, string commandText, CommandType commandType = CommandType.Text, IEnumerable<IDbDataParameter> parameters = null)
-        {
-            return ExecuteQuery(cn, commandText, commandType, CommandBehavior.SingleResult | CommandBehavior.SingleRow | CommandBehavior.SequentialAccess | CommandBehavior.CloseConnection, null, (IDbTransaction)null, parameters);
-        }
+            => ExecuteQuery(cn, commandText, commandType, CommandBehavior.SingleResult | CommandBehavior.SingleRow | CommandBehavior.SequentialAccess | CommandBehavior.CloseConnection, null, (IDbTransaction)null, parameters);
 
         /// <summary>
         /// Executes the CommandText against the Connection and builds an IDataReader to handle rows that contain a large binary column.
@@ -244,9 +211,7 @@ namespace Cflashsoft.Framework.Data
         /// Builds the DataReader with CommandBehavior.SingleResult | CommandBehavior.SingleRow | CommandBehavior.SequentialAccess | CommandBehavior.CloseConnection.
         /// </remarks>
         public static Task<DbDataReader> ExecuteSequentialSingleAsync(this DbConnection cn, string commandText, params (string ParameterName, object Value)[] parameters)
-        {
-            return ExecuteQueryAsync(cn, commandText, CommandType.Text, CommandBehavior.SingleResult | CommandBehavior.SingleRow | CommandBehavior.SequentialAccess | CommandBehavior.CloseConnection, null, (DbTransaction)null, parameters);
-        }
+            => ExecuteQueryAsync(cn, commandText, CommandType.Text, CommandBehavior.SingleResult | CommandBehavior.SingleRow | CommandBehavior.SequentialAccess | CommandBehavior.CloseConnection, null, (DbTransaction)null, parameters);
 
         /// <summary>
         /// Executes the CommandText against the Connection and builds an IDataReader to handle rows that contain a large binary column.
@@ -260,9 +225,7 @@ namespace Cflashsoft.Framework.Data
         /// Builds the DataReader with CommandBehavior.SingleResult | CommandBehavior.SingleRow | CommandBehavior.SequentialAccess | CommandBehavior.CloseConnection.
         /// </remarks>
         public static Task<DbDataReader> ExecuteSequentialSingleAsync(this DbConnection cn, string commandText, CommandType commandType = CommandType.Text, params (string ParameterName, object Value)[] parameters)
-        {
-            return ExecuteQueryAsync(cn, commandText, commandType, CommandBehavior.SingleResult | CommandBehavior.SingleRow | CommandBehavior.SequentialAccess | CommandBehavior.CloseConnection, null, (DbTransaction)null, parameters);
-        }
+            => ExecuteQueryAsync(cn, commandText, commandType, CommandBehavior.SingleResult | CommandBehavior.SingleRow | CommandBehavior.SequentialAccess | CommandBehavior.CloseConnection, null, (DbTransaction)null, parameters);
 
         /// <summary>
         /// Executes the CommandText against the Connection and builds an IDataReader to handle rows that contain a large binary column.
@@ -276,9 +239,7 @@ namespace Cflashsoft.Framework.Data
         /// Builds the DataReader with CommandBehavior.SingleResult | CommandBehavior.SingleRow | CommandBehavior.SequentialAccess | CommandBehavior.CloseConnection.
         /// </remarks>
         public static Task<DbDataReader> ExecuteSequentialSingleAsync(this DbConnection cn, string commandText, CommandType commandType = CommandType.Text, IEnumerable<IDbDataParameter> parameters = null)
-        {
-            return ExecuteQueryAsync(cn, commandText, commandType, CommandBehavior.SingleResult | CommandBehavior.SingleRow | CommandBehavior.SequentialAccess | CommandBehavior.CloseConnection, null, (DbTransaction)null, parameters);
-        }
+            => ExecuteQueryAsync(cn, commandText, commandType, CommandBehavior.SingleResult | CommandBehavior.SingleRow | CommandBehavior.SequentialAccess | CommandBehavior.CloseConnection, null, (DbTransaction)null, parameters);
 
         /// <summary>
         /// Executes an SQL statement against the Connection object of a .NET data provider, and returns the number of rows affected.
@@ -288,9 +249,7 @@ namespace Cflashsoft.Framework.Data
         /// <param name="parameters">The parameters of the SQL statement or stored procedure.</param>
         /// <returns>The number of rows affected.</returns>
         public static int ExecuteNonQuery(this IDbConnection cn, string commandText, params (string ParameterName, object Value)[] parameters)
-        {
-            return ExecuteNonQuery(cn, commandText, CommandType.Text, parameters);
-        }
+            => ExecuteNonQuery(cn, commandText, CommandType.Text, parameters);
 
         /// <summary>
         /// Executes an SQL statement against the Connection object of a .NET data provider, and returns the number of rows affected.
@@ -301,9 +260,7 @@ namespace Cflashsoft.Framework.Data
         /// <param name="parameters">The parameters of the SQL statement or stored procedure.</param>
         /// <returns>The number of rows affected.</returns>
         public static int ExecuteNonQuery(this IDbConnection cn, string commandText, CommandType commandType, params (string ParameterName, object Value)[] parameters)
-        {
-            return ExecuteNonQuery(cn, commandText, commandType, null, (IDbTransaction)null, parameters);
-        }
+            => ExecuteNonQuery(cn, commandText, commandType, null, (IDbTransaction)null, parameters);
 
         /// <summary>
         /// Executes an SQL statement against the Connection object of a .NET data provider, and returns the number of rows affected.
@@ -351,9 +308,7 @@ namespace Cflashsoft.Framework.Data
         /// <param name="parameters">The parameters of the SQL statement or stored procedure.</param>
         /// <returns>The number of rows affected.</returns>
         public static Task<int> ExecuteNonQueryAsync(this DbConnection cn, string commandText, params (string ParameterName, object Value)[] parameters)
-        {
-            return ExecuteNonQueryAsync(cn, commandText, CommandType.Text, parameters);
-        }
+            => ExecuteNonQueryAsync(cn, commandText, CommandType.Text, parameters);
 
         /// <summary>
         /// Executes an SQL statement against the Connection object of a .NET data provider, and returns the number of rows affected.
@@ -364,9 +319,7 @@ namespace Cflashsoft.Framework.Data
         /// <param name="parameters">The parameters of the SQL statement or stored procedure.</param>
         /// <returns>The number of rows affected.</returns>
         public static Task<int> ExecuteNonQueryAsync(this DbConnection cn, string commandText, CommandType commandType, params (string ParameterName, object Value)[] parameters)
-        {
-            return ExecuteNonQueryAsync(cn, commandText, commandType, null, (DbTransaction)null, parameters);
-        }
+            => ExecuteNonQueryAsync(cn, commandText, commandType, null, (DbTransaction)null, parameters);
 
         /// <summary>
         /// Executes an SQL statement against the Connection object of a .NET data provider, and returns the number of rows affected.
@@ -413,9 +366,7 @@ namespace Cflashsoft.Framework.Data
         /// <param name="parameters">The parameters of the SQL statement or stored procedure.</param>
         /// <returns>The first column of the first row in the resultset.</returns>
         public static object ExecuteScalar(this IDbConnection cn, string commandText, params (string ParameterName, object Value)[] parameters)
-        {
-            return ExecuteScalar(cn, commandText, CommandType.Text, parameters);
-        }
+            => ExecuteScalar(cn, commandText, CommandType.Text, parameters);
 
         /// <summary>
         /// Executes the query, and returns the first column of the first row in the resultset returned by the query. Extra columns or rows are ignored.
@@ -426,9 +377,7 @@ namespace Cflashsoft.Framework.Data
         /// <param name="parameters">The parameters of the SQL statement or stored procedure.</param>
         /// <returns>The first column of the first row in the resultset.</returns>
         public static object ExecuteScalar(this IDbConnection cn, string commandText, CommandType commandType, params (string ParameterName, object Value)[] parameters)
-        {
-            return ExecuteScalar(cn, commandText, commandType, null, (IDbTransaction)null, parameters);
-        }
+            => ExecuteScalar(cn, commandText, commandType, null, (IDbTransaction)null, parameters);
 
         /// <summary>
         /// Executes the query, and returns the first column of the first row in the resultset returned by the query. Extra columns or rows are ignored.
@@ -488,9 +437,7 @@ namespace Cflashsoft.Framework.Data
         /// <param name="parameters">The parameters of the SQL statement or stored procedure.</param>
         /// <returns>The first column of the first row in the resultset.</returns>
         public static Task<object> ExecuteScalarAsync(this DbConnection cn, string commandText, params (string ParameterName, object Value)[] parameters)
-        {
-            return ExecuteScalarAsync(cn, commandText, CommandType.Text, parameters);
-        }
+            => ExecuteScalarAsync(cn, commandText, CommandType.Text, parameters);
 
         /// <summary>
         /// Executes the query, and returns the first column of the first row in the resultset returned by the query. Extra columns or rows are ignored.
@@ -501,9 +448,7 @@ namespace Cflashsoft.Framework.Data
         /// <param name="parameters">The parameters of the SQL statement or stored procedure.</param>
         /// <returns>The first column of the first row in the resultset.</returns>
         public static Task<object> ExecuteScalarAsync(this DbConnection cn, string commandText, CommandType commandType, params (string ParameterName, object Value)[] parameters)
-        {
-            return ExecuteScalarAsync(cn, commandText, commandType, null, (DbTransaction)null, parameters);
-        }
+            => ExecuteScalarAsync(cn, commandText, commandType, null, (DbTransaction)null, parameters);
 
         /// <summary>
         /// Executes the query, and returns the first column of the first row in the resultset returned by the query. Extra columns or rows are ignored.
@@ -620,9 +565,7 @@ namespace Cflashsoft.Framework.Data
         /// <param name="parameters">The parameters of the SQL statement or stored procedure.</param>
         /// <returns>A IDbCommand object.</returns>
         public static IDbCommand CreateCommand(this IDbConnection cn, string commandText, CommandType commandType, params (string ParameterName, object Value)[] parameters)
-        {
-            return CreateCommand(cn, commandText, commandType, null, (IDbTransaction)null, parameters);
-        }
+            => CreateCommand(cn, commandText, commandType, null, (IDbTransaction)null, parameters);
 
         /// <summary>
         /// Utility method to create and configure a IDbCommand object in a single call.
@@ -658,9 +601,7 @@ namespace Cflashsoft.Framework.Data
         /// <param name="parameters">The parameters of the SQL statement or stored procedure.</param>
         /// <returns>A IDbCommand object.</returns>
         public static DbCommand CreateCommand(this DbConnection cn, string commandText, CommandType commandType, params (string ParameterName, object Value)[] parameters)
-        {
-            return CreateCommand(cn, commandText, commandType, null, (DbTransaction)null, parameters);
-        }
+            => CreateCommand(cn, commandText, commandType, null, (DbTransaction)null, parameters);
 
         /// <summary>
         /// Utility method to create and configure a IDbCommand object in a single call.
@@ -696,9 +637,7 @@ namespace Cflashsoft.Framework.Data
         /// <param name="parameters">The parameters of the SQL statement or stored procedure.</param>
         /// <returns>A IDbCommand object.</returns>
         public static IDbCommand CreateCommand(this IDbConnection cn, string commandText, CommandType commandType, IEnumerable<IDbDataParameter> parameters)
-        {
-            return CreateCommand(cn, commandText, commandType, null, (IDbTransaction)null, parameters);
-        }
+            => CreateCommand(cn, commandText, commandType, null, (IDbTransaction)null, parameters);
 
         /// <summary>
         /// Utility method to create and configure a IDbCommand object in a single call.
@@ -734,9 +673,7 @@ namespace Cflashsoft.Framework.Data
         /// <param name="parameters">The parameters of the SQL statement or stored procedure.</param>
         /// <returns>A IDbCommand object.</returns>
         public static DbCommand CreateCommand(this DbConnection cn, string commandText, CommandType commandType, IEnumerable<IDbDataParameter> parameters)
-        {
-            return CreateCommand(cn, commandText, commandType, null, (DbTransaction)null, parameters);
-        }
+            => CreateCommand(cn, commandText, commandType, null, (DbTransaction)null, parameters);
 
         /// <summary>
         /// Utility method to create and configure a IDbCommand object in a single call.
@@ -1590,15 +1527,746 @@ namespace Cflashsoft.Framework.Data
         }
 
         /// <summary>
+        /// Executes the CommandText against the Connection and returns rows as a List of Dictionary column/value items.
+        /// </summary>
+        /// <param name="cn">The database connection to execute the query on. The connection will be opened if it is closed.</param>
+        /// <param name="commandText">The text command to run against the data source.</param>
+        /// <param name="parameters">The parameters of the SQL statement or stored procedure.</param>
+        /// <returns>A List of rows as Dictionary column/value items.</returns>
+        public static List<Dictionary<string, object>> ExecuteToList(this IDbConnection cn, string commandText, params (string ParameterName, object Value)[] parameters)
+            => ExecuteToList(cn, commandText, CommandType.Text, parameters);
+
+        /// <summary>
+        /// Executes the CommandText against the Connection and returns rows as a List of Dictionary column/value items.
+        /// </summary>
+        /// <param name="cn">The database connection to execute the query on. The connection will be opened if it is closed.</param>
+        /// <param name="commandText">The text command to run against the data source.</param>
+        /// <param name="commandType">Indicates or specifies how the CommandText property is interpreted.</param>
+        /// <param name="parameters">The parameters of the SQL statement or stored procedure.</param>
+        /// <returns>A List of rows as Dictionary column/value items.</returns>
+        public static List<Dictionary<string, object>> ExecuteToList(this IDbConnection cn, string commandText, CommandType commandType, params (string ParameterName, object Value)[] parameters)
+            => ExecuteToList(cn, commandText, commandType, (int?)null, (IDbTransaction)null, parameters);
+
+        /// <summary>
+        /// Executes the CommandText against the Connection and returns rows as a List of Dictionary column/value items.
+        /// </summary>
+        /// <param name="cn">The database connection to execute the query on. The connection will be opened if it is closed.</param>
+        /// <param name="commandText">The text command to run against the data source.</param>
+        /// <param name="commandType">Indicates or specifies how the CommandText property is interpreted.</param>
+        /// <param name="commandTimeout">The time (in seconds) to wait for the command to execute. The default value is 30 seconds.</param>
+        /// <param name="trx">The transaction to use for the command.</param>
+        /// <param name="parameters">The parameters of the SQL statement or stored procedure.</param>
+        /// <returns>A List of rows as Dictionary column/value items.</returns>
+        public static List<Dictionary<string, object>> ExecuteToList(this IDbConnection cn, string commandText, CommandType commandType, int? commandTimeout, IDbTransaction trx, params (string ParameterName, object Value)[] parameters)
+            => ToList(ExecuteQuery(cn, commandText, commandType, CommandBehavior.SingleResult, commandTimeout, trx, parameters));
+
+        /// <summary>
+        /// Executes the CommandText against the Connection and returns rows as a List of Dictionary column/value items.
+        /// </summary>
+        /// <param name="cn">The database connection to execute the query on. The connection will be opened if it is closed.</param>
+        /// <param name="commandText">The text command to run against the data source.</param>
+        /// <param name="parameters">The parameters of the SQL statement or stored procedure.</param>
+        /// <returns>A List of rows as Dictionary column/value items.</returns>
+        public static Task<List<Dictionary<string, object>>> ExecuteToListAsync(this DbConnection cn, string commandText, params (string ParameterName, object Value)[] parameters)
+            => ExecuteToListAsync(cn, commandText, CommandType.Text, parameters);
+
+        /// <summary>
+        /// Executes the CommandText against the Connection and returns rows as a List of Dictionary column/value items.
+        /// </summary>
+        /// <param name="cn">The database connection to execute the query on. The connection will be opened if it is closed.</param>
+        /// <param name="commandText">The text command to run against the data source.</param>
+        /// <param name="commandType">Indicates or specifies how the CommandText property is interpreted.</param>
+        /// <param name="parameters">The parameters of the SQL statement or stored procedure.</param>
+        /// <returns>A List of rows as Dictionary column/value items.</returns>
+        public static Task<List<Dictionary<string, object>>> ExecuteToListAsync(this DbConnection cn, string commandText, CommandType commandType, params (string ParameterName, object Value)[] parameters)
+            => ExecuteToListAsync(cn, commandText, commandType, (int?)null, (DbTransaction)null, parameters);
+
+        /// <summary>
+        /// Executes the CommandText against the Connection and returns rows as a List of Dictionary column/value items.
+        /// </summary>
+        /// <param name="cn">The database connection to execute the query on. The connection will be opened if it is closed.</param>
+        /// <param name="commandText">The text command to run against the data source.</param>
+        /// <param name="commandType">Indicates or specifies how the CommandText property is interpreted.</param>
+        /// <param name="commandTimeout">The time (in seconds) to wait for the command to execute. The default value is 30 seconds.</param>
+        /// <param name="trx">The transaction to use for the command.</param>
+        /// <param name="parameters">The parameters of the SQL statement or stored procedure.</param>
+        /// <returns>A List of rows as Dictionary column/value items.</returns>
+        public static async Task<List<Dictionary<string, object>>> ExecuteToListAsync(this DbConnection cn, string commandText, CommandType commandType, int? commandTimeout, DbTransaction trx, params (string ParameterName, object Value)[] parameters)
+            => await ToListAsync(await ExecuteQueryAsync(cn, commandText, commandType, CommandBehavior.SingleResult, commandTimeout, trx, parameters));
+
+        /// <summary>
+        /// Executes the CommandText against the Connection and returns rows as custom concrete or anonymous objects.
+        /// </summary>
+        /// <param name="cn">The database connection to execute the query on. The connection will be opened if it is closed.</param>
+        /// <param name="commandText">The text command to run against the data source.</param>
+        /// <param name="parameters">The parameters of the SQL statement or stored procedure.</param>
+        /// <param name="selector">Function to convert the data.</param>
+        /// <returns>A List of custom concrete or anonymous objects.</returns>
+        /// <example>
+        /// <code>
+        /// (reader) => new
+        /// {
+        ///    Field1 = reader.GetNullableString(0), //by key works too
+        ///    Field2 = reader.GetNullableInt32(1), //by key works too
+        /// }
+        /// </code>
+        /// </example>
+        public static List<T> ExecuteToList<T>(this IDbConnection cn, string commandText, Func<IDataReader, T> selector, params (string ParameterName, object Value)[] parameters)
+            => ExecuteToList(cn, commandText, CommandType.Text, selector, parameters);
+
+        /// <summary>
+        /// Executes the CommandText against the Connection and returns rows as custom concrete or anonymous objects.
+        /// </summary>
+        /// <param name="cn">The database connection to execute the query on. The connection will be opened if it is closed.</param>
+        /// <param name="commandText">The text command to run against the data source.</param>
+        /// <param name="parameters">The parameters of the SQL statement or stored procedure.</param>
+        /// <param name="commandType">Indicates or specifies how the CommandText property is interpreted.</param>
+        /// <param name="selector">Function to convert the data.</param>
+        /// <returns>A List of custom concrete or anonymous objects.</returns>
+        /// <example>
+        /// <code>
+        /// (reader) => new
+        /// {
+        ///    Field1 = reader.GetNullableString(0), //by key works too
+        ///    Field2 = reader.GetNullableInt32(1), //by key works too
+        /// }
+        /// </code>
+        /// </example>
+        public static List<T> ExecuteToList<T>(this IDbConnection cn, string commandText, CommandType commandType, Func<IDataReader, T> selector, params (string ParameterName, object Value)[] parameters)
+            => ExecuteToList(cn, commandText, commandType, (int?)null, (IDbTransaction)null, selector, parameters);
+
+        /// <summary>
+        /// Executes the CommandText against the Connection and returns rows as custom concrete or anonymous objects.
+        /// </summary>
+        /// <param name="cn">The database connection to execute the query on. The connection will be opened if it is closed.</param>
+        /// <param name="commandText">The text command to run against the data source.</param>
+        /// <param name="commandType">Indicates or specifies how the CommandText property is interpreted.</param>
+        /// <param name="commandTimeout">The time (in seconds) to wait for the command to execute. The default value is 30 seconds.</param>
+        /// <param name="trx">The transaction to use for the command.</param>
+        /// <param name="parameters">The parameters of the SQL statement or stored procedure.</param>
+        /// <param name="selector">Function to convert the data.</param>
+        /// <returns>A List of custom concrete or anonymous objects.</returns>
+        /// <example>
+        /// <code>
+        /// (reader) => new
+        /// {
+        ///    Field1 = reader.GetNullableString(0), //by key works too
+        ///    Field2 = reader.GetNullableInt32(1), //by key works too
+        /// }
+        /// </code>
+        /// </example>
+        public static List<T> ExecuteToList<T>(this IDbConnection cn, string commandText, CommandType commandType, int? commandTimeout, IDbTransaction trx, Func<IDataReader, T> selector, params (string ParameterName, object Value)[] parameters)
+            => ToList(ExecuteQuery(cn, commandText, commandType, CommandBehavior.SingleResult, commandTimeout, trx, parameters), selector);
+
+        /// <summary>
+        /// Executes the CommandText against the Connection and returns rows as custom concrete or anonymous objects.
+        /// </summary>
+        /// <param name="cn">The database connection to execute the query on. The connection will be opened if it is closed.</param>
+        /// <param name="commandText">The text command to run against the data source.</param>
+        /// <param name="parameters">The parameters of the SQL statement or stored procedure.</param>
+        /// <param name="selector">Function to convert the data.</param>
+        /// <returns>A List of custom concrete or anonymous objects.</returns>
+        /// <example>
+        /// <code>
+        /// (reader) => new
+        /// {
+        ///    Field1 = reader.GetNullableString(0), //by key works too
+        ///    Field2 = reader.GetNullableInt32(1), //by key works too
+        /// }
+        /// </code>
+        /// </example>
+        public static Task<List<T>> ExecuteToListAsync<T>(this DbConnection cn, string commandText, Func<IDataReader, T> selector, params (string ParameterName, object Value)[] parameters)
+            => ExecuteToListAsync(cn, commandText, CommandType.Text, selector, parameters);
+
+        /// <summary>
+        /// Executes the CommandText against the Connection and returns rows as custom concrete or anonymous objects.
+        /// </summary>
+        /// <param name="cn">The database connection to execute the query on. The connection will be opened if it is closed.</param>
+        /// <param name="commandText">The text command to run against the data source.</param>
+        /// <param name="parameters">The parameters of the SQL statement or stored procedure.</param>
+        /// <param name="commandType">Indicates or specifies how the CommandText property is interpreted.</param>
+        /// <param name="selector">Function to convert the data.</param>
+        /// <returns>A List of custom concrete or anonymous objects.</returns>
+        /// <example>
+        /// <code>
+        /// (reader) => new
+        /// {
+        ///    Field1 = reader.GetNullableString(0), //by key works too
+        ///    Field2 = reader.GetNullableInt32(1), //by key works too
+        /// }
+        /// </code>
+        /// </example>
+        public static Task<List<T>> ExecuteToListAsync<T>(this DbConnection cn, string commandText, CommandType commandType, Func<IDataReader, T> selector, params (string ParameterName, object Value)[] parameters)
+            => ExecuteToListAsync(cn, commandText, commandType, (int?)null, (DbTransaction)null, selector, parameters);
+
+        /// <summary>
+        /// Executes the CommandText against the Connection and returns rows as custom concrete or anonymous objects.
+        /// </summary>
+        /// <param name="cn">The database connection to execute the query on. The connection will be opened if it is closed.</param>
+        /// <param name="commandText">The text command to run against the data source.</param>
+        /// <param name="commandType">Indicates or specifies how the CommandText property is interpreted.</param>
+        /// <param name="commandTimeout">The time (in seconds) to wait for the command to execute. The default value is 30 seconds.</param>
+        /// <param name="trx">The transaction to use for the command.</param>
+        /// <param name="parameters">The parameters of the SQL statement or stored procedure.</param>
+        /// <param name="selector">Function to convert the data.</param>
+        /// <returns>A List of custom concrete or anonymous objects.</returns>
+        /// <example>
+        /// <code>
+        /// (reader) => new
+        /// {
+        ///    Field1 = reader.GetNullableString(0), //by key works too
+        ///    Field2 = reader.GetNullableInt32(1), //by key works too
+        /// }
+        /// </code>
+        /// </example>
+        public static async Task<List<T>> ExecuteToListAsync<T>(this DbConnection cn, string commandText, CommandType commandType, int? commandTimeout, DbTransaction trx, Func<IDataReader, T> selector, params (string ParameterName, object Value)[] parameters)
+            => await ToListAsync(await ExecuteQueryAsync(cn, commandText, commandType, CommandBehavior.SingleResult, commandTimeout, trx, parameters), selector);
+
+        /// <summary>
+        /// Executes the CommandText against the Connection and returns rows as a List of Dictionary column/value items.
+        /// </summary>
+        /// <param name="cn">The database connection to execute the query on. The connection will be opened if it is closed.</param>
+        /// <param name="commandText">The text command to run against the data source.</param>
+        /// <param name="parameters">The parameters of the SQL statement or stored procedure.</param>
+        /// <returns>A Dictionary of column/value items that represent the first row in the resultset.</returns>
+        public static Dictionary<string, object> ExecuteFirstOrDefault(this IDbConnection cn, string commandText, params (string ParameterName, object Value)[] parameters)
+            => ExecuteFirstOrDefault(cn, commandText, CommandType.Text, parameters);
+
+        /// <summary>
+        /// Executes the CommandText against the Connection and returns rows as a List of Dictionary column/value items.
+        /// </summary>
+        /// <param name="cn">The database connection to execute the query on. The connection will be opened if it is closed.</param>
+        /// <param name="commandText">The text command to run against the data source.</param>
+        /// <param name="commandType">Indicates or specifies how the CommandText property is interpreted.</param>
+        /// <param name="parameters">The parameters of the SQL statement or stored procedure.</param>
+        /// <returns>A Dictionary of column/value items that represent the first row in the resultset.</returns>
+        public static Dictionary<string, object> ExecuteFirstOrDefault(this IDbConnection cn, string commandText, CommandType commandType, params (string ParameterName, object Value)[] parameters)
+            => ExecuteFirstOrDefault(cn, commandText, commandType, (int?)null, (IDbTransaction)null, parameters);
+
+        /// <summary>
+        /// Executes the CommandText against the Connection and returns rows as a List of Dictionary column/value items.
+        /// </summary>
+        /// <param name="cn">The database connection to execute the query on. The connection will be opened if it is closed.</param>
+        /// <param name="commandText">The text command to run against the data source.</param>
+        /// <param name="commandType">Indicates or specifies how the CommandText property is interpreted.</param>
+        /// <param name="commandTimeout">The time (in seconds) to wait for the command to execute. The default value is 30 seconds.</param>
+        /// <param name="trx">The transaction to use for the command.</param>
+        /// <param name="parameters">The parameters of the SQL statement or stored procedure.</param>
+        /// <returns>A Dictionary of column/value items that represent the first row in the resultset.</returns>
+        public static Dictionary<string, object> ExecuteFirstOrDefault(this IDbConnection cn, string commandText, CommandType commandType, int? commandTimeout, IDbTransaction trx, params (string ParameterName, object Value)[] parameters)
+            => FirstOrDefault(ExecuteQuery(cn, commandText, commandType, CommandBehavior.SingleRow | CommandBehavior.SingleResult, commandTimeout, trx, parameters));
+
+        /// <summary>
+        /// Executes the CommandText against the Connection and returns rows as custom concrete or anonymous objects.
+        /// </summary>
+        /// <param name="cn">The database connection to execute the query on. The connection will be opened if it is closed.</param>
+        /// <param name="commandText">The text command to run against the data source.</param>
+        /// <param name="parameters">The parameters of the SQL statement or stored procedure.</param>
+        /// <param name="selector">Function to convert the data.</param>
+        /// <returns>A custom concrete or anonymous object.</returns>
+        /// <example>
+        /// <code>
+        /// (reader) => new
+        /// {
+        ///    Field1 = reader.GetNullableString(0), //by key works too
+        ///    Field2 = reader.GetNullableInt32(1), //by key works too
+        /// }
+        /// </code>
+        /// </example>
+        public static T ExecuteFirstOrDefault<T>(this IDbConnection cn, string commandText, Func<IDataReader, T> selector, params (string ParameterName, object Value)[] parameters)
+            => ExecuteFirstOrDefault(cn, commandText, CommandType.Text, selector, parameters);
+
+        /// <summary>
+        /// Executes the CommandText against the Connection and returns rows as custom concrete or anonymous objects.
+        /// </summary>
+        /// <param name="cn">The database connection to execute the query on. The connection will be opened if it is closed.</param>
+        /// <param name="commandText">The text command to run against the data source.</param>
+        /// <param name="parameters">The parameters of the SQL statement or stored procedure.</param>
+        /// <param name="commandType">Indicates or specifies how the CommandText property is interpreted.</param>
+        /// <param name="selector">Function to convert the data.</param>
+        /// <returns>A custom concrete or anonymous object.</returns>
+        /// <example>
+        /// <code>
+        /// (reader) => new
+        /// {
+        ///    Field1 = reader.GetNullableString(0), //by key works too
+        ///    Field2 = reader.GetNullableInt32(1), //by key works too
+        /// }
+        /// </code>
+        /// </example>
+        public static T ExecuteFirstOrDefault<T>(this IDbConnection cn, string commandText, CommandType commandType, Func<IDataReader, T> selector, params (string ParameterName, object Value)[] parameters)
+            => ExecuteFirstOrDefault(cn, commandText, commandType, (int?)null, (IDbTransaction)null, selector, parameters);
+
+        /// <summary>
+        /// Executes the CommandText against the Connection and returns rows as custom concrete or anonymous objects.
+        /// </summary>
+        /// <param name="cn">The database connection to execute the query on. The connection will be opened if it is closed.</param>
+        /// <param name="commandText">The text command to run against the data source.</param>
+        /// <param name="commandType">Indicates or specifies how the CommandText property is interpreted.</param>
+        /// <param name="behavior">One of the CommandBehavior values.</param>
+        /// <param name="commandTimeout">The time (in seconds) to wait for the command to execute. The default value is 30 seconds.</param>
+        /// <param name="trx">The transaction to use for the command.</param>
+        /// <param name="parameters">The parameters of the SQL statement or stored procedure.</param>
+        /// <param name="selector">Function to convert the data.</param>
+        /// <returns>A custom concrete or anonymous object.</returns>
+        /// <example>
+        /// <code>
+        /// (reader) => new
+        /// {
+        ///    Field1 = reader.GetNullableString(0), //by key works too
+        ///    Field2 = reader.GetNullableInt32(1), //by key works too
+        /// }
+        /// </code>
+        /// </example>
+        public static T ExecuteFirstOrDefault<T>(this IDbConnection cn, string commandText, CommandType commandType, int? commandTimeout, IDbTransaction trx, Func<IDataReader, T> selector, params (string ParameterName, object Value)[] parameters)
+            => FirstOrDefault(ExecuteQuery(cn, commandText, commandType, CommandBehavior.SingleRow | CommandBehavior.SingleResult, commandTimeout, trx, parameters), selector);
+
+        /// <summary>
+        /// Executes the CommandText against the Connection and returns rows as a List of Dictionary column/value items.
+        /// </summary>
+        /// <param name="cn">The database connection to execute the query on. The connection will be opened if it is closed.</param>
+        /// <param name="commandText">The text command to run against the data source.</param>
+        /// <param name="parameters">The parameters of the SQL statement or stored procedure.</param>
+        /// <returns>A Dictionary of column/value items that represent the first row in the resultset.</returns>
+        public static Task<Dictionary<string, object>> ExecuteFirstOrDefaultAsync(this DbConnection cn, string commandText, params (string ParameterName, object Value)[] parameters)
+            => ExecuteFirstOrDefaultAsync(cn, commandText, CommandType.Text, parameters);
+
+        /// <summary>
+        /// Executes the CommandText against the Connection and returns rows as a List of Dictionary column/value items.
+        /// </summary>
+        /// <param name="cn">The database connection to execute the query on. The connection will be opened if it is closed.</param>
+        /// <param name="commandText">The text command to run against the data source.</param>
+        /// <param name="commandType">Indicates or specifies how the CommandText property is interpreted.</param>
+        /// <param name="parameters">The parameters of the SQL statement or stored procedure.</param>
+        /// <returns>A Dictionary of column/value items that represent the first row in the resultset.</returns>
+        public static Task<Dictionary<string, object>> ExecuteFirstOrDefaultAsync(this DbConnection cn, string commandText, CommandType commandType, params (string ParameterName, object Value)[] parameters)
+            => ExecuteFirstOrDefaultAsync(cn, commandText, commandType, (int?)null, (DbTransaction)null, parameters);
+
+        /// <summary>
+        /// Executes the CommandText against the Connection and returns rows as a List of Dictionary column/value items.
+        /// </summary>
+        /// <param name="cn">The database connection to execute the query on. The connection will be opened if it is closed.</param>
+        /// <param name="commandText">The text command to run against the data source.</param>
+        /// <param name="commandType">Indicates or specifies how the CommandText property is interpreted.</param>
+        /// <param name="behavior">One of the CommandBehavior values.</param>
+        /// <param name="commandTimeout">The time (in seconds) to wait for the command to execute. The default value is 30 seconds.</param>
+        /// <param name="trx">The transaction to use for the command.</param>
+        /// <param name="parameters">The parameters of the SQL statement or stored procedure.</param>
+        /// <returns>A Dictionary of column/value items that represent the first row in the resultset.</returns>
+        public static async Task<Dictionary<string, object>> ExecuteFirstOrDefaultAsync(this DbConnection cn, string commandText, CommandType commandType, int? commandTimeout, DbTransaction trx, params (string ParameterName, object Value)[] parameters)
+            => await FirstOrDefaultAsync(await ExecuteQueryAsync(cn, commandText, commandType, CommandBehavior.SingleRow | CommandBehavior.SingleResult, commandTimeout, trx, parameters));
+
+        /// <summary>
+        /// Executes the CommandText against the Connection and returns rows as custom concrete or anonymous objects.
+        /// </summary>
+        /// <param name="cn">The database connection to execute the query on. The connection will be opened if it is closed.</param>
+        /// <param name="commandText">The text command to run against the data source.</param>
+        /// <param name="parameters">The parameters of the SQL statement or stored procedure.</param>
+        /// <param name="selector">Function to convert the data.</param>
+        /// <returns>A custom concrete or anonymous object.</returns>
+        /// <example>
+        /// <code>
+        /// (reader) => new
+        /// {
+        ///    Field1 = reader.GetNullableString(0), //by key works too
+        ///    Field2 = reader.GetNullableInt32(1), //by key works too
+        /// }
+        /// </code>
+        /// </example>
+        public static Task<T> ExecuteFirstOrDefaultAsync<T>(this DbConnection cn, string commandText, Func<IDataReader, T> selector, params (string ParameterName, object Value)[] parameters)
+            => ExecuteFirstOrDefaultAsync(cn, commandText, CommandType.Text, selector, parameters);
+
+        /// <summary>
+        /// Executes the CommandText against the Connection and returns rows as custom concrete or anonymous objects.
+        /// </summary>
+        /// <param name="cn">The database connection to execute the query on. The connection will be opened if it is closed.</param>
+        /// <param name="commandText">The text command to run against the data source.</param>
+        /// <param name="parameters">The parameters of the SQL statement or stored procedure.</param>
+        /// <param name="commandType">Indicates or specifies how the CommandText property is interpreted.</param>
+        /// <param name="selector">Function to convert the data.</param>
+        /// <returns>A custom concrete or anonymous object.</returns>
+        /// <example>
+        /// <code>
+        /// (reader) => new
+        /// {
+        ///    Field1 = reader.GetNullableString(0), //by key works too
+        ///    Field2 = reader.GetNullableInt32(1), //by key works too
+        /// }
+        /// </code>
+        /// </example>
+        public static Task<T> ExecuteFirstOrDefaultAsync<T>(this DbConnection cn, string commandText, CommandType commandType, Func<IDataReader, T> selector, params (string ParameterName, object Value)[] parameters)
+            => ExecuteFirstOrDefaultAsync(cn, commandText, commandType, (int?)null, (DbTransaction)null, selector, parameters);
+
+        /// <summary>
+        /// Executes the CommandText against the Connection and returns rows as custom concrete or anonymous objects.
+        /// </summary>
+        /// <param name="cn">The database connection to execute the query on. The connection will be opened if it is closed.</param>
+        /// <param name="commandText">The text command to run against the data source.</param>
+        /// <param name="commandType">Indicates or specifies how the CommandText property is interpreted.</param>
+        /// <param name="commandTimeout">The time (in seconds) to wait for the command to execute. The default value is 30 seconds.</param>
+        /// <param name="trx">The transaction to use for the command.</param>
+        /// <param name="parameters">The parameters of the SQL statement or stored procedure.</param>
+        /// <param name="selector">Function to convert the data.</param>
+        /// <returns>A custom concrete or anonymous object.</returns>
+        /// <remarks>It is recommended to use the CommandBehavior.SingleRow option in the Execute portion.</remarks>
+        /// <example>
+        /// <code>
+        /// (reader) => new
+        /// {
+        ///    Field1 = reader.GetNullableString(0), //by key works too
+        ///    Field2 = reader.GetNullableInt32(1), //by key works too
+        /// }
+        /// </code>
+        /// </example>
+        public static async Task<T> ExecuteFirstOrDefaultAsync<T>(this DbConnection cn, string commandText, CommandType commandType, int? commandTimeout, DbTransaction trx, Func<IDataReader, T> selector, params (string ParameterName, object Value)[] parameters)
+            => await FirstOrDefaultAsync(await ExecuteQueryAsync(cn, commandText, commandType, CommandBehavior.SingleRow | CommandBehavior.SingleResult, commandTimeout, trx, parameters), selector);
+
+        /// <summary>
+        /// Executes the CommandText against the Connection and returns the first row as a tuple or a custom concrete or anonymous object.
+        /// </summary>
+        /// <param name="cn">The database connection to execute the query on. The connection will be opened if it is closed.</param>
+        /// <param name="commandText">The text command to run against the data source.</param>
+        /// <param name="parameters">The parameters of the SQL statement or stored procedure.</param>
+        /// <param name="selector">Function to convert the data.</param>
+        /// <returns>A tuple or a custom concrete or anonymous object.</returns>
+        /// <example>
+        /// <code>
+        /// (reader) =>
+        /// (
+        ///    Field1: reader.GetNullableString(0), //by key works too
+        ///    Field2: reader.GetNullableInt32(1), //by key works too
+        /// )
+        /// </code>
+        /// </example>
+        public static T? ExecuteNullableFirstOrDefault<T>(this IDbConnection cn, string commandText, Func<IDataReader, T> selector, params (string ParameterName, object Value)[] parameters) where T : struct
+            => ExecuteNullableFirstOrDefault(cn, commandText, CommandType.Text, selector, parameters);
+
+        /// <summary>
+        /// Executes the CommandText against the Connection and returns the first row as a tuple or a custom concrete or anonymous object.
+        /// </summary>
+        /// <param name="cn">The database connection to execute the query on. The connection will be opened if it is closed.</param>
+        /// <param name="commandText">The text command to run against the data source.</param>
+        /// <param name="commandType">Indicates or specifies how the CommandText property is interpreted.</param>
+        /// <param name="parameters">The parameters of the SQL statement or stored procedure.</param>
+        /// <param name="selector">Function to convert the data.</param>
+        /// <returns>A tuple or a custom concrete or anonymous object.</returns>
+        /// <example>
+        /// <code>
+        /// (reader) =>
+        /// (
+        ///    Field1: reader.GetNullableString(0), //by key works too
+        ///    Field2: reader.GetNullableInt32(1), //by key works too
+        /// )
+        /// </code>
+        /// </example>
+        public static T? ExecuteNullableFirstOrDefault<T>(this IDbConnection cn, string commandText, CommandType commandType, Func<IDataReader, T> selector, params (string ParameterName, object Value)[] parameters) where T : struct
+            => ExecuteNullableFirstOrDefault(cn, commandText, commandType, (int?)null, (IDbTransaction)null, selector, parameters);
+
+        /// <summary>
+        /// Executes the CommandText against the Connection and returns the first row as a tuple or a custom concrete or anonymous object.
+        /// </summary>
+        /// <param name="cn">The database connection to execute the query on. The connection will be opened if it is closed.</param>
+        /// <param name="commandText">The text command to run against the data source.</param>
+        /// <param name="commandType">Indicates or specifies how the CommandText property is interpreted.</param>
+        /// <param name="commandTimeout">The time (in seconds) to wait for the command to execute. The default value is 30 seconds.</param>
+        /// <param name="trx">The transaction to use for the command.</param>
+        /// <param name="parameters">The parameters of the SQL statement or stored procedure.</param>
+        /// <param name="selector">Function to convert the data.</param>
+        /// <returns>A tuple or a custom concrete or anonymous object.</returns>
+        /// <example>
+        /// <code>
+        /// (reader) =>
+        /// (
+        ///    Field1: reader.GetNullableString(0), //by key works too
+        ///    Field2: reader.GetNullableInt32(1), //by key works too
+        /// )
+        /// </code>
+        /// </example>
+        public static T? ExecuteNullableFirstOrDefault<T>(this IDbConnection cn, string commandText, CommandType commandType, int? commandTimeout, IDbTransaction trx, Func<IDataReader, T> selector, params (string ParameterName, object Value)[] parameters) where T : struct
+            => NullableFirstOrDefault(ExecuteQuery(cn, commandText, commandType, CommandBehavior.SingleRow | CommandBehavior.SingleResult, commandTimeout, trx, parameters), selector);
+
+        /// <summary>
+        /// Executes the CommandText against the Connection and returns the first row as a tuple or a custom concrete or anonymous object.
+        /// </summary>
+        /// <param name="cn">The database connection to execute the query on. The connection will be opened if it is closed.</param>
+        /// <param name="commandText">The text command to run against the data source.</param>
+        /// <param name="parameters">The parameters of the SQL statement or stored procedure.</param>
+        /// <param name="selector">Function to convert the data.</param>
+        /// <returns>A tuple or a custom concrete or anonymous object.</returns>
+        /// <example>
+        /// <code>
+        /// (reader) =>
+        /// (
+        ///    Field1: reader.GetNullableString(0), //by key works too
+        ///    Field2: reader.GetNullableInt32(1), //by key works too
+        /// )
+        /// </code>
+        /// </example>
+        public static Task<T?> ExecuteNullableFirstOrDefaultAsync<T>(this DbConnection cn, string commandText, Func<IDataReader, T> selector, params (string ParameterName, object Value)[] parameters) where T : struct
+            => ExecuteNullableFirstOrDefaultAsync(cn, commandText, CommandType.Text, selector, parameters);
+
+        /// <summary>
+        /// Executes the CommandText against the Connection and returns the first row as a tuple or a custom concrete or anonymous object.
+        /// </summary>
+        /// <param name="cn">The database connection to execute the query on. The connection will be opened if it is closed.</param>
+        /// <param name="commandText">The text command to run against the data source.</param>
+        /// <param name="commandType">Indicates or specifies how the CommandText property is interpreted.</param>
+        /// <param name="parameters">The parameters of the SQL statement or stored procedure.</param>
+        /// <param name="selector">Function to convert the data.</param>
+        /// <returns>A tuple or a custom concrete or anonymous object.</returns>
+        /// <example>
+        /// <code>
+        /// (reader) =>
+        /// (
+        ///    Field1: reader.GetNullableString(0), //by key works too
+        ///    Field2: reader.GetNullableInt32(1), //by key works too
+        /// )
+        /// </code>
+        /// </example>
+        public static Task<T?> ExecuteNullableFirstOrDefaultAsync<T>(this DbConnection cn, string commandText, CommandType commandType, Func<IDataReader, T> selector, params (string ParameterName, object Value)[] parameters) where T : struct
+            => ExecuteNullableFirstOrDefaultAsync(cn, commandText, commandType, (int?)null, (DbTransaction)null, selector, parameters);
+
+        /// <summary>
+        /// Executes the CommandText against the Connection and returns the first row as a tuple or a custom concrete or anonymous object.
+        /// </summary>
+        /// <param name="cn">The database connection to execute the query on. The connection will be opened if it is closed.</param>
+        /// <param name="commandText">The text command to run against the data source.</param>
+        /// <param name="commandType">Indicates or specifies how the CommandText property is interpreted.</param>
+        /// <param name="commandTimeout">The time (in seconds) to wait for the command to execute. The default value is 30 seconds.</param>
+        /// <param name="trx">The transaction to use for the command.</param>
+        /// <param name="parameters">The parameters of the SQL statement or stored procedure.</param>
+        /// <param name="selector">Function to convert the data.</param>
+        /// <returns>A tuple or a custom concrete or anonymous object.</returns>
+        /// <example>
+        /// <code>
+        /// (reader) =>
+        /// (
+        ///    Field1: reader.GetNullableString(0), //by key works too
+        ///    Field2: reader.GetNullableInt32(1), //by key works too
+        /// )
+        /// </code>
+        /// </example>
+        public static async Task<T?> ExecuteNullableFirstOrDefaultAsync<T>(this DbConnection cn, string commandText, CommandType commandType, int? commandTimeout, DbTransaction trx, Func<IDataReader, T> selector, params (string ParameterName, object Value)[] parameters) where T : struct
+            => await NullableFirstOrDefaultAsync(await ExecuteQueryAsync(cn, commandText, commandType, CommandBehavior.SingleRow | CommandBehavior.SingleResult, commandTimeout, trx, parameters), selector);
+
+        /// <summary>
+        /// Executes the CommandText against the Connection and iterates through a DataReader and performs an action.
+        /// </summary>
+        /// <param name="cn">The database connection to execute the query on. The connection will be opened if it is closed.</param>
+        /// <param name="commandText">The text command to run against the data source.</param>
+        /// <param name="parameters">The parameters of the SQL statement or stored procedure.</param>
+        /// <param name="action">Function to convert the data.</param>
+        public static void ExecuteForEachRow(this IDbConnection cn, string commandText, (string ParameterName, object Value)[] parameters, Func<IDataReader, bool> action)
+            => ExecuteForEachRow(cn, commandText, CommandType.Text, parameters, action);
+
+        /// <summary>
+        /// Executes the CommandText against the Connection and iterates through a DataReader and performs an action.
+        /// </summary>
+        /// <param name="cn">The database connection to execute the query on. The connection will be opened if it is closed.</param>
+        /// <param name="commandText">The text command to run against the data source.</param>
+        /// <param name="commandType">Indicates or specifies how the CommandText property is interpreted.</param>
+        /// <param name="parameters">The parameters of the SQL statement or stored procedure.</param>
+        /// <param name="action">Function to convert the data.</param>
+        public static void ExecuteForEachRow(this IDbConnection cn, string commandText, CommandType commandType, (string ParameterName, object Value)[] parameters, Func<IDataReader, bool> action)
+            => ExecuteForEachRow(cn, commandText, commandType, (int?)null, (IDbTransaction)null, parameters, action);
+
+        /// <summary>
+        /// Executes the CommandText against the Connection and iterates through a DataReader and performs an action.
+        /// </summary>
+        /// <param name="cn">The database connection to execute the query on. The connection will be opened if it is closed.</param>
+        /// <param name="commandText">The text command to run against the data source.</param>
+        /// <param name="commandType">Indicates or specifies how the CommandText property is interpreted.</param>
+        /// <param name="commandTimeout">The time (in seconds) to wait for the command to execute. The default value is 30 seconds.</param>
+        /// <param name="trx">The transaction to use for the command.</param>
+        /// <param name="parameters">The parameters of the SQL statement or stored procedure.</param>
+        /// <param name="action">Function to convert the data.</param>
+        public static void ExecuteForEachRow(this IDbConnection cn, string commandText, CommandType commandType, int? commandTimeout, IDbTransaction trx, (string ParameterName, object Value)[] parameters, Func<IDataReader, bool> action)
+            => ForEachRow(ExecuteQuery(cn, commandText, commandType, CommandBehavior.SingleResult, commandTimeout, trx, parameters), action);
+
+        /// <summary>
+        /// Executes the CommandText against the Connection and iterates through a DataReader and performs an action.
+        /// </summary>
+        /// <param name="cn">The database connection to execute the query on. The connection will be opened if it is closed.</param>
+        /// <param name="commandText">The text command to run against the data source.</param>
+        /// <param name="parameters">The parameters of the SQL statement or stored procedure.</param>
+        /// <param name="action">Function to convert the data.</param>
+        public static Task ExecuteForEachRowAync(this DbConnection cn, string commandText, (string ParameterName, object Value)[] parameters, Func<IDataReader, Task<bool>> action)
+            => ExecuteForEachRowAsync(cn, commandText, CommandType.Text, parameters, action);
+
+        /// <summary>
+        /// Executes the CommandText against the Connection and iterates through a DataReader and performs an action.
+        /// </summary>
+        /// <param name="cn">The database connection to execute the query on. The connection will be opened if it is closed.</param>
+        /// <param name="commandText">The text command to run against the data source.</param>
+        /// <param name="commandType">Indicates or specifies how the CommandText property is interpreted.</param>
+        /// <param name="parameters">The parameters of the SQL statement or stored procedure.</param>
+        /// <param name="action">Function to convert the data.</param>
+        public static Task ExecuteForEachRowAsync(this DbConnection cn, string commandText, CommandType commandType, (string ParameterName, object Value)[] parameters, Func<IDataReader, Task<bool>> action)
+            => ExecuteForEachRowAsync(cn, commandText, commandType, (int?)null, (DbTransaction)null, parameters, action);
+
+        /// <summary>
+        /// Executes the CommandText against the Connection and iterates through a DataReader and performs an action.
+        /// </summary>
+        /// <param name="cn">The database connection to execute the query on. The connection will be opened if it is closed.</param>
+        /// <param name="commandText">The text command to run against the data source.</param>
+        /// <param name="commandType">Indicates or specifies how the CommandText property is interpreted.</param>
+        /// <param name="commandTimeout">The time (in seconds) to wait for the command to execute. The default value is 30 seconds.</param>
+        /// <param name="trx">The transaction to use for the command.</param>
+        /// <param name="parameters">The parameters of the SQL statement or stored procedure.</param>
+        /// <param name="action">Function to convert the data.</param>
+        public static async Task ExecuteForEachRowAsync(this DbConnection cn, string commandText, CommandType commandType, int? commandTimeout, DbTransaction trx, (string ParameterName, object Value)[] parameters, Func<IDataReader, Task<bool>> action)
+            => await ForEachRowAsync(await ExecuteQueryAsync(cn, commandText, commandType, CommandBehavior.SingleResult, commandTimeout, trx, parameters), action);
+
+        /// <summary>
+        /// Executes the CommandText against the Connection and returns a DataTable.
+        /// </summary>
+        /// <param name="cn">The database connection to execute the query on. The connection will be opened if it is closed.</param>
+        /// <param name="commandText">The text command to run against the data source.</param>
+        /// <param name="parameters">The parameters of the SQL statement or stored procedure.</param>
+        /// <returns>A DataTable.</returns>
+        public static DataTable ExecuteToDataTable(this IDbConnection cn, string commandText, params (string ParameterName, object Value)[] parameters)
+            => ExecuteToDataTable(cn, commandText, CommandType.Text, parameters);
+
+        /// <summary>
+        /// Executes the CommandText against the Connection and returns a DataTable.
+        /// </summary>
+        /// <param name="cn">The database connection to execute the query on. The connection will be opened if it is closed.</param>
+        /// <param name="commandText">The text command to run against the data source.</param>
+        /// <param name="commandType">Indicates or specifies how the CommandText property is interpreted.</param>
+        /// <param name="parameters">The parameters of the SQL statement or stored procedure.</param>
+        /// <returns>A DataTable.</returns>
+        public static DataTable ExecuteToDataTable(this IDbConnection cn, string commandText, CommandType commandType, params (string ParameterName, object Value)[] parameters)
+            => ExecuteToDataTable(cn, commandText, commandType, (int?)null, (IDbTransaction)null, parameters);
+
+        /// <summary>
+        /// Executes the CommandText against the Connection and returns a DataTable.
+        /// </summary>
+        /// <param name="cn">The database connection to execute the query on. The connection will be opened if it is closed.</param>
+        /// <param name="commandText">The text command to run against the data source.</param>
+        /// <param name="commandType">Indicates or specifies how the CommandText property is interpreted.</param>
+        /// <param name="commandTimeout">The time (in seconds) to wait for the command to execute. The default value is 30 seconds.</param>
+        /// <param name="trx">The transaction to use for the command.</param>
+        /// <param name="parameters">The parameters of the SQL statement or stored procedure.</param>
+        /// <returns>A DataTable.</returns>
+        public static DataTable ExecuteToDataTable(this IDbConnection cn, string commandText, CommandType commandType, int? commandTimeout, IDbTransaction trx, params (string ParameterName, object Value)[] parameters)
+            => ToDataTable(ExecuteQuery(cn, commandText, commandType, CommandBehavior.SingleResult, commandTimeout, trx, parameters));
+
+        /// <summary>
+        /// Executes the CommandText against the Connection and returns a DataTable.
+        /// </summary>
+        /// <param name="cn">The database connection to execute the query on. The connection will be opened if it is closed.</param>
+        /// <param name="commandText">The text command to run against the data source.</param>
+        /// <param name="parameters">The parameters of the SQL statement or stored procedure.</param>
+        /// <returns>A DataTable.</returns>
+        public static Task<DataTable> ExecuteToDataTableAsync(this DbConnection cn, string commandText, params (string ParameterName, object Value)[] parameters)
+            => ExecuteToDataTableAsync(cn, commandText, CommandType.Text, parameters);
+
+        /// <summary>
+        /// Executes the CommandText against the Connection and returns a DataTable.
+        /// </summary>
+        /// <param name="cn">The database connection to execute the query on. The connection will be opened if it is closed.</param>
+        /// <param name="commandText">The text command to run against the data source.</param>
+        /// <param name="commandType">Indicates or specifies how the CommandText property is interpreted.</param>
+        /// <param name="parameters">The parameters of the SQL statement or stored procedure.</param>
+        /// <returns>A DataTable.</returns>
+        public static Task<DataTable> ExecuteToDataTableAsync(this DbConnection cn, string commandText, CommandType commandType, params (string ParameterName, object Value)[] parameters)
+            => ExecuteToDataTableAsync(cn, commandText, commandType, (int?)null, (DbTransaction)null, parameters);
+
+        /// <summary>
+        /// Executes the CommandText against the Connection and returns a DataTable.
+        /// </summary>
+        /// <param name="cn">The database connection to execute the query on. The connection will be opened if it is closed.</param>
+        /// <param name="commandText">The text command to run against the data source.</param>
+        /// <param name="commandType">Indicates or specifies how the CommandText property is interpreted.</param>
+        /// <param name="commandTimeout">The time (in seconds) to wait for the command to execute. The default value is 30 seconds.</param>
+        /// <param name="trx">The transaction to use for the command.</param>
+        /// <param name="parameters">The parameters of the SQL statement or stored procedure.</param>
+        /// <returns>A DataTable.</returns>
+        public static async Task<DataTable> ExecuteToDataTableAsync(this DbConnection cn, string commandText, CommandType commandType, int? commandTimeout, DbTransaction trx, params (string ParameterName, object Value)[] parameters)
+            => await ToDataTableAsync(await ExecuteQueryAsync(cn, commandText, commandType, CommandBehavior.SingleResult, commandTimeout, trx, parameters));
+
+        /// <summary>
+        /// Executes the CommandText against the Connection and returns a DataSet with multiple DataTables.
+        /// </summary>
+        /// <param name="cn">The database connection to execute the query on. The connection will be opened if it is closed.</param>
+        /// <param name="commandText">The text command to run against the data source.</param>
+        /// <param name="parameters">The parameters of the SQL statement or stored procedure.</param>
+        /// <param name="tables">An array of strings from which to retrieve table name information.</param>
+        /// <returns>A DataSet.</returns>
+        public static DataSet ExecuteToDataSet(this IDbConnection cn, string commandText, string[] tables, params (string ParameterName, object Value)[] parameters)
+            => ExecuteToDataSet(cn, commandText, CommandType.Text, tables, parameters);
+
+        /// <summary>
+        /// Executes the CommandText against the Connection and returns a DataSet with multiple DataTables.
+        /// </summary>
+        /// <param name="cn">The database connection to execute the query on. The connection will be opened if it is closed.</param>
+        /// <param name="commandText">The text command to run against the data source.</param>
+        /// <param name="commandType">Indicates or specifies how the CommandText property is interpreted.</param>
+        /// <param name="parameters">The parameters of the SQL statement or stored procedure.</param>
+        /// <param name="tables">An array of strings from which to retrieve table name information.</param>
+        /// <returns>A DataSet.</returns>
+        public static DataSet ExecuteToDataSet(this IDbConnection cn, string commandText, CommandType commandType, string[] tables, params (string ParameterName, object Value)[] parameters)
+            => ExecuteToDataSet(cn, commandText, commandType, (int?)null, (IDbTransaction)null, tables, parameters);
+
+        /// <summary>
+        /// Executes the CommandText against the Connection and returns a DataSet with multiple DataTables.
+        /// </summary>
+        /// <param name="cn">The database connection to execute the query on. The connection will be opened if it is closed.</param>
+        /// <param name="commandText">The text command to run against the data source.</param>
+        /// <param name="commandType">Indicates or specifies how the CommandText property is interpreted.</param>
+        /// <param name="commandTimeout">The time (in seconds) to wait for the command to execute. The default value is 30 seconds.</param>
+        /// <param name="trx">The transaction to use for the command.</param>
+        /// <param name="parameters">The parameters of the SQL statement or stored procedure.</param>
+        /// <param name="tables">An array of strings from which to retrieve table name information.</param>
+        /// <returns>A DataSet.</returns>
+        public static DataSet ExecuteToDataSet(this IDbConnection cn, string commandText, CommandType commandType, int? commandTimeout, IDbTransaction trx, string[] tables, params (string ParameterName, object Value)[] parameters)
+            => ToDataSet(ExecuteQuery(cn, commandText, commandType, CommandBehavior.Default, commandTimeout, trx, parameters), tables);
+
+        /// <summary>
+        /// Executes the CommandText against the Connection and returns a DataSet with multiple DataTables.
+        /// </summary>
+        /// <param name="cn">The database connection to execute the query on. The connection will be opened if it is closed.</param>
+        /// <param name="commandText">The text command to run against the data source.</param>
+        /// <param name="parameters">The parameters of the SQL statement or stored procedure.</param>
+        /// <param name="tables">An array of strings from which to retrieve table name information.</param>
+        /// <returns>A DataSet.</returns>
+        public static Task<DataSet> ExecuteToDataSetAsync(this DbConnection cn, string commandText, string[] tables, params (string ParameterName, object Value)[] parameters)
+            => ExecuteToDataSetAsync(cn, commandText, CommandType.Text, tables, parameters);
+
+        /// <summary>
+        /// Executes the CommandText against the Connection and returns a DataSet with multiple DataTables.
+        /// </summary>
+        /// <param name="cn">The database connection to execute the query on. The connection will be opened if it is closed.</param>
+        /// <param name="commandText">The text command to run against the data source.</param>
+        /// <param name="commandType">Indicates or specifies how the CommandText property is interpreted.</param>
+        /// <param name="parameters">The parameters of the SQL statement or stored procedure.</param>
+        /// <param name="tables">An array of strings from which to retrieve table name information.</param>
+        /// <returns>A DataSet.</returns>
+        public static Task<DataSet> ExecuteToDataSetAsync(this DbConnection cn, string commandText, CommandType commandType, string[] tables, params (string ParameterName, object Value)[] parameters)
+            => ExecuteToDataSetAsync(cn, commandText, commandType, (int?)null, (DbTransaction)null, tables, parameters);
+
+        /// <summary>
+        /// Executes the CommandText against the Connection and returns a DataSet with multiple DataTables.
+        /// </summary>
+        /// <param name="cn">The database connection to execute the query on. The connection will be opened if it is closed.</param>
+        /// <param name="commandText">The text command to run against the data source.</param>
+        /// <param name="commandType">Indicates or specifies how the CommandText property is interpreted.</param>
+        /// <param name="commandTimeout">The time (in seconds) to wait for the command to execute. The default value is 30 seconds.</param>
+        /// <param name="trx">The transaction to use for the command.</param>
+        /// <param name="parameters">The parameters of the SQL statement or stored procedure.</param>
+        /// <param name="tables">An array of strings from which to retrieve table name information.</param>
+        /// <returns>A DataSet.</returns>
+        public static async Task<DataSet> ExecuteToDataSetAsync(this DbConnection cn, string commandText, CommandType commandType, int? commandTimeout, DbTransaction trx, string[] tables, params (string ParameterName, object Value)[] parameters)
+            => await ToDataSetAsync(await ExecuteQueryAsync(cn, commandText, commandType, CommandBehavior.Default, commandTimeout, trx, parameters), tables);
+
+        /// <summary>
         /// Gets the string value of the specified field if IsDBNull is false otherwise returns null.
         /// </summary>
         /// <param name="reader">The IDataReader.</param>
         /// <param name="i">The index of the field to find.</param>
         /// <returns>The string value of the specified field or NULL if the value is DbNull.</returns>
         public static string GetNullableString(this IDataReader reader, int i)
-        {
-            return reader.IsDBNull(i) ? null : reader.GetString(i);
-        }
+            => reader.IsDBNull(i) ? null : reader.GetString(i);
 
         /// <summary>
         /// Gets the bool value of the specified column if IsDBNull is false otherwise returns null.
@@ -1607,9 +2275,7 @@ namespace Cflashsoft.Framework.Data
         /// <param name="i">The index of the field to find.</param>
         /// <returns>A nullable boolean.</returns>
         public static bool? GetNullableBoolean(this IDataReader reader, int i)
-        {
-            return reader.IsDBNull(i) ? (bool?)null : reader.GetBoolean(i);
-        }
+            => reader.IsDBNull(i) ? (bool?)null : reader.GetBoolean(i);
 
         /// <summary>
         /// Gets the 8-bit unsigned integer value of the specified column if IsDBNull is false otherwise returns null.
@@ -1618,9 +2284,7 @@ namespace Cflashsoft.Framework.Data
         /// <param name="i">The index of the field to find.</param>
         /// <returns>The nullable 8-bit unsigned integer value of the specified column.</returns>
         public static byte? GetNullableByte(this IDataReader reader, int i)
-        {
-            return reader.IsDBNull(i) ? (byte?)null : reader.GetByte(i);
-        }
+            => reader.IsDBNull(i) ? (byte?)null : reader.GetByte(i);
 
         /// <summary>
         /// Gets the character value of the specified column if IsDBNull is false otherwise returns null.
@@ -1629,9 +2293,7 @@ namespace Cflashsoft.Framework.Data
         /// <param name="i">The index of the field to find.</param>
         /// <returns>The nullable character value of the specified column.</returns>
         public static char? GetNullableChar(this IDataReader reader, int i)
-        {
-            return reader.IsDBNull(i) ? (char?)null : reader.GetChar(i);
-        }
+            => reader.IsDBNull(i) ? (char?)null : reader.GetChar(i);
 
         /// <summary>
         /// Gets the date and time data value of the specified field if IsDBNull is false otherwise returns null.
@@ -1640,9 +2302,7 @@ namespace Cflashsoft.Framework.Data
         /// <param name="i">The index of the field to find.</param>
         /// <returns>The nullable date and time data value of the specified field.</returns>
         public static DateTime? GetNullableDateTime(this IDataReader reader, int i)
-        {
-            return reader.IsDBNull(i) ? (DateTime?)null : reader.GetDateTime(i);
-        }
+            => reader.IsDBNull(i) ? (DateTime?)null : reader.GetDateTime(i);
 
         /// <summary>
         /// Gets the fixed-position numeric value of the specified field if IsDBNull is false otherwise returns null.
@@ -1651,9 +2311,7 @@ namespace Cflashsoft.Framework.Data
         /// <param name="i">The index of the field to find.</param>
         /// <returns>The nullable fixed-position numeric value of the specified field.</returns>
         public static decimal? GetNullableDecimal(this IDataReader reader, int i)
-        {
-            return reader.IsDBNull(i) ? (decimal?)null : reader.GetDecimal(i);
-        }
+            => reader.IsDBNull(i) ? (decimal?)null : reader.GetDecimal(i);
 
         /// <summary>
         /// Gets the double-precision floating point number of the specified field if IsDBNull is false otherwise returns null.
@@ -1662,9 +2320,7 @@ namespace Cflashsoft.Framework.Data
         /// <param name="i">The index of the field to find.</param>
         /// <returns>The nullable double-precision floating point number of the specified field.</returns>
         public static double? GetNullableDouble(this IDataReader reader, int i)
-        {
-            return reader.IsDBNull(i) ? (double?)null : reader.GetDouble(i);
-        }
+            => reader.IsDBNull(i) ? (double?)null : reader.GetDouble(i);
 
         /// <summary>
         /// Gets the single-precision floating point number of the specified field if IsDBNull is false otherwise returns null.
@@ -1673,9 +2329,7 @@ namespace Cflashsoft.Framework.Data
         /// <param name="i">The index of the field to find.</param>
         /// <returns>The nullable single-precision floating point number of the specified field.</returns>
         public static float? GetNullableFloat(this IDataReader reader, int i)
-        {
-            return reader.IsDBNull(i) ? (float?)null : reader.GetFloat(i);
-        }
+            => reader.IsDBNull(i) ? (float?)null : reader.GetFloat(i);
 
         /// <summary>
         /// Returns the GUID value of the specified field if IsDBNull is false otherwise returns null.
@@ -1684,9 +2338,7 @@ namespace Cflashsoft.Framework.Data
         /// <param name="i">The index of the field to find.</param>
         /// <returns>The nullable GUID value of the specified field.</returns>
         public static Guid? GetNullableGuid(this IDataReader reader, int i)
-        {
-            return reader.IsDBNull(i) ? (Guid?)null : reader.GetGuid(i);
-        }
+            => reader.IsDBNull(i) ? (Guid?)null : reader.GetGuid(i);
 
         /// <summary>
         /// Gets the 16-bit signed integer value of the specified field if IsDBNull is false otherwise returns null.
@@ -1695,9 +2347,7 @@ namespace Cflashsoft.Framework.Data
         /// <param name="i">The index of the field to find.</param>
         /// <returns>The nullable 16-bit signed integer value of the specified field.</returns>
         public static short? GetNullableInt16(this IDataReader reader, int i)
-        {
-            return reader.IsDBNull(i) ? (short?)null : reader.GetInt16(i);
-        }
+            => reader.IsDBNull(i) ? (short?)null : reader.GetInt16(i);
 
         /// <summary>
         /// Gets the 32-bit signed integer value of the specified field if IsDBNull is false otherwise returns null.
@@ -1706,9 +2356,7 @@ namespace Cflashsoft.Framework.Data
         /// <param name="i">The index of the field to find.</param>
         /// <returns>The nullable 32-bit signed integer value of the specified field.</returns>
         public static int? GetNullableInt32(this IDataReader reader, int i)
-        {
-            return reader.IsDBNull(i) ? (int?)null : reader.GetInt32(i);
-        }
+            => reader.IsDBNull(i) ? (int?)null : reader.GetInt32(i);
 
         /// <summary>
         /// Gets the 64-bit signed integer value of the specified field if IsDBNull is false otherwise returns null.
@@ -1717,9 +2365,7 @@ namespace Cflashsoft.Framework.Data
         /// <param name="i">The index of the field to find.</param>
         /// <returns>The nullable 64-bit signed integer value of the specified field.</returns>
         public static long? GetNullableInt64(this IDataReader reader, int i)
-        {
-            return reader.IsDBNull(i) ? (long?)null : reader.GetInt64(i);
-        }
+            => reader.IsDBNull(i) ? (long?)null : reader.GetInt64(i);
 
         /// <summary>
         /// Gets a stream to retrieve data from the specified column if IsDBNull is false otherwise returns null.
@@ -1728,9 +2374,7 @@ namespace Cflashsoft.Framework.Data
         /// <param name="i">The index of the field to find.</param>
         /// <returns>A stream.</returns>
         public static Stream GetNullableStream(this DbDataReader reader, int i)
-        {
-            return reader.IsDBNull(i) ? (Stream)null : reader.GetStream(i);
-        }
+            => reader.IsDBNull(i) ? (Stream)null : reader.GetStream(i);
 
         /// <summary>
         /// Gets the string value of the specified field if IsDBNull is false otherwise returns null.
@@ -1739,9 +2383,7 @@ namespace Cflashsoft.Framework.Data
         /// <param name="name">The name of the field.</param>
         /// <returns>The string value of the specified field or NULL if the value is DbNull.</returns>
         public static string GetNullableString(this IDataReader reader, string name)
-        {
-            return GetNullableString(reader, reader.GetOrdinal(name));
-        }
+            => GetNullableString(reader, reader.GetOrdinal(name));
 
         /// <summary>
         /// Gets the bool value of the specified column if IsDBNull is false otherwise returns null.
@@ -1750,9 +2392,7 @@ namespace Cflashsoft.Framework.Data
         /// <param name="name">The name of the field.</param>
         /// <returns>A nullable boolean.</returns>
         public static bool? GetNullableBoolean(this IDataReader reader, string name)
-        {
-            return GetNullableBoolean(reader, reader.GetOrdinal(name));
-        }
+            => GetNullableBoolean(reader, reader.GetOrdinal(name));
 
         /// <summary>
         /// Gets the 8-bit unsigned integer value of the specified column if IsDBNull is false otherwise returns null.
@@ -1761,9 +2401,7 @@ namespace Cflashsoft.Framework.Data
         /// <param name="name">The name of the field.</param>
         /// <returns>The nullable 8-bit unsigned integer value of the specified column.</returns>
         public static byte? GetNullableByte(this IDataReader reader, string name)
-        {
-            return GetNullableByte(reader, reader.GetOrdinal(name));
-        }
+            => GetNullableByte(reader, reader.GetOrdinal(name));
 
         /// <summary>
         /// Gets the character value of the specified column if IsDBNull is false otherwise returns null.
@@ -1772,9 +2410,7 @@ namespace Cflashsoft.Framework.Data
         /// <param name="name">The name of the field.</param>
         /// <returns>The nullable character value of the specified column.</returns>
         public static char? GetNullableChar(this IDataReader reader, string name)
-        {
-            return GetNullableChar(reader, reader.GetOrdinal(name));
-        }
+            => GetNullableChar(reader, reader.GetOrdinal(name));
 
         /// <summary>
         /// Gets the date and time data value of the specified field if IsDBNull is false otherwise returns null.
@@ -1783,9 +2419,7 @@ namespace Cflashsoft.Framework.Data
         /// <param name="name">The name of the field.</param>
         /// <returns>The nullable date and time data value of the specified field.</returns>
         public static DateTime? GetNullableDateTime(this IDataReader reader, string name)
-        {
-            return GetNullableDateTime(reader, reader.GetOrdinal(name));
-        }
+            => GetNullableDateTime(reader, reader.GetOrdinal(name));
 
         /// <summary>
         /// Gets the fixed-position numeric value of the specified field if IsDBNull is false otherwise returns null.
@@ -1794,9 +2428,7 @@ namespace Cflashsoft.Framework.Data
         /// <param name="name">The name of the field.</param>
         /// <returns>The nullable fixed-position numeric value of the specified field.</returns>
         public static decimal? GetNullableDecimal(this IDataReader reader, string name)
-        {
-            return GetNullableDecimal(reader, reader.GetOrdinal(name));
-        }
+            => GetNullableDecimal(reader, reader.GetOrdinal(name));
 
         /// <summary>
         /// Gets the double-precision floating point number of the specified field if IsDBNull is false otherwise returns null.
@@ -1805,9 +2437,7 @@ namespace Cflashsoft.Framework.Data
         /// <param name="name">The name of the field.</param>
         /// <returns>The nullable double-precision floating point number of the specified field.</returns>
         public static double? GetNullableDouble(this IDataReader reader, string name)
-        {
-            return GetNullableDouble(reader, reader.GetOrdinal(name));
-        }
+            => GetNullableDouble(reader, reader.GetOrdinal(name));
 
         /// <summary>
         /// Gets the single-precision floating point number of the specified field if IsDBNull is false otherwise returns null.
@@ -1816,9 +2446,7 @@ namespace Cflashsoft.Framework.Data
         /// <param name="name">The name of the field.</param>
         /// <returns>The nullable single-precision floating point number of the specified field.</returns>
         public static float? GetNullableFloat(this IDataReader reader, string name)
-        {
-            return GetNullableFloat(reader, reader.GetOrdinal(name));
-        }
+            => GetNullableFloat(reader, reader.GetOrdinal(name));
 
         /// <summary>
         /// Returns the GUID value of the specified field if IsDBNull is false otherwise returns null.
@@ -1827,9 +2455,7 @@ namespace Cflashsoft.Framework.Data
         /// <param name="name">The name of the field.</param>
         /// <returns>The nullable GUID value of the specified field.</returns>
         public static Guid? GetNullableGuid(this IDataReader reader, string name)
-        {
-            return GetNullableGuid(reader, reader.GetOrdinal(name));
-        }
+            => GetNullableGuid(reader, reader.GetOrdinal(name));
 
         /// <summary>
         /// Gets the 16-bit signed integer value of the specified field if IsDBNull is false otherwise returns null.
@@ -1838,9 +2464,7 @@ namespace Cflashsoft.Framework.Data
         /// <param name="name">The name of the field.</param>
         /// <returns>The nullable 16-bit signed integer value of the specified field.</returns>
         public static short? GetNullableInt16(this IDataReader reader, string name)
-        {
-            return GetNullableInt16(reader, reader.GetOrdinal(name));
-        }
+            => GetNullableInt16(reader, reader.GetOrdinal(name));
 
         /// <summary>
         /// Gets the 32-bit signed integer value of the specified field if IsDBNull is false otherwise returns null.
@@ -1849,9 +2473,7 @@ namespace Cflashsoft.Framework.Data
         /// <param name="name">The name of the field.</param>
         /// <returns>The nullable 32-bit signed integer value of the specified field.</returns>
         public static int? GetNullableInt32(this IDataReader reader, string name)
-        {
-            return GetNullableInt32(reader, reader.GetOrdinal(name));
-        }
+            => GetNullableInt32(reader, reader.GetOrdinal(name));
 
         /// <summary>
         /// Gets the 64-bit signed integer value of the specified field if IsDBNull is false otherwise returns null.
@@ -1860,9 +2482,7 @@ namespace Cflashsoft.Framework.Data
         /// <param name="name">The name of the field.</param>
         /// <returns>The nullable 64-bit signed integer value of the specified field.</returns>
         public static long? GetNullableInt64(this IDataReader reader, string name)
-        {
-            return GetNullableInt64(reader, reader.GetOrdinal(name));
-        }
+            => GetNullableInt64(reader, reader.GetOrdinal(name));
 
         /// <summary>
         /// Gets a stream to retrieve data from the specified column if IsDBNull is false otherwise returns null.
@@ -1871,9 +2491,7 @@ namespace Cflashsoft.Framework.Data
         /// <param name="name">The name of the field.</param>
         /// <returns>A stream.</returns>
         public static Stream GetNullableStream(this DbDataReader reader, string name)
-        {
-            return GetNullableStream(reader, reader.GetOrdinal(name));
-        }
+            => GetNullableStream(reader, reader.GetOrdinal(name));
 
         /// <summary>
         /// Gets the string value of the specified field.
@@ -1883,9 +2501,7 @@ namespace Cflashsoft.Framework.Data
         /// <returns>The string value of the specified field.</returns>
         /// <remarks>Shorthand for reader.Get...(reader.GetOrdinal(name)</remarks>
         public static string GetString(this IDataReader reader, string name)
-        {
-            return reader.GetString(reader.GetOrdinal(name));
-        }
+            => reader.GetString(reader.GetOrdinal(name));
 
         /// <summary>
         /// Gets the bool value of the specified column.
@@ -1895,9 +2511,7 @@ namespace Cflashsoft.Framework.Data
         /// <returns>A boolean.</returns>
         /// <remarks>Shorthand for reader.Get...(reader.GetOrdinal(name)</remarks>
         public static bool GetBoolean(this IDataReader reader, string name)
-        {
-            return reader.GetBoolean(reader.GetOrdinal(name));
-        }
+            => reader.GetBoolean(reader.GetOrdinal(name));
 
         /// <summary>
         /// Gets the 8-bit unsigned integer value of the specified column.
@@ -1907,9 +2521,7 @@ namespace Cflashsoft.Framework.Data
         /// <returns>The 8-bit unsigned integer value of the specified column.</returns>
         /// <remarks>Shorthand for reader.Get...(reader.GetOrdinal(name)</remarks>
         public static byte GetByte(this IDataReader reader, string name)
-        {
-            return reader.GetByte(reader.GetOrdinal(name));
-        }
+            => reader.GetByte(reader.GetOrdinal(name));
 
         /// <summary>
         /// Gets the character value of the specified column.
@@ -1919,9 +2531,7 @@ namespace Cflashsoft.Framework.Data
         /// <returns>The character value of the specified column.</returns>
         /// <remarks>Shorthand for reader.Get...(reader.GetOrdinal(name)</remarks>
         public static char GetChar(this IDataReader reader, string name)
-        {
-            return reader.GetChar(reader.GetOrdinal(name));
-        }
+            => reader.GetChar(reader.GetOrdinal(name));
 
         /// <summary>
         /// Gets the date and time data value of the specified field.
@@ -1931,9 +2541,7 @@ namespace Cflashsoft.Framework.Data
         /// <returns>The date and time data value of the specified field.</returns>
         /// <remarks>Shorthand for reader.Get...(reader.GetOrdinal(name)</remarks>
         public static DateTime GetDateTime(this IDataReader reader, string name)
-        {
-            return reader.GetDateTime(reader.GetOrdinal(name));
-        }
+            => reader.GetDateTime(reader.GetOrdinal(name));
 
         /// <summary>
         /// Gets the fixed-position numeric value of the specified field.
@@ -1943,9 +2551,7 @@ namespace Cflashsoft.Framework.Data
         /// <returns>The fixed-position numeric value of the specified field.</returns>
         /// <remarks>Shorthand for reader.Get...(reader.GetOrdinal(name)</remarks>
         public static decimal GetDecimal(this IDataReader reader, string name)
-        {
-            return reader.GetDecimal(reader.GetOrdinal(name));
-        }
+            => reader.GetDecimal(reader.GetOrdinal(name));
 
         /// <summary>
         /// Gets the double-precision floating point number of the specified field.
@@ -1955,9 +2561,7 @@ namespace Cflashsoft.Framework.Data
         /// <returns>The double-precision floating point number of the specified field.</returns>
         /// <remarks>Shorthand for reader.Get...(reader.GetOrdinal(name)</remarks>
         public static double GetDouble(this IDataReader reader, string name)
-        {
-            return reader.GetDouble(reader.GetOrdinal(name));
-        }
+            => reader.GetDouble(reader.GetOrdinal(name));
 
         /// <summary>
         /// Gets the single-precision floating point number of the specified field.
@@ -1967,9 +2571,7 @@ namespace Cflashsoft.Framework.Data
         /// <returns>The single-precision floating point number of the specified field.</returns>
         /// <remarks>Shorthand for reader.Get...(reader.GetOrdinal(name)</remarks>
         public static float GetFloat(this IDataReader reader, string name)
-        {
-            return reader.GetFloat(reader.GetOrdinal(name));
-        }
+            => reader.GetFloat(reader.GetOrdinal(name));
 
         /// <summary>
         /// Returns the GUID value of the specified field.
@@ -1979,9 +2581,7 @@ namespace Cflashsoft.Framework.Data
         /// <returns>The GUID value of the specified field.</returns>
         /// <remarks>Shorthand for reader.Get...(reader.GetOrdinal(name)</remarks>
         public static Guid GetGuid(this IDataReader reader, string name)
-        {
-            return reader.GetGuid(reader.GetOrdinal(name));
-        }
+            => reader.GetGuid(reader.GetOrdinal(name));
 
         /// <summary>
         /// Gets the 16-bit signed integer value of the specified field.
@@ -1991,9 +2591,7 @@ namespace Cflashsoft.Framework.Data
         /// <returns>The 16-bit signed integer value of the specified field.</returns>
         /// <remarks>Shorthand for reader.Get...(reader.GetOrdinal(name)</remarks>
         public static short GetInt16(this IDataReader reader, string name)
-        {
-            return reader.GetInt16(reader.GetOrdinal(name));
-        }
+            => reader.GetInt16(reader.GetOrdinal(name));
 
         /// <summary>
         /// Gets the 32-bit signed integer value of the specified field.
@@ -2003,9 +2601,7 @@ namespace Cflashsoft.Framework.Data
         /// <returns>The 32-bit signed integer value of the specified field.</returns>
         /// <remarks>Shorthand for reader.Get...(reader.GetOrdinal(name)</remarks>
         public static int GetInt32(this IDataReader reader, string name)
-        {
-            return reader.GetInt32(reader.GetOrdinal(name));
-        }
+            => reader.GetInt32(reader.GetOrdinal(name));
 
         /// <summary>
         /// Gets the 64-bit signed integer value of the specified field.
@@ -2015,9 +2611,7 @@ namespace Cflashsoft.Framework.Data
         /// <returns>The 64-bit signed integer value of the specified field.</returns>
         /// <remarks>Shorthand for reader.Get...(reader.GetOrdinal(name)</remarks>
         public static long GetInt64(this IDataReader reader, string name)
-        {
-            return reader.GetInt64(reader.GetOrdinal(name));
-        }
+            => reader.GetInt64(reader.GetOrdinal(name));
 
         /// <summary>
         /// Gets a stream to retrieve data from the specified column.
@@ -2027,9 +2621,7 @@ namespace Cflashsoft.Framework.Data
         /// <returns>TA stream.</returns>
         /// <remarks>Shorthand for reader.Get...(reader.GetOrdinal(name)</remarks>
         public static Stream GetStream(this DbDataReader reader, string name)
-        {
-            return reader.GetStream(reader.GetOrdinal(name));
-        }
+            => reader.GetStream(reader.GetOrdinal(name));
 
         /// <summary>
         /// Returns a stream that will close the DataReader when it is closed.
@@ -2039,8 +2631,6 @@ namespace Cflashsoft.Framework.Data
         /// <returns>A stream to the contents of the field.</returns>
         /// <remarks>Intended for use with large binary columns accessed via ExecuteSequentialStream or CommandBehavior CommandBehavior.SingleResult | CommandBehavior.SingleRow | CommandBehavior.SequentialAccess | CommandBehavior.CloseConnection.</remarks>
         public static DataReaderBinaryStream GetDataReaderBinaryStream(this IDataReader reader, int i)
-        {
-            return new DataReaderBinaryStream(reader, i);
-        }
+            => new DataReaderBinaryStream(reader, i);
     }
 }
