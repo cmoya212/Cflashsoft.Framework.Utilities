@@ -44,7 +44,7 @@ namespace Cflashsoft.Framework.Data
         /// <param name="parameters">The parameters of the SQL statement or stored procedure.</param>
         /// <returns>An IDataReader object.</returns>
         public static IDataReader ExecuteQuery(this IDbConnection cn, string commandText, CommandType commandType, CommandBehavior behavior, params (string ParameterName, object Value)[] parameters)
-            => ExecuteQuery(cn, commandText, commandType, behavior,(int?)null, (IDbTransaction)null, parameters);
+            => ExecuteQuery(cn, commandText, commandType, behavior, (int?)null, (IDbTransaction)null, parameters);
 
         /// <summary>
         /// Executes the CommandText against the Connection and builds an IDataReader.
@@ -117,7 +117,7 @@ namespace Cflashsoft.Framework.Data
         /// <param name="parameters">The parameters of the SQL statement or stored procedure.</param>
         /// <returns>An IDataReader object.</returns>
         public static Task<DbDataReader> ExecuteQueryAsync(this DbConnection cn, string commandText, CommandType commandType, CommandBehavior behavior, params (string ParameterName, object Value)[] parameters)
-            => ExecuteQueryAsync(cn, commandText, commandType, behavior, null, (DbTransaction)null, parameters);
+            => ExecuteQueryAsync(cn, commandText, commandType, behavior, (int?)null, (DbTransaction)null, parameters);
 
         /// <summary>
         /// Executes the CommandText against the Connection and builds an IDataReader.
@@ -260,7 +260,7 @@ namespace Cflashsoft.Framework.Data
         /// <param name="parameters">The parameters of the SQL statement or stored procedure.</param>
         /// <returns>The number of rows affected.</returns>
         public static int ExecuteNonQuery(this IDbConnection cn, string commandText, CommandType commandType, params (string ParameterName, object Value)[] parameters)
-            => ExecuteNonQuery(cn, commandText, commandType, null, (IDbTransaction)null, parameters);
+            => ExecuteNonQuery(cn, commandText, commandType, (int?)null, (IDbTransaction)null, parameters);
 
         /// <summary>
         /// Executes an SQL statement against the Connection object of a .NET data provider, and returns the number of rows affected.
@@ -319,7 +319,7 @@ namespace Cflashsoft.Framework.Data
         /// <param name="parameters">The parameters of the SQL statement or stored procedure.</param>
         /// <returns>The number of rows affected.</returns>
         public static Task<int> ExecuteNonQueryAsync(this DbConnection cn, string commandText, CommandType commandType, params (string ParameterName, object Value)[] parameters)
-            => ExecuteNonQueryAsync(cn, commandText, commandType, null, (DbTransaction)null, parameters);
+            => ExecuteNonQueryAsync(cn, commandText, commandType, (int?)null, (DbTransaction)null, parameters);
 
         /// <summary>
         /// Executes an SQL statement against the Connection object of a .NET data provider, and returns the number of rows affected.
@@ -377,7 +377,7 @@ namespace Cflashsoft.Framework.Data
         /// <param name="parameters">The parameters of the SQL statement or stored procedure.</param>
         /// <returns>The first column of the first row in the resultset.</returns>
         public static object ExecuteScalar(this IDbConnection cn, string commandText, CommandType commandType, params (string ParameterName, object Value)[] parameters)
-            => ExecuteScalar(cn, commandText, commandType, null, (IDbTransaction)null, parameters);
+            => ExecuteScalar(cn, commandText, commandType, (int?)null, (IDbTransaction)null, parameters);
 
         /// <summary>
         /// Executes the query, and returns the first column of the first row in the resultset returned by the query. Extra columns or rows are ignored.
@@ -448,7 +448,7 @@ namespace Cflashsoft.Framework.Data
         /// <param name="parameters">The parameters of the SQL statement or stored procedure.</param>
         /// <returns>The first column of the first row in the resultset.</returns>
         public static Task<object> ExecuteScalarAsync(this DbConnection cn, string commandText, CommandType commandType, params (string ParameterName, object Value)[] parameters)
-            => ExecuteScalarAsync(cn, commandText, commandType, null, (DbTransaction)null, parameters);
+            => ExecuteScalarAsync(cn, commandText, commandType, (int?)null, (DbTransaction)null, parameters);
 
         /// <summary>
         /// Executes the query, and returns the first column of the first row in the resultset returned by the query. Extra columns or rows are ignored.
@@ -565,7 +565,7 @@ namespace Cflashsoft.Framework.Data
         /// <param name="parameters">The parameters of the SQL statement or stored procedure.</param>
         /// <returns>A IDbCommand object.</returns>
         public static IDbCommand CreateCommand(this IDbConnection cn, string commandText, CommandType commandType, params (string ParameterName, object Value)[] parameters)
-            => CreateCommand(cn, commandText, commandType, null, (IDbTransaction)null, parameters);
+            => CreateCommand(cn, commandText, commandType, (int?)null, (IDbTransaction)null, parameters);
 
         /// <summary>
         /// Utility method to create and configure a IDbCommand object in a single call.
@@ -601,7 +601,7 @@ namespace Cflashsoft.Framework.Data
         /// <param name="parameters">The parameters of the SQL statement or stored procedure.</param>
         /// <returns>A IDbCommand object.</returns>
         public static DbCommand CreateCommand(this DbConnection cn, string commandText, CommandType commandType, params (string ParameterName, object Value)[] parameters)
-            => CreateCommand(cn, commandText, commandType, null, (DbTransaction)null, parameters);
+            => CreateCommand(cn, commandText, commandType, (int?)null, (DbTransaction)null, parameters);
 
         /// <summary>
         /// Utility method to create and configure a IDbCommand object in a single call.
@@ -637,7 +637,7 @@ namespace Cflashsoft.Framework.Data
         /// <param name="parameters">The parameters of the SQL statement or stored procedure.</param>
         /// <returns>A IDbCommand object.</returns>
         public static IDbCommand CreateCommand(this IDbConnection cn, string commandText, CommandType commandType, IEnumerable<IDbDataParameter> parameters)
-            => CreateCommand(cn, commandText, commandType, null, (IDbTransaction)null, parameters);
+            => CreateCommand(cn, commandText, commandType, (int?)null, (IDbTransaction)null, parameters);
 
         /// <summary>
         /// Utility method to create and configure a IDbCommand object in a single call.
@@ -673,7 +673,7 @@ namespace Cflashsoft.Framework.Data
         /// <param name="parameters">The parameters of the SQL statement or stored procedure.</param>
         /// <returns>A IDbCommand object.</returns>
         public static DbCommand CreateCommand(this DbConnection cn, string commandText, CommandType commandType, IEnumerable<IDbDataParameter> parameters)
-            => CreateCommand(cn, commandText, commandType, null, (DbTransaction)null, parameters);
+            => CreateCommand(cn, commandText, commandType, (int?)null, (DbTransaction)null, parameters);
 
         /// <summary>
         /// Utility method to create and configure a IDbCommand object in a single call.
