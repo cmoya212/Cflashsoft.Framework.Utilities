@@ -30,7 +30,7 @@ namespace Cflashsoft.Framework.ApiKeyAuthentication
         {
             _options = options;
 
-            if (options.InitializeDatabase)
+            if (_options.InitializeDatabase)
                 InitializeDatabase();
         }
 
@@ -38,17 +38,23 @@ namespace Cflashsoft.Framework.ApiKeyAuthentication
         {
             await using var cn = new SqlConnection(_options.ConnectionString);
 
-            var appApiKeyInfo = await (await cn.ExecuteQueryAsync("SELECT Id, Name FROM CfAuth_AppApiKeys WHERE ApiKey = @ApiKey AND Enabled = 1 AND (ExpiryDate IS NULL OR ExpiryDate > GETUTCDATE())", ("ApiKey", apiKey)))
-                .FirstOrDefaultAsync(reader => new { Id = reader.GetInt32(0), Name = reader.GetString(1) });
+            var appApiKeyInfo = await cn.ExecuteNullableFirstOrDefaultAsync("SELECT Id, Name FROM CfAuth_AppApiKeys WHERE ApiKey = @ApiKey AND Enabled = 1 AND (ExpiryDate IS NULL OR ExpiryDate > GETUTCDATE())",
+                reader => 
+                (
+                    Id: reader.GetInt32(0),
+                    Name: reader.GetString(1)
+                ),
+                ("ApiKey", apiKey));
 
-            if (appApiKeyInfo != null)
+            if (appApiKeyInfo.HasValue)
             {
-                var roles = await (await cn.ExecuteQueryAsync("SELECT r.Name FROM CfAuth_AppApiKeyRoles kr INNER JOIN CfAuth_AppRoles r ON kr.AppRoleId = r.Id WHERE kr.AppApiKeyId = @AppApiKeyId AND r.Enabled = 1", ("AppApiKeyId", appApiKeyInfo.Id)))
-                    .ToListAsync(reader => reader.GetString(0));
+                var roles = await cn.ExecuteToListAsync("SELECT r.Name FROM CfAuth_AppApiKeyRoles kr INNER JOIN CfAuth_AppRoles r ON kr.AppRoleId = r.Id WHERE kr.AppApiKeyId = @AppApiKeyId AND r.Enabled = 1",
+                    reader => reader.GetString(0),
+                    ("AppApiKeyId", appApiKeyInfo.Value.Id));
 
                 return new AppApiKeyModel
                 {
-                    Name = appApiKeyInfo.Name,
+                    Name = appApiKeyInfo.Value.Name,
                     Key = apiKey,
                     Roles = roles.Count > 0 ? roles : null
                 };

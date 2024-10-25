@@ -42,6 +42,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Cflashsoft.Framework.ApiKey
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Cflashsoft.Framework.ApiKeyAuthentication.SqlApiKeysProvider", "Cflashsoft.Framework.ApiKeyAuthentication.SqlApiKeysProvider\Cflashsoft.Framework.ApiKeyAuthentication.SqlApiKeysProvider.csproj", "{7DD98ACE-E837-40D3-9045-DC8A33E6C574}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WebApplication1", "WebApplication1\WebApplication1.csproj", "{887CCAA7-2FD6-44B7-AA0C-72002B79C89C}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -100,6 +102,10 @@ Global
 		{7DD98ACE-E837-40D3-9045-DC8A33E6C574}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7DD98ACE-E837-40D3-9045-DC8A33E6C574}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7DD98ACE-E837-40D3-9045-DC8A33E6C574}.Release|Any CPU.Build.0 = Release|Any CPU
+		{887CCAA7-2FD6-44B7-AA0C-72002B79C89C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{887CCAA7-2FD6-44B7-AA0C-72002B79C89C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{887CCAA7-2FD6-44B7-AA0C-72002B79C89C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{887CCAA7-2FD6-44B7-AA0C-72002B79C89C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
