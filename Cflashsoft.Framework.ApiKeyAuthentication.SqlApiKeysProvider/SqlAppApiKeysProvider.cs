@@ -1,7 +1,5 @@
 ﻿using Cflashsoft.Framework.Data;
 using Microsoft.Data.SqlClient;
-using Microsoft.Extensions.Caching.Memory;
-using Cflashsoft.Framework.Optimization;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Cflashsoft.Framework.ApiKeyAuthentication

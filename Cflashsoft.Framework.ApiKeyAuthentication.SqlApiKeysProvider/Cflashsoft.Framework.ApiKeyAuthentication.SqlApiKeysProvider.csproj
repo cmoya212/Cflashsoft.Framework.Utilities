@@ -38,7 +38,6 @@
   <ItemGroup>
     <ProjectReference Include="..\Cflashsoft.Framework.ApiKeyAuthentication\Cflashsoft.Framework.ApiKeyAuthentication.csproj" />
     <ProjectReference Include="..\Cflashsoft.Framework.Data\Cflashsoft.Framework.Data.csproj" />
-    <ProjectReference Include="..\Cflashsoft.Framework.Optimization\Cflashsoft.Framework.Optimization.csproj" />
   </ItemGroup>
 
 </Project>
