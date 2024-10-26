@@ -4,33 +4,45 @@ Cfx Utilities is a set of extensions to make some of the more verbose .NET under
 
 ## Examples
 
-For instance, simplified data access similar to Dapper but even simpler:
+For instance, simplified ADO.NET data access similar to Dapper but even simpler:
 ```C#
-//Note: Could use DbContext.Database.Connection as well in a partial class
-//for your Entity Framework DbContext such as quick Deletes, SP's, or 
-//any situation where EF is overkill and probably innefficient (like for
-//deletes). 
-using (var cn = new SqlConnection(ConnectionString))
+await using (var cn = new SqlConnection(ConnectionString))
 {
     //no need to open the connection first.
 
     //Returns List<Dictionary<string, object>>
-    var rows1 = await (await cn.ExecuteQueryAsync("select Field1, Field2 from MyTable where Field1 = @Field1",
-        ("Field1", "SomeValue")))
-        .ToListAsync();
+    var apples = await cn.ExecuteToListAsync("select FruitName, FruitKind, Notes from Fruits where FruitKind = @FruitKind",
+        ("FruitKind", "Apple"));
 
-    var field1 = (string)rows1.FirstOrDefault()?["Field2"];
+    foreach (var apple in apples)
+        Console.WriteLine(apple["FruitName"]);
 
     //Returns List of anonymous objects or concrete class
-    var rows2 = await (await cn.ExecuteQueryAsync("select Field1, Field2 from MyTable where Field1 = @Field1",
-        ("Field1", "SomeValue")))
-        .ToListAsync((reader) => new
+    var oranges = await cn.ExecuteToListAsync("select FruitName, FruitKind, Notes from Fruits where FruitKind = @FruitKind",
+        reader => new
         {
-            Field1 = reader.GetNullableString(0), //by key works too
-            Field2 = reader.GetNullableInt32(1), //by key works too
-        });
+            Name = reader.GetString(0), //by key works too
+            Kind = reader.GetString(1), //by key works too
+            Notes = reader.GetNullableString(2) //IsDBNull rigmarole, by key works too
+        },
+        ("FruitKind", "Orange"));
 
-     var field2 = rows2.FirstOrDefault()?.Field2;
+    foreach (var orange in oranges)
+        Console.WriteLine(orange.Name);
+
+    //Even return a tuple
+    var delicious = await cn.ExecuteNullableFirstOrDefaultAsync("select FruitName, FruitKind, Notes from Fruits where FruitKind = @FruitKind and FruitName = @FruitName",
+        reader =>
+        (
+            Name: reader.GetString(0), //by key works too
+            Kind: reader.GetString(1), //by key works too
+            Notes: reader.GetNullableString(2) //IsDBNull rigmarole, by key works too
+        ),
+        ("FruitKind", "Apple"),
+        ("FruitName", "Delicious"));
+
+    if (delicious.HasValue)
+        Console.WriteLine(delicious.Value.Name);
 }
 ```
 And using a DbContext partial to delete a record without pulling it in first:
@@ -53,13 +65,15 @@ Here's an example of a simple, concise HttpClient GET request.
 //Returns HttpApiResult<MyClass>
 var apiResult = await httpClient.ApiAsAsync<MyClass>(HttpVerb.Get, "http://www.somendpoint.com/etc", authHeader);
 
-var someValue = apiResult.Value.SomeValue
+if (apiResult.IsSuccessStatusCode)
+    Console.WriteLine(apiResult.Value.SomeValue);
 
 //Returns a Newtonsoft JToken root object where the properties can be accessed in a dictionary hierarchy.
 //Helpful when creating a concrete class for JSON is just overkill.
 var apiResult2 = await httpClient.ApiAsJTokenAsync(HttpVerb.Get, "http://www.somendpoint.com/etc", authHeader);
 
-var someValue2 = (string)apiResult.Value["SomeValue"];
+if (apiResult.IsSuccessStatusCode)
+    Console.WriteLine((string)apiResult.Value["SomeValue"]);
 ```
 
 Also included is a "HybridCache" that implements an L1-L2 memorycache + remotecache (Redis) strategy with configurable item expiration that only now seems to be making its way into .NET in .NET 9 in 2024 but has existed here since 2017.
@@ -68,7 +82,7 @@ var item = await hybridCache.InterlockedGetOrSetAsync(
     key, 
     async () => 
     { 
-        //Note: this would normally be a database call
+        //this would normally be a database call
         return new MyClass { MyProperty1 = "Property 1", MyProperty2 = "Property 2!" }; 
     },
     useMemoryCache: true,
