@@ -5,7 +5,7 @@
     <GenerateDocumentationFile>True</GenerateDocumentationFile>
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
     <Title>Cflashsoft.Framework.Data</Title>
-    <Version>1.4.4</Version>
+    <Version>1.4.5</Version>
     <Authors>C. Moya</Authors>
     <Description>Database utility.</Description>
     <Copyright>Copyright 2024</Copyright>
