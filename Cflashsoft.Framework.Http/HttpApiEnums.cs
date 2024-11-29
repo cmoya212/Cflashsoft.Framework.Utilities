@@ -70,7 +70,11 @@ namespace Cflashsoft.Framework.Http
         /// <summary>
         /// String
         /// </summary>
-        String = 6
+        String = 6,
+        /// <summary>
+        /// CamelJson
+        /// </summary>
+        CamelJson = 7
     }
 
     /// <summary>

@@ -9,6 +9,7 @@ using System.Net.Http.Formatting;
 using System.Net.Http.Headers;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using Newtonsoft.Json.Serialization;
 
 namespace Cflashsoft.Framework.Http
 {
@@ -101,6 +102,7 @@ namespace Cflashsoft.Framework.Http
                 {
                     case HttpContentType.Form:
                         return GetFormUrlEncodedContent(value);
+                    case HttpContentType.CamelJson:
                     case HttpContentType.Json:
                     case HttpContentType.Xml:
                     case HttpContentType.Bson:
@@ -108,7 +110,8 @@ namespace Cflashsoft.Framework.Http
                     case HttpContentType.Multipart:
                         return GetMultipartFormDataContent(value);
                     case HttpContentType.NotSet:
-                        throw new FormatException("When content type is not set, content must be an HttpContent derived object.");
+                        return GetFormattedObjectContent(value, HttpContentType.CamelJson);
+                        //throw new FormatException("When content type is not set, content must be an HttpContent derived object.");
                     default:
                         throw new ArgumentOutOfRangeException("ContentType is not recognized.");
                 }
@@ -211,6 +214,10 @@ namespace Cflashsoft.Framework.Http
                 {
                     switch (contentType)
                     {
+                        case HttpContentType.CamelJson:
+                            var formatter = new JsonMediaTypeFormatter();
+                            formatter.SerializerSettings.ContractResolver = new CamelCasePropertyNamesContractResolver();
+                            return new ObjectContent(type, value, formatter);
                         case HttpContentType.Json:
                             return new ObjectContent(type, value, new JsonMediaTypeFormatter());
                         case HttpContentType.Xml:

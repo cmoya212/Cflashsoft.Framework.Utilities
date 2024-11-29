@@ -4,7 +4,7 @@
     <TargetFramework>netstandard2.0</TargetFramework>
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
     <Title>Cflashsoft.Framework.Http</Title>
-    <Version>1.4.4</Version>
+    <Version>1.4.5</Version>
     <Authors>C. Moya</Authors>
     <Description>HTTP API utility.</Description>
     <Copyright>Copyright 2024</Copyright>

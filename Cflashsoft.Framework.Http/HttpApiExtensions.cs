@@ -48,7 +48,7 @@ namespace Cflashsoft.Framework.Http
         /// <param name="contentType">The HttpContentType to use when sending the data.</param>
         /// <returns>Depending on TResult, a concrete class that the content can deserialize to.</returns>
         /// <remarks>Special handling is given to JToken, String, and Byte Array TResult. Non-generic methods for those 3 types also exist in these extensions. See ApiAsJTokenAsync, ApiAsStringAsync, and ApiAsByteArrayAsync.</remarks>
-        public static async Task<HttpApiResult<TResult>> ApiAsAsync<TResult>(this HttpClient client, HttpVerb verb, string requestUri, object value, AuthenticationHeaderValue authenticationHeader = null, IEnumerable<(string Key, string Value)> headers = null, HttpContentType contentType = HttpContentType.Json)
+        public static async Task<HttpApiResult<TResult>> ApiAsAsync<TResult>(this HttpClient client, HttpVerb verb, string requestUri, object value, AuthenticationHeaderValue authenticationHeader = null, IEnumerable<(string Key, string Value)> headers = null, HttpContentType contentType = HttpContentType.CamelJson)
         {
             using (HttpRequestMessage message = HttpApiUtility.CreateRequestMessage(verb, requestUri, value, contentType, authenticationHeader, headers))
             {
@@ -96,7 +96,7 @@ namespace Cflashsoft.Framework.Http
         /// <param name="headers">Misc headers to attach to the request.</param>
         /// <param name="contentType">The HttpContentType to use when sending the data.</param>
         /// <returns>A JToken dictionary.</returns>
-        public static Task<HttpApiResult<JToken>> ApiAsJTokenAsync(this HttpClient client, HttpVerb verb, string requestUri, object value, AuthenticationHeaderValue authenticationHeader = null, IEnumerable<(string Key, string Value)> headers = null, HttpContentType contentType = HttpContentType.Json)
+        public static Task<HttpApiResult<JToken>> ApiAsJTokenAsync(this HttpClient client, HttpVerb verb, string requestUri, object value, AuthenticationHeaderValue authenticationHeader = null, IEnumerable<(string Key, string Value)> headers = null, HttpContentType contentType = HttpContentType.CamelJson)
         {
             return ApiAsAsync<JToken>(client, verb, requestUri, value, authenticationHeader, headers, contentType);
         }
@@ -126,7 +126,7 @@ namespace Cflashsoft.Framework.Http
         /// <param name="headers">Misc headers to attach to the request.</param>
         /// <param name="contentType">The HttpContentType to use when sending the data.</param>
         /// <returns>A string containing the contents of the response.</returns>
-        public static Task<HttpApiResult<string>> ApiAsStringAsync(this HttpClient client, HttpVerb verb, string requestUri, object value, AuthenticationHeaderValue authenticationHeader = null, IEnumerable<(string Key, string Value)> headers = null, HttpContentType contentType = HttpContentType.Json)
+        public static Task<HttpApiResult<string>> ApiAsStringAsync(this HttpClient client, HttpVerb verb, string requestUri, object value, AuthenticationHeaderValue authenticationHeader = null, IEnumerable<(string Key, string Value)> headers = null, HttpContentType contentType = HttpContentType.CamelJson)
         {
             return ApiAsAsync<string>(client, verb, requestUri, value, authenticationHeader, headers, contentType);
         }
@@ -156,7 +156,7 @@ namespace Cflashsoft.Framework.Http
         /// <param name="headers">Misc headers to attach to the request.</param>
         /// <param name="contentType">The HttpContentType to use when sending the data.</param>
         /// <returns>A byte array.</returns>
-        public static Task<HttpApiResult<byte[]>> ApiAsByteArrayAsync(this HttpClient client, HttpVerb verb, string requestUri, object value, AuthenticationHeaderValue authenticationHeader = null, IEnumerable<(string Key, string Value)> headers = null, HttpContentType contentType = HttpContentType.Json)
+        public static Task<HttpApiResult<byte[]>> ApiAsByteArrayAsync(this HttpClient client, HttpVerb verb, string requestUri, object value, AuthenticationHeaderValue authenticationHeader = null, IEnumerable<(string Key, string Value)> headers = null, HttpContentType contentType = HttpContentType.CamelJson)
         {
             return ApiAsAsync<byte[]>(client, verb, requestUri, value, authenticationHeader, headers, contentType);
         }
