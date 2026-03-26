@@ -82,7 +82,7 @@ var item = await hybridCache.InterlockedGetOrSetAsync(
     key, 
     async () => 
     { 
-        //this would normally be a database call
+        //simulated database call
         return new MyClass { MyProperty1 = "Property 1", MyProperty2 = "Property 2!" }; 
     },
     useMemoryCache: true,
